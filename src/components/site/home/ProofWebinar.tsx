@@ -27,7 +27,7 @@ export function ProofWebinar() {
         <div className="grid gap-6 md:grid-cols-3">
           {proof.map((p, i) => (
             <Reveal key={p.title} delay={(i + 1) as 1 | 2 | 3} as="article">
-              <div className="rounded-2xl border border-peri/15 p-8">
+              <div className="glass-card rounded-2xl p-8">
                 <div className="mb-4 font-display text-5xl font-extrabold tracking-[-0.04em] text-primary">
                   {p.num}
                 </div>
@@ -56,7 +56,7 @@ export function ProofWebinar() {
 
         {/* Webinar bar */}
         <Reveal delay={4}>
-          <div className="mt-20 flex flex-col items-center justify-between gap-6 rounded-2xl border border-peri/15 px-8 py-8 text-center sm:flex-row sm:text-left">
+          <div className="glass-card mt-20 flex flex-col items-center justify-between gap-6 rounded-2xl px-8 py-8 text-center sm:flex-row sm:text-left">
             <div>
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary">
                 Free this month
@@ -68,7 +68,7 @@ export function ProofWebinar() {
             </div>
             <a
               href="#contact"
-              className="shrink-0 whitespace-nowrap rounded-full bg-primary px-6 py-3 text-[13px] font-semibold text-primary-foreground transition hover:-translate-y-px hover:bg-primary-bright"
+              className="cta-glow shrink-0 whitespace-nowrap rounded-full bg-primary px-6 py-3 text-[13px] font-semibold text-primary-foreground"
             >
               Save my seat →
             </a>

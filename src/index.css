@@ -126,6 +126,9 @@
 
     --transition-base: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --transition-out: 600ms cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Reflect-style noise overlay (SVG fractal) */
+    --noise-svg: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
   /* Light surface scope — used inside sections that need cream/white bg */
@@ -156,6 +159,36 @@
     @apply bg-background text-foreground;
     font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
     overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Mesh gradient base — soft purples, navy, royal */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 18% 12%, hsl(var(--royal) / 0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 88% 18%, hsl(var(--nebula) / 0.28) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 45% at 50% 95%, hsl(var(--peri) / 0.16) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 5% 85%, hsl(var(--royal) / 0.18) 0%, transparent 55%),
+      hsl(var(--cosmic));
+    animation: meshDrift 24s ease-in-out infinite alternate;
+  }
+
+  /* Grain / noise overlay — Reflect signature texture */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: var(--noise-svg);
+    background-size: 200px 200px;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -170,6 +203,43 @@
 }
 
 @layer components {
+  /* Glassmorphism — Reflect signature surface */
+  .glass {
+    background: hsl(0 0% 0% / 0.22);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+  }
+  .glass-strong {
+    background: hsl(var(--cosmic) / 0.55);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid hsl(0 0% 100% / 0.1);
+  }
+  .glass-card {
+    background: linear-gradient(145deg, hsl(0 0% 100% / 0.04), hsl(0 0% 100% / 0.015));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid hsl(0 0% 100% / 0.07);
+  }
+
+  /* Headline gradient — Reflect's white→silver text wash */
+  .text-gradient-light {
+    background: linear-gradient(180deg, hsl(var(--starlight)) 0%, hsl(var(--moondust) / 0.85) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* CTA glow on hover */
+  .cta-glow {
+    transition: transform 200ms ease, box-shadow 300ms ease, background-color 200ms ease;
+  }
+  .cta-glow:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px hsl(var(--gold) / 0.4), 0 8px 32px hsl(var(--gold) / 0.35);
+  }
+
   /* Eyebrow label with leading rule */
   .eyebrow {
     @apply inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em];
@@ -217,5 +287,9 @@
   @keyframes haloRingSpin {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
+  }
+  @keyframes meshDrift {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    100% { transform: translate3d(-2%, 1%, 0) scale(1.04); }
   }
 }

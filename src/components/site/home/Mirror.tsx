@@ -48,7 +48,7 @@ export function Mirror() {
           <div className="mt-10 flex justify-center">
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-px hover:bg-primary-bright"
+              className="cta-glow inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground"
             >
               Book Your Free AI Audit →
             </a>

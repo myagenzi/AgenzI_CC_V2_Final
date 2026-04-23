@@ -28,11 +28,11 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4 lg:pt-6">
+      <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-6 lg:pt-10">
         <div
           className={cn(
-            "flex w-full max-w-[1100px] items-center justify-between gap-4 rounded-full border border-foreground/10 px-3 py-2 pl-5 backdrop-blur-xl transition-all",
-            scrolled ? "border-foreground/15 bg-cosmic/70" : "bg-cosmic/40",
+            "glass flex w-full max-w-[1100px] items-center justify-between gap-4 rounded-full px-3 py-2 pl-5 transition-all",
+            scrolled && "shadow-[0_8px_32px_hsl(0_0%_0%/0.35)]",
           )}
         >
           <a href="#top" className="flex items-center gap-2.5 shrink-0" aria-label="AgenzI home">
@@ -44,7 +44,7 @@ export function Header() {
               <a
                 key={l.label}
                 href={l.href}
-                className="rounded-full px-4 py-2 text-[13px] text-foreground/65 transition-colors hover:text-foreground"
+                className="rounded-full px-4 py-2 text-[13px] text-foreground/70 transition-colors hover:text-foreground"
               >
                 {l.label}
               </a>
@@ -54,13 +54,13 @@ export function Header() {
           <div className="flex items-center gap-2">
             <a
               href="#contact"
-              className="hidden rounded-full px-4 py-2 text-[13px] text-foreground/65 transition hover:text-foreground sm:inline-flex"
+              className="hidden rounded-full px-4 py-2 text-[13px] text-foreground/70 transition hover:text-foreground sm:inline-flex"
             >
               Login
             </a>
             <a
               href="#contact"
-              className="rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground transition hover:-translate-y-px hover:bg-primary-bright"
+              className="cta-glow rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground"
             >
               Book Free Audit
             </a>
