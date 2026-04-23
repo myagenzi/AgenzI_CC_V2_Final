@@ -1,7 +1,7 @@
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Hero } from "@/components/site/home/Hero";
-import { Ticker } from "@/components/site/home/Ticker";
+import { StatPanel } from "@/components/site/home/StatPanel";
 import { Stats } from "@/components/site/home/Stats";
 import { ThreeEngines } from "@/components/site/home/ThreeEngines";
 import { Problem } from "@/components/site/home/Problem";
@@ -10,28 +10,25 @@ import { HowItWorks } from "@/components/site/home/HowItWorks";
 import { Statement } from "@/components/site/home/Statement";
 import { ProofWebinar } from "@/components/site/home/ProofWebinar";
 import { FinalCta } from "@/components/site/home/FinalCta";
-import { LenisProvider } from "@/lib/lenis";
 
 const Index = () => {
   return (
-    <LenisProvider>
-      <div className="min-h-screen bg-background text-foreground">
-        <Header />
-        <main>
-          <Hero />
-          <Ticker />
-          <Stats />
-          <ThreeEngines />
-          <Problem />
-          <Mirror />
-          <HowItWorks />
-          <Statement />
-          <ProofWebinar />
-          <FinalCta />
-        </main>
-        <Footer />
-      </div>
-    </LenisProvider>
+    <div className="surface-lavender min-h-screen">
+      <Header />
+      <main>
+        <Hero />
+        <StatPanel />
+        <Stats />
+        <ThreeEngines />
+        <Problem />
+        <Mirror />
+        <HowItWorks />
+        <Statement />
+        <ProofWebinar />
+        <FinalCta />
+      </main>
+      <Footer />
+    </div>
   );
 };
 
