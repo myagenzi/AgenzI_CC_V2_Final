@@ -1,52 +1,78 @@
 
 
-# Header polish + custom cursor + logo sizing
+# One System, Three Engines — Pinned Sticky Card Stack
 
-## 1. Navigation bar — lavender glass + hide-on-scroll-down
+Rebuild the section as a pin-and-scrub stack of three cards (CaaS, MaaS, Zenzai) using Framer Motion. Cards stack centered with a slide-up wipe. Existing heading stays.
 
-**Look**
-- Swap the current dark glass for a lavender-tinted glossy pill: `bg-white/55 backdrop-blur-xl` with a subtle lilac inner glow and `border border-white/60`. Inherits the home page vibe.
-- Text color shifts to ink (`text-foreground`) on home, stays current on other pages (auto-detect via the `.surface-lavender` scope already on `<body>` / page root — fall back gracefully).
-- Soft shadow only after scroll: `shadow-[0_8px_32px_rgba(76,42,153,0.12)]`.
+## Layout (per card, desktop ≥ lg)
 
-**Behavior — auto hide / reveal**
-- Track scroll direction with a `useEffect` + `lastScrollY` ref.
-- Scrolling **down** past 80px → translate header `-translate-y-[120%]` (slides up out of view).
-- Scrolling **up** at any point → translate back to `translate-y-0` (slides in).
-- At the very top (< 8px) → always visible, no shadow.
-- Smooth: `transition-transform duration-300 ease-out`.
-- Mobile drawer open → header stays visible regardless.
+3-column grid inside one centered rounded card (max-w 1180, ~min-h 560px):
 
-## 2. Custom cursor — dot + ring
+```text
+┌─────────────────────────────────────────────────────────────┐
+│  LEFT (4 cols)        CENTER (4 cols)        RIGHT (4 cols) │
+│  ──────────────       ───────────────        ────────────── │
+│  01 / 03              ┌─────────────┐        → point one    │
+│  CaaS                 │ placeholder │        → point two    │
+│  Creative as a        │  with svc   │        → point three  │
+│  Service. Videos…     │  tagline    │                       │
+│                       │  inside it  │        [Explore CaaS] │
+│                       └─────────────┘                       │
+└─────────────────────────────────────────────────────────────┘
+                         01 / 03  ●○○
+```
 
-**New component**: `src/components/site/effects/Cursor.tsx`
-- Two fixed elements rendered into a portal:
-  - **Dot**: 6px solid Brand Purple (`#6C3FCF`), follows cursor 1:1 with no easing (sharp, precise).
-  - **Ring**: 32px circle, 1.5px lilac border, follows cursor with eased lerp (~0.18 factor) so it trails slightly.
-- Hover state: when over `a`, `button`, `[role="button"]`, or `.cursor-hover` — ring scales to `1.6`, dot fades to 0, ring border becomes Brand Purple. Creates a "magnify" feel.
-- Hidden on touch devices (`@media (hover: none)`) and when `prefers-reduced-motion`.
-- Native cursor hidden globally via `body { cursor: none }` — but only on screens with `(hover: hover)` so touch isn't affected.
-- Mounted once in `App.tsx` so it works site-wide.
+- **Left**: small index `01 / 03`, big system name (display font), description paragraph
+- **Center**: rounded `MediaPlaceholder` (4/5 aspect) with the service tagline overlaid in the bottom-left of the placeholder ("Creative as a Service · 48h turnaround" etc.)
+- **Right**: 3 bullets (arrow + text), then `Explore [System] →` button (primary purple)
+- **Bottom of card**: counter `01 / 03` + 3 dots indicator (active dot = purple)
+- **Card 1 (CaaS)**: dark variant — `#1C1C1C` bg, white text, magenta/lilac accents
+- **Cards 2, 3**: lavender glass — white/70 bg, ink text, purple accents
+- **Mobile (< lg)**: cards stack vertically, no pin, no wipe — just normal scroll with the same internal layout reflowed (left/center/right become stacked)
 
-## 3. Logo sizing
+## Animation (Framer Motion + scroll scrub)
 
-**Header logo**
-- Current: `h-9 md:h-11`
-- New: `h-11 md:h-14` — gives the wordmark + tagline room to breathe without ballooning the pill.
-- Pill padding tightens to compensate: `pl-4 pr-3 py-2` → keeps overall bar height balanced.
+- Section becomes a **tall scroll container** (`height: 300vh` for 3 cards = 100vh per card-step).
+- Inside, a **sticky inner wrapper** (`sticky top-0 h-screen flex items-center`) holds all 3 cards absolutely centered.
+- Use `useScroll({ target: sectionRef, offset: ["start start", "end end"] })` then derive per-card progress with `useTransform`.
 
-**Hero logo (you said "in the head it needs to be increase a lot")**
-- Interpreting "head" as the hero section — currently no logo there. I'll **not add** one unless you confirm. If you meant the header itself, that's covered above. If you meant a watermark-style large logo behind the hero headline, tell me and I'll add it as a faded backdrop element.
+**Per-card transforms** (driven by section scroll progress 0 → 1):
 
-## Files touched
+| Card | Enter range | y | scale | opacity |
+|---|---|---|---|---|
+| 1 (CaaS) | 0.00 → 0.33 (rests, then exits) | 0 → -40 | 1 → 0.94 | 1 → 0.5 |
+| 2 (MaaS) | 0.20 → 0.55 (slides up in, then exits) | 100% → 0 → -40 | 0.96 → 1 → 0.94 | 0 → 1 → 0.5 |
+| 3 (Zenzai) | 0.55 → 0.85 (slides up in, settles) | 100% → 0 | 0.96 → 1 | 0 → 1 |
 
-- `src/components/site/Header.tsx` — lavender glass restyle, hide-on-scroll logic, larger logo
-- `src/components/site/effects/Cursor.tsx` — new dot + ring cursor component
-- `src/App.tsx` — mount `<Cursor />` once globally
-- `src/index.css` — add `body { cursor: none }` (scoped to `@media (hover: hover)`), `.cursor-hover` helper, lavender-glass header tokens
+- Each card uses `motion.div` with `style={{ y, scale, opacity }}`.
+- Easing handled by Framer's spring-less transform mapping (smooth via scroll scrub).
+- Z-index ascends so newer cards visually cover older ones.
+- Counter + dots driven by the same progress (binary thresholds).
+- `prefers-reduced-motion` → fall back to plain stacked layout, no pin, instant visibility.
+
+## Files
+
+**New**
+- `src/components/site/home/EnginesStack.tsx` — section with pin + Framer Motion scrub, 3 stacked card panels, counter, dots
+- `src/components/site/home/EngineCard.tsx` — single card layout (left/center/right) with `dark` variant prop
+
+**Updated**
+- `src/pages/Index.tsx` — replace `<ThreeEngines />` with `<EnginesStack />`
+- `src/components/site/home/ThreeEngines.tsx` — keep file but unused (safe to delete later)
+
+**Dependencies**
+- `framer-motion` — add to project (single new dep, ~50KB gzipped, already common in this stack)
+
+## Content (verbatim from current `ThreeEngines.tsx`)
+
+| # | Name | Description | Tagline (in placeholder) | Bullets | CTA |
+|---|---|---|---|---|---|
+| 01 | CaaS | Creative as a Service. Videos, posts, ads, brand identity. One brief — we handle the rest. Human direction. AI speed. | Creative as a Service · 48h turnaround | Content without the briefing loop · 48-hour creative turnaround · From ₹2,999/month | Explore CaaS → `/what-we-do/creative-caas` |
+| 02 | MaaS | Marketing as a Service. Performance marketing measured in revenue. Every rupee traced to a customer. | Marketing as a Service · Revenue-tracked | Every rupee traced to a customer · Pipeline that fills itself · Performance + Growth + Perception | Explore MaaS → `/what-we-do/marketing-maas` |
+| 03 | Zenzai | AI · Automation · Tech. Automations live in 48 hours. Every tool connected. Custom AI built for your business. | Intelligence · 48h automations live | WhatsApp · CRM · Support automated · All your tools finally connected · Custom AI models + mobile apps | Explore Zenzai → `/what-we-do/intelligence-zenzai` |
 
 ## Out of scope
-- Section refinements (waiting on your screenshots)
-- Real images / silhouettes (separate pass)
-- Other pages' headers — they inherit the same Header component, so the new look applies everywhere; if you want home-only styling, say the word
+- Real card visuals (placeholders stay)
+- Any other section
+- Other pages
 
