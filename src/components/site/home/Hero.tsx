@@ -14,14 +14,14 @@ export function Hero() {
         }}
       />
 
-      {/* Eyebrow pill */}
-      <div className="mb-10 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/[0.03] px-4 py-1.5 text-[12px] text-foreground/70 backdrop-blur-sm">
+      {/* Eyebrow pill — glassmorphic */}
+      <div className="glass mb-10 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[12px] text-foreground/75">
         <span className="text-primary">✦</span>
         Human + AI · One System
       </div>
 
-      {/* Headline */}
-      <h1 className="mx-auto max-w-5xl font-display font-extrabold leading-[0.98] tracking-[-0.04em] text-foreground"
+      {/* Headline with gradient wash */}
+      <h1 className="mx-auto max-w-5xl font-display font-extrabold leading-[0.98] tracking-[-0.04em] text-gradient-light"
           style={{ fontSize: "clamp(48px, 9vw, 120px)" }}>
         Your competitors aren't
         <br />
@@ -39,13 +39,13 @@ export function Hero() {
       <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
         <a
           href="#contact"
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-px hover:bg-primary-bright"
+          className="cta-glow inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground"
         >
           Book Your Free AI Audit →
         </a>
         <a
           href="#how-it-works"
-          className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium text-foreground/75 transition hover:text-foreground"
+          className="glass inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium text-foreground/80 transition hover:text-foreground"
         >
           See how it works <span aria-hidden>↓</span>
         </a>
