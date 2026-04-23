@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { LeftRail } from "@/components/site/caas/LeftRail";
 import { CursorPortal } from "@/components/site/caas/CursorPortal";
 import { MarqueeStatement } from "@/components/site/caas/MarqueeStatement";
 import { CtaStripe } from "@/components/site/caas/CtaStripe";
@@ -27,10 +26,9 @@ export default function IntelligenceZenzai() {
     <LenisProvider>
     <div className="min-h-screen">
       <Header />
-      <LeftRail currentEngine="Intelligence — Zenzai" />
 
       <CursorPortal thumbs={thumbs}>
-        <main className="md:pl-[88px]">
+        <main>
           <ZenzaiHero />
 
           <MarqueeStatement words={["Automate", "Integrate", "Build", "Compound"]} />
@@ -77,9 +75,7 @@ export default function IntelligenceZenzai() {
         </main>
       </CursorPortal>
 
-      <div className="md:pl-[88px]">
-        <Footer />
-      </div>
+      <Footer />
     </div>
     </LenisProvider>
   );

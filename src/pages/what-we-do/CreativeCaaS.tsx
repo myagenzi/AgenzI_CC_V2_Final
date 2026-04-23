@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { LeftRail } from "@/components/site/caas/LeftRail";
 import { CaasHero } from "@/components/site/caas/CaasHero";
 import { CursorPortal } from "@/components/site/caas/CursorPortal";
 import { MarqueeStatement } from "@/components/site/caas/MarqueeStatement";
@@ -147,10 +146,9 @@ export default function CreativeCaaS() {
     <LenisProvider>
       <div className="min-h-screen">
         <Header />
-        <LeftRail currentEngine="Creative — CaaS" />
 
         <CursorPortal thumbs={thumbs}>
-          <main className="md:pl-[88px]">
+          <main>
             <CaasHero />
 
             <MarqueeStatement
@@ -261,9 +259,7 @@ export default function CreativeCaaS() {
           </main>
         </CursorPortal>
 
-        <div className="md:pl-[88px]">
-          <Footer />
-        </div>
+        <Footer />
       </div>
     </LenisProvider>
   );
