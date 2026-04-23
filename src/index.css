@@ -326,35 +326,36 @@
 }
 
 /* ============================================================
-   Monochrome surface — Creative-CaaS page
-   Japanese minimal × European brutalist
+   Engine pages — shared utilities (CaaS / MaaS / Zenzai)
+   Use the homepage palette + accent (gold). The "electric"
+   token here aliases to gold so legacy CaaS classes still work.
    ============================================================ */
-.surface-mono {
-  --background: 0 0% 4%;
-  --foreground: 0 0% 98%;
-  --card: 0 0% 7%;
-  --card-foreground: 0 0% 98%;
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 60%;
-  --border: 0 0% 100% / 0.08;
-  --primary: 0 0% 98%;
-  --primary-foreground: 0 0% 4%;
-  --electric: 230 100% 56%;
-
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+:root {
+  --electric: var(--gold);
 }
-.surface-mono .text-electric { color: hsl(var(--electric)); }
-.surface-mono .bg-electric { background-color: hsl(var(--electric)); }
-.surface-mono .border-electric { border-color: hsl(var(--electric)); }
-.surface-mono .hover-electric:hover { color: hsl(var(--electric)); }
+.text-electric { color: hsl(var(--electric)); }
+.bg-electric { background-color: hsl(var(--electric)); }
+.border-electric { border-color: hsl(var(--electric)); }
 
-/* Accordion row hover for mono surface */
-.surface-mono .acc-row { transition: background-color 280ms ease; }
-.surface-mono .acc-row:hover { background-color: hsl(var(--foreground) / 0.025); }
+/* Accordion row hover */
+.acc-row { transition: background-color 280ms ease; }
+.acc-row:hover { background-color: hsl(var(--foreground) / 0.03); }
 
-/* Tag pills (mono) */
-.surface-mono .tag-price { box-shadow: inset 0 0 0 1px hsl(var(--electric) / 0.5); }
-.surface-mono .tag-market { box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.25); }
-.surface-mono .tag-audience { box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.15); }
+/* Tag pills */
+.tag-price    { box-shadow: inset 0 0 0 1px hsl(var(--electric) / 0.5); }
+.tag-market   { box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.25); }
+.tag-audience { box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.15); }
+
+/* Manifesto numbered row */
+.manifesto-row {
+  border-top: 1px solid hsl(var(--foreground) / 0.08);
+  padding: 3rem 0;
+}
+.num-display {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(80px, 12vw, 200px);
+  line-height: 0.9;
+  color: hsl(var(--foreground) / 0.3);
+  letter-spacing: -0.04em;
+}
 

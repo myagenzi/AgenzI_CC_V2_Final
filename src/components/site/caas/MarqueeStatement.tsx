@@ -3,7 +3,7 @@ type Props = { words: string[] };
 export function MarqueeStatement({ words }: Props) {
   const row = [...words, ...words, ...words, ...words];
   return (
-    <div className="overflow-hidden border-y border-white/8 py-8">
+    <div className="overflow-hidden border-y border-foreground/[0.08] py-8">
       <div className="flex w-max animate-marquee items-center gap-12 whitespace-nowrap">
         {row.map((w, i) => (
           <span

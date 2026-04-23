@@ -10,12 +10,14 @@ const menuItems = [
   { label: "Contact", href: "/#contact" },
 ];
 
-export function LeftRail() {
+type LeftRailProps = { currentEngine?: string };
+
+export function LeftRail({ currentEngine = "Creative — CaaS" }: LeftRailProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-[88px] flex-col items-center justify-between border-r border-white/5 py-8 md:flex">
+      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-[88px] flex-col items-center justify-between border-r border-foreground/[0.08] py-8 md:flex">
         <Link to="/" className="font-mono-tech text-[10px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground">
           A.
         </Link>
@@ -25,7 +27,7 @@ export function LeftRail() {
             className="font-mono-tech text-[10px] uppercase tracking-[0.4em] text-foreground/40"
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
           >
-            AgenzI / Creative — CaaS
+            AgenzI / {currentEngine}
           </span>
         </div>
 
