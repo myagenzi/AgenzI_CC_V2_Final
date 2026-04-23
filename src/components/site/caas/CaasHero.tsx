@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
+import { useScrollSetup, gsap, ScrollTrigger } from "@/lib/scroll";
 
 const lines: { text: string; accent?: boolean }[] = [
   { text: "You know what your brand" },
@@ -9,20 +10,51 @@ const lines: { text: string; accent?: boolean }[] = [
 ];
 
 export function CaasHero() {
-  const [shown, setShown] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const ruleRef = useRef<HTMLSpanElement | null>(null);
+  const subRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const t = window.setTimeout(() => setShown(true), 80);
-    return () => window.clearTimeout(t);
+  useScrollSetup(sectionRef, (el) => {
+    const heads = el.querySelectorAll<HTMLElement>("[data-caas-line]");
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    tl.fromTo(
+      heads,
+      { yPercent: 105, opacity: 0 },
+      { yPercent: 0, opacity: 1, duration: 1.0, stagger: 0.11 },
+      0,
+    );
+    if (subRef.current) tl.fromTo(subRef.current, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, 0.55);
+    if (ruleRef.current) {
+      gsap.fromTo(
+        ruleRef.current,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          transformOrigin: "left center",
+          ease: "none",
+          scrollTrigger: { trigger: el, start: "top top", end: "+=60%", scrub: true },
+        },
+      );
+    }
+    ScrollTrigger.create({
+      trigger: el,
+      start: "top top",
+      end: "+=70%",
+      pin: true,
+      pinSpacing: true,
+    });
   }, []);
 
   return (
-    <section className="relative px-6 pb-16 pt-40 md:px-16 md:pb-24 md:pt-48">
+    <section
+      ref={sectionRef}
+      className="relative px-6 pb-16 pt-40 md:px-16 md:pb-24 md:pt-48"
+    >
       <div className="mb-12 flex items-center gap-4">
         <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
           01 / Engine · CaaS
         </span>
-        <span className="h-px flex-1 bg-white/10" />
+        <span ref={ruleRef} className="h-px flex-1 origin-left bg-white/10" />
         <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
           Creative as a Service
         </span>
@@ -32,15 +64,9 @@ export function CaasHero() {
         {lines.map((l, i) => (
           <span key={i} className="block overflow-hidden">
             <span
-              className={cn(
-                "inline-block transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
-                shown ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
-                l.accent && "text-electric",
-              )}
-              style={{
-                fontSize: "clamp(40px, 7.2vw, 124px)",
-                transitionDelay: `${i * 110}ms`,
-              }}
+              data-caas-line
+              className={cn("inline-block", l.accent && "text-electric")}
+              style={{ fontSize: "clamp(40px, 7.2vw, 124px)" }}
             >
               {l.text}
             </span>
@@ -48,7 +74,7 @@ export function CaasHero() {
         ))}
       </h1>
 
-      <div className="mt-14 grid grid-cols-12 gap-6">
+      <div ref={subRef} className="mt-14 grid grid-cols-12 gap-6">
         <div className="col-span-12 md:col-span-6 md:col-start-7">
           <p className="font-mono-tech mb-3 text-[11px] uppercase tracking-[0.25em] text-foreground/50">
             ↓ Manifesto

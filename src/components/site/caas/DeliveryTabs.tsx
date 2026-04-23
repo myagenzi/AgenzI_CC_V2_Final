@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const modes = [
@@ -25,6 +26,8 @@ const modes = [
 ];
 
 export function DeliveryTabs() {
+  const tabsRef = useRef<HTMLDivElement | null>(null);
+
   return (
     <section className="px-6 py-20 md:px-16 md:py-28">
       <div className="mb-12">
@@ -42,20 +45,26 @@ export function DeliveryTabs() {
       </div>
 
       <Tabs defaultValue="capture" className="w-full">
-        <TabsList className="flex h-auto w-full flex-wrap items-center justify-start gap-0 rounded-none border-b border-white/10 bg-transparent p-0">
-          {modes.map((m) => (
-            <TabsTrigger
-              key={m.id}
-              value={m.id}
-              className="font-mono-tech rounded-none border-b-2 border-transparent bg-transparent px-5 py-4 text-[11px] uppercase tracking-[0.25em] text-foreground/55 transition-all data-[state=active]:border-electric data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
-            >
-              {m.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div ref={tabsRef} className="sticky top-20 z-30 -mx-6 bg-background/85 px-6 backdrop-blur-md md:-mx-16 md:px-16">
+          <TabsList className="flex h-auto w-full flex-wrap items-center justify-start gap-0 rounded-none border-b border-white/10 bg-transparent p-0">
+            {modes.map((m) => (
+              <TabsTrigger
+                key={m.id}
+                value={m.id}
+                className="font-mono-tech relative rounded-none border-b-2 border-transparent bg-transparent px-5 py-4 text-[11px] uppercase tracking-[0.25em] text-foreground/55 transition-all data-[state=active]:border-electric data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                {m.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         {modes.map((m) => (
-          <TabsContent key={m.id} value={m.id} className="mt-10">
+          <TabsContent
+            key={m.id}
+            value={m.id}
+            className="mt-10 animate-fade-in data-[state=inactive]:hidden"
+          >
             <h3
               className="font-display mb-6 font-bold uppercase leading-[0.95] tracking-[-0.03em]"
               style={{ fontSize: "clamp(32px, 4.5vw, 64px)" }}
