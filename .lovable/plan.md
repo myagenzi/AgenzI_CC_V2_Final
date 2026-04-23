@@ -1,117 +1,111 @@
 
 
-# Reference-Grade Rebuild — CaaS, MaaS, Home (+ Zenzai hero fix)
+# Home Page Rebuild — Lavender/Purple Vibe with Brand Palette
 
-Same doctrine as Zenzai: **reference site = motion + layout grammar, base HTML = content source, gold/royal/starlight tokens preserved**. Every page gets: Lenis smooth scroll, GSAP scrubbed choreography, asymmetric grids, scroll-velocity marquees, pinned sequences, real-feeling parallax — and zero invented copy.
-
----
-
-## 0. Zenzai hero fix (quick, before anything else)
-
-Symptom: hero text appears blank/half on load because GSAP `fromTo({yPercent:18, opacity:.55})` sets the start state immediately, and the CSS `translate-y-full opacity-0` on-mount transition collides with it. Pin also delays full reveal until scroll.
-
-Fix in `ZenzaiHero.tsx`:
-- Remove the `shown` state + CSS transition entirely (GSAP owns the reveal).
-- Change scrub start state to `{yPercent: 8, opacity: 0.85}` and use a one-shot intro timeline (`scrub: false`, plays on mount in 1.1s) instead of scrub-locked. The pin keeps the section but the headline is fully readable from frame 1 of pin.
-- Add a fail-safe: if `prefers-reduced-motion`, headline renders fully visible with no animation.
+Rebuilding the home page to match the uploaded reference (light lavender bg, dark glass stat panel, floating tile mosaic, rounded pill stats, clean card rows). Content stays verbatim. Fonts stay as-is (Bricolage Grotesque + Space Grotesk). Colors come from your brand palette below.
 
 ---
 
-## 1. Home (`/`) — reference: **reflect.app** (calm, editorial, layered cards, slow parallax, generous whitespace, soft glows, sequenced hero)
+## 1. Palette mapping (home page only, scoped via `.surface-lavender`)
 
-| Section | Current | Reference-grade upgrade |
+| Role | Hex | From your palette |
 |---|---|---|
-| `Hero` | Static halo, IO fade | Pinned hero (~70vh). Headline scrubbed in **per word** with mass easing. Halo becomes a **slow-drifting OGL gradient orb** (reflect-style soft glow) with cursor-reactive warp. Sub + CTAs fade in late. |
-| `Ticker` | CSS marquee | Lenis-velocity reactive (idle-slow → scroll-fast). |
-| `Stats` | Static count | Numbers **count up** as they scrub into view (GSAP, no third-party). Card row staggers with mass easing. |
-| `ThreeEngines` | 3 equal cards | Editorial mosaic: card 1 wider + lower, card 2 narrower + higher, card 3 offset. Each card's media tile parallaxes at a different rate. Hover: gold hairline draws across, copy lifts 4px. |
-| `Problem` | Side-by-side panels | Pinned section, **left panel scrolls past while right panel stays**. Reflect uses this exact horizontal-rest motion. |
-| `Mirror` | Static | Sticky title on left, pain points reveal one-by-one via scrubbed timeline. |
-| `HowItWorks` | 3 cards | Pinned 3-step horizontal scroll (scrub vertical scroll → translate cards horizontally). |
-| `Statement` | Static | Letter-mass settle (chars drop in randomised, settle to baseline). |
-| `ProofWebinar` | Static | Numbers count-up + tag pills stagger. |
-| `FinalCta` | Static | Headline char-stagger + soft halo behind CTA. |
+| Page background | `#F5F7FA` | Soft White Background |
+| Surface dark (glass panel) | `#1C1C1C` w/ violet overlay `#4B2A99` 14% | Deep Black + Deep Violet |
+| Primary | `#6C3FCF` | Brand Purple |
+| Primary hover | `#8A5CFF` | Vibrant Lavender |
+| Primary soft (chips/halos) | `#B983FF` | Light Lilac |
+| Accent gradient start | `#6C3FCF` → `#D946EF` | Brand Purple → Neon Magenta |
+| Glow / orb | `#FFB300` → `#FF8C42` | Golden Yellow → Orange Glow |
+| Sparkle highlights | `#FFE066`, `#FFF3B0` | Star Glow, Light Sparkle |
+| Foreground (ink) | `#1C1C1C` | Deep Black |
+| Muted text | `#5B5775` (derived from #C7CDD6 darkened) | Neutral Shadow family |
+| Borders / dividers | `#E5E7EB` | Light Grey |
+| Foreground on dark panel | `#F5F7FA` | Soft White |
 
-Wrap whole page with `LenisProvider`. All copy from `#pg-home`. Where the base mentions an image/video and we have none, drop a labelled `MediaPlaceholder` (already exists).
-
----
-
-## 2. CaaS (`/what-we-do/creative-caas`) — reference: **monopo.london/services** (oversized typography, vertical sticky labels, asymmetric service rows, kinetic accents, marquee statement, dark with chromatic accents)
-
-| Section | Upgrade |
-|---|---|
-| `CaasHero` | Pinned ~80vh. Headline per-line scrubbed with second clause (gold) lagging. Hairline draws left→right across the eyebrow row. Sub + CTAs fade in late. |
-| `MarqueeStatement` | Already exists — wire to Lenis velocity (already done in shared component). |
-| `WhyGrid` | Becomes a **bento mosaic** (12-col, varied span, intentional negative space). Each tile has a parallaxing background tone. |
-| `DeliveryTabs` | Tab bar becomes sticky during the section; tab content cross-fades with subtle y-translate. Active tab indicator slides (GSAP `to`). |
-| `ServiceAccordion` (Phase 1 + 2) | Sticky **vertical phase label** on left (monopo signature). Each accordion row has scrubbed reveal as it enters viewport. Tag pills stagger after row reveal. Click-to-open keeps existing accordion behaviour. |
-| `CtaStripe` | Pass `scrub` prop (already supports it) → letter-mass settle. |
-| Footer ribbon | Keep. |
-
-All copy from `#pg-caas`.
+The rest of the site keeps current dark theme until you approve rolling this out.
 
 ---
 
-## 3. MaaS (`/what-we-do/marketing-maas`) — reference: **thinkingbox.com/services** (cinematic dark hero, oversized stat callouts, system-as-architecture blocks, big chromatic gradients, scroll-pinned chapter intros)
+## 2. Section-by-section
 
-| Section | Upgrade |
-|---|---|
-| `MaasHero` | Pinned hero with **video-placeholder background** that scales 1.0 → 1.08 across the pin (thinkingbox signature). Headline per-line scrubbed; accent clause in `--electric`/gold lags. |
-| `MarqueeStatement` | Velocity-reactive (shared). |
-| `SystemsManifesto` | Each numbered system gets a **scrubbed chapter intro**: number scales from 0.6 → 1, title char-stagger, copy fades. |
-| `SystemBlock` × 3 (Performance, Growth, Perception) | Each block becomes a **pinned chapter** (~100vh): sticky title + system number on left, service list scrolls past on right with scrubbed reveal. Vertical progress bar in the sticky column. |
-| `ClientWall` | Logo grid: each cell gains a subtle **scroll-driven brightness pass** (left-to-right shimmer tied to scroll). |
-| `CtaStripe` | Same `scrub` prop. |
+All copy verbatim from current components.
 
-All copy from `#pg-maas`.
+### Hero — two-column
+- **Left (7 cols)**: glass eyebrow pill (white/70 + lilac dot), huge ink headline (no gradient, fully visible), accent clause "better systems." in Brand Purple, sub copy in muted ink, two CTAs (primary solid purple, secondary white glass).
+- **Right (5 cols)**: floating mosaic of 4 rounded `MediaPlaceholder` tiles at varied sizes/rotations with soft drop-shadows. Subtle infinite float (y±6px, staggered). Behind them: soft golden orb glow (`#FFB300 → transparent` radial) — nods to your logo's center orb.
+- No pin, no scrub.
+
+### Dark glass stat panel (replaces visible Ticker)
+- Full-width rounded-3xl, `#1C1C1C` bg with subtle violet grid + lilac glow corner.
+- Reuses ticker copy as inline metric labels with purple chips.
+- Includes a chart-style `MediaPlaceholder` on the left and 3 metric rows on the right.
+
+### Stats — rounded pill row
+- 4 white rounded-2xl pills, equal width. Big ink number + label + small purple chip. No parallax.
+
+### Three Engines
+- 3 equal-height cards, `md:grid-cols-3`, all same size, no drift.
+- CaaS card = dark variant (`#1C1C1C` bg, white text, magenta accent line).
+- MaaS + Zenzai = white glass (ink text, purple accents).
+- Each card: top `MediaPlaceholder` ("Engine visual"), number, title, sub, bullets, CTA link.
+
+### Problem / Mirror
+- Side-by-side, no GSAP pin.
+- "What you have now" — pale white card, ink list with grey divider lines.
+- "Now imagine this" — dark glass card with purple accents, CSS `sticky top-24` only on its column at `lg`.
+- Mirror restyled as a clean two-col: sticky title left, stacked pain points right, fade-in only.
+
+### How It Works
+- 3 cards in a row (desktop) / stack (mobile). No horizontal scroll pin, no horizontal translate.
+- Big purple number, title, body, bullets, footer line.
+
+### Statement
+- Oversized ink headline, accent span in Brand Purple, centered on lavender. No char scrub — simple fade.
+
+### ProofWebinar
+- Dark glass panel with purple/magenta stat chips. Trust tags as lavender pills. Webinar bar = white card with purple CTA.
+
+### FinalCta
+- Ink headline (fixes invisibility), Brand Purple primary CTA with golden halo behind (nods to logo orb).
+
+### Header
+- Logo `h-9 md:h-11` (was `h-6 md:h-7`).
+- Glass adapts to lavender: `bg-white/70 backdrop-blur` with ink text.
 
 ---
 
-## 4. Shared infrastructure additions
-
-| New / changed | Purpose |
-|---|---|
-| `src/lib/lenis.tsx` | Already exists. Wrap Home, CaaS, MaaS the same way Zenzai is wrapped. |
-| `src/lib/scroll.ts` | Already exists (`useScrollSetup`). Reused by every new animation. |
-| `src/components/site/effects/SoftOrb.tsx` | NEW — small OGL gradient orb shader for Home hero (replaces static halo). Falls back to CSS radial-gradient if no WebGL. |
-| `src/components/site/effects/CountUp.tsx` | NEW — GSAP-driven number counter, ScrollTrigger entry. |
-| `src/components/site/effects/StickyChapter.tsx` | NEW — reusable pinned-chapter wrapper (sticky title col + scrolling content col + progress bar). Used by MaaS SystemBlock and CaaS ServiceAccordion. |
-| `src/components/site/effects/HorizontalSteps.tsx` | NEW — pinned vertical-scroll → horizontal-translate panel set. Used by Home `HowItWorks`. |
-| `src/index.css` | Add `.soft-orb`, `.sticky-chapter`, `.h-steps`, `.bento-tile` helpers. |
-
-All new effects components have `prefers-reduced-motion` fallbacks (no animation, content fully visible).
+## 3. Motion rules
+- On-mount fade/slide only (300–600ms via existing `Reveal`).
+- Hero tiles: gentle infinite float (CSS keyframes).
+- No ScrollTrigger pins, no scrubs, no parallax, no velocity-reactive ticker/marquee on home.
+- `prefers-reduced-motion` → all motion off.
 
 ---
 
-## 5. Files Touched
+## 4. Files touched
 
-**Zenzai fix**
-- `src/components/site/zenzai/ZenzaiHero.tsx`
+**New**
+- `src/components/site/home/StatPanel.tsx` — dark glass panel
+- `src/components/site/home/HeroTiles.tsx` — floating placeholder mosaic with golden orb
 
-**Home**
-- `src/pages/Index.tsx` (wrap in `LenisProvider`)
-- `src/components/site/home/Hero.tsx`, `Ticker.tsx`, `Stats.tsx`, `ThreeEngines.tsx`, `Problem.tsx`, `Mirror.tsx`, `HowItWorks.tsx`, `Statement.tsx`, `ProofWebinar.tsx`, `FinalCta.tsx`
+**Updated**
+- `src/pages/Index.tsx` — wrap in `surface-lavender`, drop visible Ticker (its copy moves into StatPanel)
+- `src/components/site/home/Hero.tsx` — two-col, ink text, no pin/gradient
+- `src/components/site/home/Stats.tsx` — pill row
+- `src/components/site/home/ThreeEngines.tsx` — equal cards, no parallax, one dark variant
+- `src/components/site/home/Problem.tsx` — side-by-side, CSS sticky only
+- `src/components/site/home/Mirror.tsx` — clean two-col fade-in
+- `src/components/site/home/HowItWorks.tsx` — row of cards, no horizontal pin
+- `src/components/site/home/Statement.tsx` — ink + purple accent, no char scrub
+- `src/components/site/home/ProofWebinar.tsx` — dark glass restyle
+- `src/components/site/home/FinalCta.tsx` — ink text, purple CTA + golden halo
+- `src/components/site/Header.tsx` — bigger logo, lavender-aware glass
+- `src/index.css` — add `.surface-lavender` scope tokens + helpers (`.glass-lavender`, `.glass-dark-panel`, `.pill-stat`, `.float-tile`, `.orb-gold`)
 
-**CaaS**
-- `src/pages/what-we-do/CreativeCaaS.tsx` (already wrapped? if not, wrap)
-- `src/components/site/caas/CaasHero.tsx`, `WhyGrid.tsx`, `DeliveryTabs.tsx`, `ServiceAccordion.tsx`, `ServiceGroup.tsx`
-
-**MaaS**
-- `src/pages/what-we-do/MarketingMaaS.tsx` (wrap)
-- `src/components/site/maas/MaasHero.tsx`, `SystemsManifesto.tsx`, `SystemBlock.tsx`, `ClientWall.tsx`
-
-**Shared (new)**
-- `src/components/site/effects/SoftOrb.tsx`
-- `src/components/site/effects/CountUp.tsx`
-- `src/components/site/effects/StickyChapter.tsx`
-- `src/components/site/effects/HorizontalSteps.tsx`
-- `src/index.css` (helper classes)
-
-## Out of Scope
-
-- Real artwork/video (labelled `MediaPlaceholder` stays where needed)
-- Custom cursor system, page transitions, magnetic buttons (next pass)
-- Pricing / About / other base pages (not yet built)
-- Font swap, copy edits (content stays verbatim from base HTML)
-- New runtime dependencies — uses what we already added (gsap, ScrollTrigger, Lenis, ogl)
+## Out of scope
+- CaaS / MaaS / Zenzai / other pages — untouched until you approve home
+- Real artwork (placeholders stay, clearly labelled)
+- Font swap (keeping current Bricolage + Space Grotesk)
+- New dependencies
 
