@@ -1,184 +1,207 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Blob = {
-  ax: number; ay: number;   // anchor (relative 0..1)
-  x: number; y: number;     // current position
-  vx: number; vy: number;   // velocity
-  r: number;                // radius
+  anchor: { x: number; y: number };
+  pos: { x: number; y: number };
+  vel: { x: number; y: number };
+  r: number;
+  mass: number;
+  rot: number;
+  rotVel: number;
 };
 
-const FILTER_ID = "zenzai-goo";
+const BLOB_COUNT = 5;
+const STIFFNESS = 0.018;
+const LINEAR_DAMPING = 0.92;
+const ANGULAR_DAMPING = 0.94;
+const CURSOR_STRENGTH = 1800;
+const CURSOR_MAX_FORCE = 2.4;
 
-/**
- * Cursor-reactive metaballs. Pure SVG + RAF.
- * Three blobs softly attracted to cursor; gooey filter merges overlaps.
- * Falls back to static halo on prefers-reduced-motion or below md.
- */
 export function CursorMetaballs() {
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const blobsRef = useRef<Blob[] | null>(null);
-  const circlesRef = useRef<(SVGCircleElement | null)[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const cursorRef = useRef({ x: -9999, y: -9999, active: false });
+  const blobsRef = useRef<Blob[]>([]);
+  const rafRef = useRef<number>();
   const sizeRef = useRef({ w: 0, h: 0 });
-  const cursorRef = useRef<{ x: number; y: number; active: boolean }>({
-    x: 0, y: 0, active: false,
+
+  const [reduced, setReduced] = useState(false);
+  const [debug, setDebug] = useState({
+    damping: LINEAR_DAMPING,
+    returnForce: STIFFNESS,
+    cursorDist: 0,
+    charges: BLOB_COUNT,
   });
-  const rafRef = useRef<number | null>(null);
+
+  const initBlobs = (w: number, h: number) => {
+    const cx = w / 2;
+    const cy = h / 2;
+    const radii = [110, 86, 72, 58, 44];
+    const arr: Blob[] = [];
+    for (let i = 0; i < BLOB_COUNT; i++) {
+      const ang = (i / BLOB_COUNT) * Math.PI * 2;
+      const dist = 70 + i * 14;
+      const ax = cx + Math.cos(ang) * dist;
+      const ay = cy + Math.sin(ang) * dist * 0.7;
+      arr.push({
+        anchor: { x: ax, y: ay },
+        pos: { x: ax, y: ay },
+        vel: { x: 0, y: 0 },
+        r: radii[i],
+        mass: radii[i] / 60,
+        rot: Math.random() * Math.PI * 2,
+        rotVel: (Math.random() - 0.5) * 0.02,
+      });
+    }
+    blobsRef.current = arr;
+  };
 
   useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mql.matches);
+    const onChange = () => setReduced(mql.matches);
+    mql.addEventListener?.("change", onChange);
+    return () => mql.removeEventListener?.("change", onChange);
+  }, []);
 
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const small =
-      typeof window !== "undefined" &&
-      window.matchMedia("(max-width: 767px)").matches;
+  useEffect(() => {
+    if (reduced) return;
+    const canvas = canvasRef.current;
+    const wrap = wrapRef.current;
+    if (!canvas || !wrap) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    // Initialise blobs (anchor positions roughly forming a triangle)
-    blobsRef.current = [
-      { ax: 0.42, ay: 0.5, x: 0, y: 0, vx: 0, vy: 0, r: 150 },
-      { ax: 0.55, ay: 0.42, x: 0, y: 0, vx: 0, vy: 0, r: 110 },
-      { ax: 0.5,  ay: 0.6,  x: 0, y: 0, vx: 0, vy: 0, r: 90  },
-    ];
-
-    const onResize = () => {
-      const rect = svg.getBoundingClientRect();
+    const resize = () => {
+      const rect = wrap.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       sizeRef.current = { w: rect.width, h: rect.height };
-      // Snap blob positions to anchors on resize
-      blobsRef.current?.forEach((b) => {
-        b.x = b.ax * rect.width;
-        b.y = b.ay * rect.height;
-      });
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      initBlobs(rect.width, rect.height);
     };
-    onResize();
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(wrap);
 
     const onMove = (e: MouseEvent) => {
-      const rect = svg.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      cursorRef.current.x = x;
-      cursorRef.current.y = y;
-      cursorRef.current.active =
-        x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
+      const rect = wrap.getBoundingClientRect();
+      cursorRef.current.x = e.clientX - rect.left;
+      cursorRef.current.y = e.clientY - rect.top;
+      cursorRef.current.active = true;
     };
-    const onLeave = () => { cursorRef.current.active = false; };
+    const onLeave = () => {
+      cursorRef.current.active = false;
+      cursorRef.current.x = -9999;
+      cursorRef.current.y = -9999;
+    };
+    window.addEventListener("mousemove", onMove);
+    wrap.addEventListener("mouseleave", onLeave);
 
-    if (reduced || small) {
-      // Render anchors in place — no animation
-      blobsRef.current?.forEach((b, i) => {
-        const c = circlesRef.current[i];
-        if (c) {
-          c.setAttribute("cx", String(b.x));
-          c.setAttribute("cy", String(b.y));
-        }
-      });
-    } else {
-      window.addEventListener("mousemove", onMove);
-      window.addEventListener("mouseleave", onLeave);
-      window.addEventListener("resize", onResize);
+    let lastDebug = 0;
+    const root = getComputedStyle(document.documentElement);
+    const gold = root.getPropertyValue("--gold").trim() || "44 90% 60%";
+    const royal = root.getPropertyValue("--royal").trim() || "230 70% 55%";
 
-      const tick = () => {
-        const { w, h } = sizeRef.current;
-        const blobs = blobsRef.current!;
-        const cur = cursorRef.current;
+    const tick = (t: number) => {
+      const { w, h } = sizeRef.current;
+      const blobs = blobsRef.current;
+      const cur = cursorRef.current;
 
-        for (let i = 0; i < blobs.length; i++) {
-          const b = blobs[i];
-          const anchorX = b.ax * w;
-          const anchorY = b.ay * h;
+      let cursorDistAvg = 0;
+      for (const b of blobs) {
+        const ax = (b.anchor.x - b.pos.x) * STIFFNESS;
+        const ay = (b.anchor.y - b.pos.y) * STIFFNESS;
+        b.vel.x += ax / b.mass;
+        b.vel.y += ay / b.mass;
 
-          // Spring back to anchor
-          const kAnchor = 0.012;
-          b.vx += (anchorX - b.x) * kAnchor;
-          b.vy += (anchorY - b.y) * kAnchor;
-
-          // Cursor attraction (capped)
-          if (cur.active) {
-            const dx = cur.x - b.x;
-            const dy = cur.y - b.y;
-            const dist = Math.sqrt(dx * dx + dy * dy) + 0.001;
-            const range = 360 + i * 40;
-            if (dist < range) {
-              const force = ((range - dist) / range) * (0.55 + i * 0.18);
-              b.vx += (dx / dist) * force;
-              b.vy += (dy / dist) * force;
-            }
-          }
-
-          // Damping
-          b.vx *= 0.86;
-          b.vy *= 0.86;
-
-          b.x += b.vx;
-          b.y += b.vy;
-
-          const c = circlesRef.current[i];
-          if (c) {
-            c.setAttribute("cx", String(b.x));
-            c.setAttribute("cy", String(b.y));
-          }
+        if (cur.active) {
+          const dx = cur.x - b.pos.x;
+          const dy = cur.y - b.pos.y;
+          const d2 = dx * dx + dy * dy + 400;
+          const f = Math.min(CURSOR_STRENGTH / d2, CURSOR_MAX_FORCE);
+          const d = Math.sqrt(d2);
+          b.vel.x += (dx / d) * f;
+          b.vel.y += (dy / d) * f;
+          cursorDistAvg += d;
         }
 
-        rafRef.current = requestAnimationFrame(tick);
-      };
+        b.vel.x *= LINEAR_DAMPING;
+        b.vel.y *= LINEAR_DAMPING;
+        b.pos.x += b.vel.x;
+        b.pos.y += b.vel.y;
+        b.rotVel *= ANGULAR_DAMPING;
+        b.rot += b.rotVel;
+      }
+      cursorDistAvg = cur.active ? cursorDistAvg / blobs.length : 0;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = "lighter";
+      for (const b of blobs) {
+        const grad = ctx.createRadialGradient(b.pos.x, b.pos.y, 0, b.pos.x, b.pos.y, b.r);
+        grad.addColorStop(0, `hsla(${gold}, 1)`);
+        grad.addColorStop(0.45, `hsla(${royal}, 0.7)`);
+        grad.addColorStop(1, `hsla(${royal}, 0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(b.pos.x, b.pos.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
+
+      if (t - lastDebug > 100) {
+        setDebug({
+          damping: LINEAR_DAMPING,
+          returnForce: STIFFNESS,
+          cursorDist: Math.round(cursorDistAvg),
+          charges: BLOB_COUNT,
+        });
+        lastDebug = t;
+      }
       rafRef.current = requestAnimationFrame(tick);
-    }
+    };
+    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      ro.disconnect();
       window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseleave", onLeave);
-      window.removeEventListener("resize", onResize);
+      wrap.removeEventListener("mouseleave", onLeave);
     };
-  }, []);
+  }, [reduced]);
 
   return (
-    <svg
-      ref={svgRef}
-      className="metaball-svg absolute inset-0 h-full w-full"
-      aria-hidden
-      preserveAspectRatio="xMidYMid slice"
-    >
-      <defs>
-        <filter id={FILTER_ID}>
-          <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="blur" />
-          <feColorMatrix
-            in="blur"
-            mode="matrix"
-            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 26 -12"
-            result="goo"
-          />
-          <feBlend in="SourceGraphic" in2="goo" />
-        </filter>
-        <radialGradient id="zenzai-grad-a" cx="40%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="hsl(var(--gold))" stopOpacity="0.95" />
-          <stop offset="60%" stopColor="hsl(var(--gold) / 0.55)" />
-          <stop offset="100%" stopColor="hsl(var(--gold) / 0)" />
-        </radialGradient>
-        <radialGradient id="zenzai-grad-b" cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="hsl(var(--royal, var(--primary)))" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="hsl(var(--gold) / 0)" />
-        </radialGradient>
-      </defs>
+    <div ref={wrapRef} className="metaball-wrap pointer-events-none absolute inset-0 overflow-hidden">
+      {reduced ? (
+        <div
+          aria-hidden
+          className="absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, hsl(var(--gold) / 0.55) 0%, hsl(var(--royal) / 0.35) 45%, transparent 70%)",
+            filter: "blur(20px)",
+          }}
+        />
+      ) : (
+        <canvas ref={canvasRef} className="metaball-canvas absolute inset-0" aria-hidden />
+      )}
 
-      <g filter={`url(#${FILTER_ID})`}>
-        <circle
-          ref={(el) => (circlesRef.current[0] = el)}
-          r="150"
-          fill="url(#zenzai-grad-a)"
-        />
-        <circle
-          ref={(el) => (circlesRef.current[1] = el)}
-          r="110"
-          fill="url(#zenzai-grad-b)"
-        />
-        <circle
-          ref={(el) => (circlesRef.current[2] = el)}
-          r="90"
-          fill="url(#zenzai-grad-a)"
-        />
-      </g>
-    </svg>
+      {!reduced && (
+        <div className="debug-panel pointer-events-none absolute bottom-5 left-5 hidden md:block">
+          <div className="font-mono-tech text-[10px] uppercase tracking-[0.25em] text-foreground/55">
+            <div className="mb-1 text-foreground/70">METABALL · live</div>
+            <div className="grid grid-cols-[auto_auto] gap-x-4">
+              <span>linear damping</span><span className="text-electric">{debug.damping.toFixed(2)}</span>
+              <span>return force</span><span className="text-electric">{debug.returnForce.toFixed(3)}</span>
+              <span>cursor distance</span><span className="text-electric">{debug.cursorDist}px</span>
+              <span>charges</span><span className="text-electric">{debug.charges}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

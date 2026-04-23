@@ -51,7 +51,7 @@ export default function IntelligenceZenzai() {
                 repetition AI should be doing.
                 <br />
                 <span className="text-electric">
-                  Let's find out how much that's costing you.
+                  Let's find out how much that's actually costing you.
                 </span>
               </>
             }
