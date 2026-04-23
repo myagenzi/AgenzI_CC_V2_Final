@@ -104,32 +104,67 @@ const customAI: ServiceItem[] = [
 ];
 
 type LayerProps = {
+  id: string;
+  stickyLabel: string;
   eyebrow: string;
   headline: React.ReactNode;
   meta: string;
+  keywords: string[];
   items: ServiceItem[];
 };
 
-function Layer({ eyebrow, headline, meta, items }: LayerProps) {
+function Layer({ id, stickyLabel, eyebrow, headline, meta, keywords, items }: LayerProps) {
   return (
-    <section className="border-t border-foreground/[0.08] px-6 py-20 md:px-16 md:py-24">
-      <Reveal>
-        <p className="font-mono-tech mb-4 text-[11px] uppercase tracking-[0.3em] text-foreground/50">
-          {eyebrow}
-        </p>
-        <h2
-          className="font-display mb-6 font-bold uppercase leading-[0.95] tracking-[-0.03em]"
-          style={{ fontSize: "clamp(32px, 5.2vw, 78px)" }}
-        >
-          {headline}
-        </h2>
-        <p className="font-mono-tech mb-12 text-[11px] uppercase tracking-[0.25em] text-foreground/55">
-          {meta}
-        </p>
-      </Reveal>
-      <Reveal delay={1}>
-        <ServiceAccordion items={items} />
-      </Reveal>
+    <section
+      id={id}
+      className="relative border-t border-foreground/[0.08] px-6 py-20 md:px-16 md:py-24"
+    >
+      <div className="md:grid md:grid-cols-12 md:gap-10">
+        {/* Sticky vertical layer label */}
+        <aside className="hidden md:col-span-2 md:block">
+          <div className="sticky top-28">
+            <p
+              className="font-mono-tech text-[10px] uppercase tracking-[0.35em] text-foreground/40"
+              style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+            >
+              {stickyLabel}
+            </p>
+          </div>
+        </aside>
+
+        <div className="md:col-span-10">
+          <Reveal>
+            <p className="font-mono-tech mb-4 text-[11px] uppercase tracking-[0.3em] text-foreground/50">
+              {eyebrow}
+            </p>
+            <h2
+              className="font-display mb-6 font-bold uppercase leading-[0.95] tracking-[-0.03em]"
+              style={{ fontSize: "clamp(32px, 5.2vw, 78px)" }}
+            >
+              {headline}
+            </h2>
+            <p className="font-mono-tech mb-8 text-[11px] uppercase tracking-[0.25em] text-foreground/55">
+              {meta}
+            </p>
+          </Reveal>
+
+          <Reveal delay={1}>
+            <div className="layer-keyword-strip mb-10 flex flex-wrap gap-x-4 gap-y-2 border-y border-foreground/[0.08] py-4">
+              {keywords.map((k, i) => (
+                <span key={k} className="font-mono-tech text-[10px] uppercase tracking-[0.25em] text-foreground/55">
+                  <span className="mr-3 text-electric">{String(i + 1).padStart(2, "0")}</span>
+                  {k}
+                  {i < keywords.length - 1 && <span className="ml-4 text-foreground/25">·</span>}
+                </span>
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal delay={2}>
+            <ServiceAccordion items={items} />
+          </Reveal>
+        </div>
+      </div>
     </section>
   );
 }
@@ -138,8 +173,11 @@ export function LayerServices() {
   return (
     <div id="zen-svcs">
       <Layer
+        id="layer-01"
+        stickyLabel="LAYER 01 / AUTOMATIONS"
         eyebrow="Layer 01 · Automations · Live in Days"
         meta="WhatsApp · CRM · Support · Booking · 06 services"
+        keywords={["WhatsApp AI", "Lead Capture", "Invoice Follow-Up", "Booking", "Support AI", "Reporting"]}
         headline={
           <>
             The fastest way to see AI
@@ -150,8 +188,11 @@ export function LayerServices() {
         items={automations}
       />
       <Layer
+        id="layer-02"
+        stickyLabel="LAYER 02 / INTEGRATIONS"
         eyebrow="Layer 02 · Integrations"
         meta="CRM · WhatsApp · E-commerce · 03 services"
+        keywords={["CRM Stack", "WhatsApp ↔ Systems", "E-commerce Ops"]}
         headline={
           <>
             Your tools work fine.
@@ -164,8 +205,11 @@ export function LayerServices() {
         items={integrations}
       />
       <Layer
+        id="layer-03"
+        stickyLabel="LAYER 03 / CUSTOM AI"
         eyebrow="Layer 03 · Custom AI + Tech"
         meta="ML · OCR · Apps · 03 services"
+        keywords={["Custom AI Models", "OCR / IDP", "Custom Apps"]}
         headline={
           <>
             When off-the-shelf stops working,

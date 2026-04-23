@@ -6,19 +6,25 @@ const layers = [
     glyph: "⚡",
     title: "Layer 01 — Automations",
     desc: "Fastest wins. Live in 48 hours to 2 weeks. Tasks eating your team's time — identified, automated, done.",
-    media: "Automations reel",
+    media: "Layer 01 visual",
+    span: "md:col-span-4",
+    offset: "md:mt-0",
   },
   {
     glyph: "⟳",
     title: "Layer 02 — Integrations",
     desc: "Your 12–15 tools connected. CRM, WhatsApp, email, invoicing, e-commerce — one data flow. No more copy-pasting.",
-    media: "Integrations diagram",
+    media: "Layer 02 visual",
+    span: "md:col-span-4",
+    offset: "md:mt-16",
   },
   {
     glyph: "◈",
     title: "Layer 03 — Custom AI + Tech",
     desc: "Custom AI models, mobile apps, document processing. The infrastructure that makes your business defensible.",
-    media: "Custom AI case study",
+    media: "Layer 03 visual",
+    span: "md:col-span-4",
+    offset: "md:mt-8",
   },
 ];
 
@@ -41,10 +47,10 @@ export function ZenzaiAbout() {
         </h2>
       </Reveal>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6">
         {layers.map((l, i) => (
           <Reveal key={l.title} delay={(i + 1) as 1 | 2 | 3}>
-            <article className="layer-card group flex h-full flex-col">
+            <article className={`layer-card group flex h-full flex-col ${l.span} ${l.offset}`}>
               <MediaPlaceholder
                 aspect="4/5"
                 kind="image"
