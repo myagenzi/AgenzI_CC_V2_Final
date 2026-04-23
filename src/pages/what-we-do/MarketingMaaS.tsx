@@ -7,7 +7,7 @@ import { CursorPortal } from "@/components/site/caas/CursorPortal";
 import { MarqueeStatement } from "@/components/site/caas/MarqueeStatement";
 import { CtaStripe } from "@/components/site/caas/CtaStripe";
 import { MaasHero } from "@/components/site/maas/MaasHero";
-import { SystemsManifesto } from "@/components/site/maas/SystemsManifesto";
+import { SystemsTriad } from "@/components/site/maas/SystemsTriad";
 import { SystemBlock } from "@/components/site/maas/SystemBlock";
 import { ClientWall } from "@/components/site/maas/ClientWall";
 import type { ServiceItem } from "@/components/site/caas/ServiceAccordion";
@@ -129,7 +129,7 @@ export default function MarketingMaaS() {
               words={["Revenue", "Pipeline", "Performance", "Perception", "Attribution"]}
             />
 
-            <SystemsManifesto />
+            <SystemsTriad />
 
             <SystemBlock
               first
