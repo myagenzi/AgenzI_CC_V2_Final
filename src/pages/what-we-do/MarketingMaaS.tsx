@@ -2,16 +2,16 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { LeftRail } from "@/components/site/caas/LeftRail";
-import { CursorPortal } from "@/components/site/caas/CursorPortal";
-import { MarqueeStatement } from "@/components/site/caas/MarqueeStatement";
-import { CtaStripe } from "@/components/site/caas/CtaStripe";
-import { MaasHero } from "@/components/site/maas/MaasHero";
-import { SystemsTriad } from "@/components/site/maas/SystemsTriad";
-import { SystemBlock } from "@/components/site/maas/SystemBlock";
-import { ClientWall } from "@/components/site/maas/ClientWall";
 import type { ServiceItem } from "@/components/site/caas/ServiceAccordion";
-import { LenisProvider } from "@/lib/lenis";
+import { MaasLavenderHero } from "@/components/site/maas/lavender/MaasLavenderHero";
+import { MaasIntroBand } from "@/components/site/maas/lavender/MaasIntroBand";
+import { MaasCategoryList } from "@/components/site/maas/lavender/MaasCategoryList";
+import { MaasSpecialtyGrid } from "@/components/site/maas/lavender/MaasSpecialtyGrid";
+import { MaasGhostMarquee } from "@/components/site/maas/lavender/MaasGhostMarquee";
+import { MaasServiceRows } from "@/components/site/maas/lavender/MaasServiceRows";
+import { MaasAwardsTable } from "@/components/site/maas/lavender/MaasAwardsTable";
+import { MaasLatestBand } from "@/components/site/maas/lavender/MaasLatestBand";
+import { MaasGetInTouch } from "@/components/site/maas/lavender/MaasGetInTouch";
 
 const performance: ServiceItem[] = [
   {
@@ -106,9 +106,44 @@ const perception: ServiceItem[] = [
   },
 ];
 
-const thumbs = {
-  maas: { label: "MaaS · Revenue", bg: "linear-gradient(135deg, hsl(35 84% 67%), hsl(283 27% 47%))" },
-};
+const rows = [
+  {
+    number: "01",
+    eyebrow: "System 01 · Performance",
+    meta: "Performance · Attribution · Paid Media · 04 services",
+    headline: (
+      <>
+        Stop paying for eyeballs. Start paying for{" "}
+        <span className="text-primary italic">customers.</span>
+      </>
+    ),
+    items: performance,
+  },
+  {
+    number: "02",
+    eyebrow: "System 02 · Pipeline",
+    meta: "SEO · Email · CRO · Referral · 04 services",
+    headline: (
+      <>
+        A lead list is not a pipeline. A pipeline is a{" "}
+        <span className="text-primary italic">system.</span>
+      </>
+    ),
+    items: growth,
+  },
+  {
+    number: "03",
+    eyebrow: "System 03 · Perception",
+    meta: "Brand · PR · Personal Brand · Reputation · 04 services",
+    headline: (
+      <>
+        Your market already has an opinion about you.{" "}
+        <span className="text-primary italic">We control it.</span>
+      </>
+    ),
+    items: perception,
+  },
+];
 
 export default function MarketingMaaS() {
   useEffect(() => {
@@ -116,120 +151,48 @@ export default function MarketingMaaS() {
   }, []);
 
   return (
-    <LenisProvider>
-      <div className="min-h-screen">
-        <Header />
-        <LeftRail currentEngine="Marketing — MaaS" />
+    <div className="surface-lavender min-h-screen">
+      <Header />
+      <main>
+        <MaasLavenderHero />
+        <MaasIntroBand />
+        <MaasCategoryList />
+        <MaasSpecialtyGrid />
+        <MaasGhostMarquee />
+        <MaasServiceRows rows={rows} />
+        <MaasAwardsTable />
+        <MaasLatestBand />
+        <MaasGetInTouch />
 
-        <CursorPortal thumbs={thumbs}>
-          <main className="md:pl-[88px]" id="maas-svcs">
-            <MaasHero />
-
-            <MarqueeStatement
-              words={["Revenue", "Pipeline", "Performance", "Perception", "Attribution"]}
-            />
-
-            <SystemsTriad />
-
-            <SystemBlock
-              first
-              eyebrow="System 01 · Performance"
-              systemNumber="01"
-              mediaLabel="Performance reel"
-              metaLine="Performance · Attribution · Paid Media · 04 services"
-              headline={
-                <>
-                  Stop paying for eyeballs.
-                  <br />
-                  Start paying for <span className="text-electric">customers.</span>
-                </>
-              }
-              items={performance}
-            />
-
-            <SystemBlock
-              eyebrow="System 02 · Growth"
-              systemNumber="02"
-              mediaLabel="Growth pipeline"
-              metaLine="SEO · Email · CRO · Referral · 04 services"
-              headline={
-                <>
-                  A lead list is not a pipeline.
-                  <br />
-                  A pipeline is a <span className="text-electric">system.</span>
-                </>
-              }
-              items={growth}
-            />
-
-            <SystemBlock
-              eyebrow="System 03 · Perception"
-              systemNumber="03"
-              mediaLabel="Perception case study"
-              metaLine="Brand · PR · Personal Brand · Reputation · 04 services"
-              headline={
-                <>
-                  Your market already has
-                  <br />
-                  an opinion about you.
-                  <br />
-                  <span className="text-electric">We control it.</span>
-                </>
-              }
-              items={perception}
-            />
-
-            <ClientWall />
-
-            <CtaStripe
-              scrub
-              headlineText="Your marketing budget is either building your pipeline or leaking."
-              headline={
-                <>
-                  Your marketing budget is either
-                  <br />
-                  building your pipeline
-                  <br />
-                  <span className="text-electric">or leaking.</span>
-                </>
-              }
-              sub="30 minutes. We look at your current setup. You leave knowing exactly where the gaps are."
-            />
-
-            <section className="border-t border-foreground/[0.08] px-6 py-10 md:px-16">
-              <div className="flex flex-wrap items-center justify-between gap-6">
-                <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
-                  © 2026 AgenzI · MaaS
-                </span>
-                <div className="flex flex-wrap gap-6">
-                  <Link
-                    to="/what-we-do/creative-caas"
-                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
-                  >
-                    CaaS →
-                  </Link>
-                  <Link
-                    to="/what-we-do/intelligence-zenzai"
-                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
-                  >
-                    Zenzai →
-                  </Link>
-                  <a
-                    href="/#pricing"
-                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
-                  >
-                    Pricing →
-                  </a>
-                </div>
-              </div>
-            </section>
-          </main>
-        </CursorPortal>
-
-        <div className="md:pl-[88px]">
-          <Footer />
-        </div>
-      </div>
-    </LenisProvider>
+        <section className="border-t border-border px-6 py-10 lg:px-12">
+          <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-6">
+            <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+              © 2026 AgenzI · MaaS
+            </span>
+            <div className="flex flex-wrap gap-6">
+              <Link
+                to="/what-we-do/creative-caas"
+                className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+              >
+                CaaS →
+              </Link>
+              <Link
+                to="/what-we-do/intelligence-zenzai"
+                className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+              >
+                Zenzai →
+              </Link>
+              <a
+                href="/#pricing"
+                className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+              >
+                Pricing →
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }
