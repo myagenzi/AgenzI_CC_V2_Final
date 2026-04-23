@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { MetaballsGL } from "./MetaballsGL";
 import { useScrollSetup, gsap, ScrollTrigger } from "@/lib/scroll";
@@ -14,36 +14,20 @@ export function ZenzaiHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const ruleRef = useRef<HTMLSpanElement | null>(null);
   const subRef = useRef<HTMLDivElement | null>(null);
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setShown(true), 80);
-    return () => window.clearTimeout(t);
-  }, []);
 
   useScrollSetup(sectionRef, (el) => {
     const lineEls = el.querySelectorAll<HTMLElement>("[data-hero-line]");
-    // Per-line scrubbed drift as the user scrolls past the hero
-    lineEls.forEach((line, i) => {
-      gsap.fromTo(
-        line,
-        { yPercent: 18, opacity: 0.55 },
-        {
-          yPercent: 0,
-          opacity: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top top",
-            end: "+=80%",
-            scrub: 1,
-          },
-          delay: i * 0.04,
-        },
-      );
-    });
 
-    // Hairline draws across during pin
+    // One-shot intro timeline (plays on mount). Headline fully readable from frame 1 of pin.
+    const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+    intro.fromTo(
+      lineEls,
+      { yPercent: 105, opacity: 0 },
+      { yPercent: 0, opacity: 1, duration: 1.1, stagger: 0.11 },
+      0,
+    );
+
+    // Hairline draws across during pin (still scrubbed)
     if (ruleRef.current) {
       gsap.fromTo(
         ruleRef.current,
@@ -52,40 +36,26 @@ export function ZenzaiHero() {
           scaleX: 1,
           transformOrigin: "left center",
           ease: "none",
-          scrollTrigger: {
-            trigger: el,
-            start: "top top",
-            end: "+=60%",
-            scrub: true,
-          },
+          scrollTrigger: { trigger: el, start: "top top", end: "+=60%", scrub: true },
         },
       );
     }
 
-    // Sub paragraph + CTA fade-in late in pin
+    // Sub paragraph + CTA fade in shortly after intro
     if (subRef.current) {
-      gsap.fromTo(
+      intro.fromTo(
         subRef.current,
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top top",
-            end: "+=70%",
-            scrub: 1,
-          },
-        },
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8 },
+        0.55,
       );
     }
 
-    // Pin the hero for ~80vh of scroll
+    // Pin the hero for ~70vh of scroll
     ScrollTrigger.create({
       trigger: el,
       start: "top top",
-      end: "+=80%",
+      end: "+=70%",
       pin: true,
       pinSpacing: true,
     });
@@ -118,15 +88,8 @@ export function ZenzaiHero() {
             <span key={i} className="block overflow-hidden">
               <span
                 data-hero-line
-                className={cn(
-                  "inline-block transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
-                  shown ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
-                  l.accent && "text-electric",
-                )}
-                style={{
-                  fontSize: "clamp(40px, 7.2vw, 124px)",
-                  transitionDelay: `${i * 110}ms`,
-                }}
+                className={cn("inline-block", l.accent && "text-electric")}
+                style={{ fontSize: "clamp(40px, 7.2vw, 124px)" }}
               >
                 {l.text}
               </span>
