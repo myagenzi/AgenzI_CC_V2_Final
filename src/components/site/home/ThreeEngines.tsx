@@ -55,7 +55,7 @@ export function ThreeEngines() {
           {engines.map((e, i) => {
             const isDark = e.dark;
             return (
-              <Reveal key={e.title} delay={(i + 1) as 1 | 2 | 3} as="article">
+              <Reveal key={e.title} delay={(i + 1) as 1 | 2 | 3}>
                 <div
                   className={
                     isDark

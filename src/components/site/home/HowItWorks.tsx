@@ -54,8 +54,8 @@ export function HowItWorks() {
 
         <div className="grid items-stretch gap-5 md:grid-cols-3">
           {steps.map((s, i) => (
-            <Reveal key={s.num} delay={(i + 1) as 1 | 2 | 3} as="article">
-              <div className="glass-lavender flex h-full flex-col rounded-3xl p-7">
+            <Reveal key={s.num} delay={(i + 1) as 1 | 2 | 3}>
+              <article className="glass-lavender flex h-full flex-col rounded-3xl p-7">
                 <div className="mb-4 flex items-baseline justify-between">
                   <div className="font-display text-5xl font-extrabold leading-none tracking-[-0.04em] text-primary">
                     {s.num}
@@ -78,7 +78,7 @@ export function HowItWorks() {
                   ))}
                 </ul>
                 {s.foot && <p className="mt-auto text-[12px] italic text-muted-foreground">{s.foot}</p>}
-              </div>
+              </article>
             </Reveal>
           ))}
         </div>

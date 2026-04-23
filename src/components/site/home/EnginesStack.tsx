@@ -51,10 +51,11 @@ const engines: EngineData[] = [
 ];
 
 // Per-card animation ranges across full section progress (0..1)
+// Each non-first card: enter, hold, exit. Last card holds until end (no exit).
 const ranges: Array<{ inStart: number; inEnd: number; outStart: number; outEnd: number }> = [
-  { inStart: 0, inEnd: 0, outStart: 0.3, outEnd: 0.4 },
-  { inStart: 0.3, inEnd: 0.4, outStart: 0.63, outEnd: 0.73 },
-  { inStart: 0.63, inEnd: 0.73, outStart: 1, outEnd: 1 },
+  { inStart: 0,    inEnd: 0,    outStart: 0.28, outEnd: 0.36 },
+  { inStart: 0.28, inEnd: 0.36, outStart: 0.60, outEnd: 0.68 },
+  { inStart: 0.60, inEnd: 0.68, outStart: 1.01, outEnd: 1.01 },
 ];
 
 function StackedCard({
@@ -104,10 +105,10 @@ export function EnginesStack() {
     offset: ["start start", "end end"],
   });
 
-  // Active card index for counter / dots
+  // Active card index for counter / dots — aligned with the ranges above
   const activeIndex = useTransform(scrollYProgress, (v) => {
-    if (v < 0.36) return 0;
-    if (v < 0.68) return 1;
+    if (v < 0.32) return 0;
+    if (v < 0.64) return 1;
     return 2;
   });
 
@@ -125,37 +126,47 @@ export function EnginesStack() {
   }
 
   return (
-    <section
-      id="three-engines"
-      ref={sectionRef}
-      className="relative"
-      style={{ height: "360vh" }}
-    >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div className="flex h-full flex-col">
-          {/* Heading */}
-          <div className="px-6 pt-20 lg:px-12 lg:pt-24">
-            <Header />
-          </div>
+    <>
+      {/* Mobile: simple stacked list, no pin */}
+      <section className="px-6 py-20 lg:hidden">
+        <Header />
+        <div className="mx-auto mt-10 grid max-w-[680px] gap-6">
+          {engines.map((e) => (
+            <EngineCard key={e.name} data={e} />
+          ))}
+        </div>
+      </section>
 
-          {/* Stack */}
-          <div className="relative flex-1">
-            {engines.map((e, i) => (
-              <StackedCard key={e.name} data={e} index={i} progress={scrollYProgress} />
-            ))}
-          </div>
+      {/* Desktop: pinned scrub stack */}
+      <section
+        id="three-engines"
+        ref={sectionRef}
+        className="relative hidden lg:block"
+        style={{ height: "400vh" }}
+      >
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          <div className="flex h-full flex-col">
+            {/* Heading */}
+            <div className="px-6 pt-20 lg:px-12 lg:pt-24">
+              <Header />
+            </div>
 
-          {/* Counter + dots */}
-          <div className="flex items-center justify-center gap-4 pb-10">
-            <Counter activeIndex={activeIndex} />
-            <Dots activeIndex={activeIndex} />
+            {/* Stack */}
+            <div className="relative flex-1">
+              {engines.map((e, i) => (
+                <StackedCard key={e.name} data={e} index={i} progress={scrollYProgress} />
+              ))}
+            </div>
+
+            {/* Counter + dots */}
+            <div className="flex items-center justify-center gap-4 pb-10">
+              <Counter activeIndex={activeIndex} />
+              <Dots activeIndex={activeIndex} />
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Mobile fallback (below lg, no pin) */}
-      <div className="lg:hidden absolute inset-0 -z-10" aria-hidden />
-    </section>
+      </section>
+    </>
   );
 }
 
