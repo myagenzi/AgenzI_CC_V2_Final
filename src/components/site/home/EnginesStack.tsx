@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import { Reveal } from "@/components/site/Reveal";
 import { EngineCard, type EngineData } from "./EngineCard";
 import { cn } from "@/lib/utils";
@@ -50,72 +50,81 @@ const engines: EngineData[] = [
   },
 ];
 
-function StickyEngine({
-  data,
-  index,
-  total,
-  onActive,
-}: {
-  data: EngineData;
-  index: number;
-  total: number;
-  onActive: (i: number) => void;
-}) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const isLast = index === total - 1;
+function DesktopStack() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
 
-  // Per-card scroll progress over its own scroll spacer.
   const { scrollYProgress } = useScroll({
-    target: wrapRef,
-    offset: ["start start", "end start"],
+    target: sectionRef,
+    offset: ["start start", "end end"],
   });
 
-  // Last card never fades — it stays as the final resting state.
-  const scale = useTransform(scrollYProgress, [0, 1], isLast ? [1, 1] : [1, 0.92]);
-  const opacity = useTransform(scrollYProgress, [0, 0.85, 1], isLast ? [1, 1, 1] : [1, 0.6, 0]);
-  const y = useTransform(scrollYProgress, [0, 1], isLast ? [0, 0] : [0, -40]);
+  // Card 2 slides over Card 1 between 0.15 → 0.45
+  const y2 = useTransform(scrollYProgress, [0.15, 0.45], ["110%", "0%"], {
+    clamp: true,
+  });
+  // Card 3 slides over Card 2 between 0.55 → 0.85
+  const y3 = useTransform(scrollYProgress, [0.55, 0.85], ["110%", "0%"], {
+    clamp: true,
+  });
 
-  // Active-index detection via IntersectionObserver on the sticky card.
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            onActive(index);
-          }
-        }
-      },
-      { threshold: [0.5, 0.75, 0.95], rootMargin: "-15% 0px -15% 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [index, onActive]);
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    const next = p >= 0.65 ? 2 : p >= 0.3 ? 1 : 0;
+    setActive((prev) => (prev === next ? prev : next));
+  });
+
+  const cardYs = [undefined, y2, y3];
 
   return (
-    <div
-      ref={wrapRef}
-      className="relative"
-      style={{ height: isLast ? "110vh" : "150vh", zIndex: 10 + index }}
-    >
-      <div className="sticky top-[12vh] flex items-start justify-center px-4 md:px-8">
-        <motion.div
-          ref={cardRef}
-          style={{ scale, opacity, y }}
-          className="w-full max-w-[1180px]"
-        >
-          <EngineCard data={data} />
-        </motion.div>
+    <section ref={sectionRef} className="relative hidden lg:block" style={{ height: "320vh" }}>
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <div className="flex h-full flex-col">
+          <div className="px-6 pb-8 pt-[10vh] lg:px-12">
+            <Header />
+          </div>
+
+          <div className="relative flex-1">
+            {engines.map((e, i) => (
+              <div
+                key={e.name}
+                className="absolute inset-x-0 top-0 flex justify-center px-4 md:px-8"
+                style={{ zIndex: 10 + i }}
+              >
+                <motion.div
+                  style={cardYs[i] ? { y: cardYs[i] } : undefined}
+                  className="w-full max-w-[1180px]"
+                >
+                  <EngineCard data={e} />
+                </motion.div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Counter + dots */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 z-50 flex items-center justify-center gap-4">
+          <span className="font-mono-tech rounded-full bg-background/70 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-muted-foreground backdrop-blur">
+            {`0${active + 1} / 03`}
+          </span>
+          <div className="flex items-center gap-2 rounded-full bg-background/70 px-3 py-1.5 backdrop-blur">
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full bg-primary transition-all",
+                  active === i ? "scale-125 opacity-100" : "opacity-30",
+                )}
+              />
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
 export function EnginesStack() {
   const reduced = useReducedMotion();
-  const [active, setActive] = useState(0);
 
   if (reduced) {
     return (
@@ -142,42 +151,8 @@ export function EnginesStack() {
         </div>
       </section>
 
-      {/* Desktop: per-card sticky stack */}
-      <section className="relative hidden lg:block">
-        <div className="px-6 pb-12 pt-20 lg:px-12 lg:pt-24">
-          <Header />
-        </div>
-
-        <div className="relative">
-          {engines.map((e, i) => (
-            <StickyEngine
-              key={e.name}
-              data={e}
-              index={i}
-              total={engines.length}
-              onActive={setActive}
-            />
-          ))}
-        </div>
-
-        {/* Counter + dots */}
-        <div className="sticky bottom-6 z-50 flex items-center justify-center gap-4 pb-6">
-          <span className="font-mono-tech rounded-full bg-background/70 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-muted-foreground backdrop-blur">
-            {`0${active + 1} / 03`}
-          </span>
-          <div className="flex items-center gap-2 rounded-full bg-background/70 px-3 py-1.5 backdrop-blur">
-            {[0, 1, 2].map((i) => (
-              <span
-                key={i}
-                className={cn(
-                  "h-1.5 w-1.5 rounded-full bg-primary transition-all",
-                  active === i ? "scale-125 opacity-100" : "opacity-30",
-                )}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Desktop: shared pinned stage with cards swiping over each other */}
+      <DesktopStack />
     </>
   );
 }
