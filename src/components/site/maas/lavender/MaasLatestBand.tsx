@@ -24,27 +24,22 @@ export function MaasLatestBand() {
     <section className="relative overflow-hidden px-6 py-20 lg:px-12 lg:py-28">
       <div className="mx-auto max-w-[1200px]">
         {/* Oversized headline + ghost echo */}
-        <div className="relative mb-12">
+        <div className="relative mb-16">
           <span
-            className="lav-ghost-text absolute -left-2 top-4 select-none opacity-60"
-            style={{ fontSize: "clamp(80px, 13vw, 220px)" }}
+            className="lav-ghost-text pointer-events-none absolute -left-2 top-6 z-0 select-none"
+            style={{ fontSize: "clamp(80px, 13vw, 220px)", opacity: 0.35 }}
             aria-hidden
           >
             Insights
           </span>
           <Reveal>
-            <div className="relative flex flex-wrap items-center gap-6">
+            <div className="relative z-10 flex flex-wrap items-baseline gap-x-6 gap-y-2">
               <h2
                 className="font-display font-extrabold leading-none tracking-[-0.04em] text-foreground"
                 style={{ fontSize: "clamp(60px, 11vw, 180px)" }}
               >
                 Latest
               </h2>
-              <div className="float-tile w-28 md:w-40" style={{ ["--rot" as string]: "-6deg" }}>
-                <div style={{ transform: "rotate(-6deg)" }}>
-                  <MediaPlaceholder aspect="1/1" kind="image" label="Editorial tile" className="rounded-2xl" />
-                </div>
-              </div>
               <h2
                 className="font-display font-extrabold leading-none tracking-[-0.04em] text-primary"
                 style={{ fontSize: "clamp(60px, 11vw, 180px)" }}
@@ -53,6 +48,22 @@ export function MaasLatestBand() {
               </h2>
             </div>
           </Reveal>
+
+          {/* Decorative floating tile — positioned out of headline flow */}
+          <div
+            className="float-tile pointer-events-none absolute -top-4 right-2 hidden w-32 md:block lg:w-40"
+            style={{ ["--rot" as string]: "8deg" }}
+            aria-hidden
+          >
+            <div style={{ transform: "rotate(8deg)" }}>
+              <MediaPlaceholder
+                aspect="1/1"
+                kind="image"
+                label="Editorial tile"
+                className="rounded-2xl"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-5 md:grid-cols-3">
