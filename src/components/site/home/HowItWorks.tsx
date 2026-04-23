@@ -15,7 +15,7 @@ const steps = [
     badge: "Build Your System",
     title: "This Is Where Everything Changes",
     sub: "We don't give you a plan. We build the system for you.",
-    body: "One system. Designed around your business. One integrated engine running Creative, Marketing, and Automation. Powered by Human Strategy and AI Execution working as one.",
+    body: "One system. Designed around your business. One integrated engine running Creative, Marketing, and Automation. Powered by two things working as one — Human Strategy (your dedicated operator who sees the full picture) and AI Execution (an always-on system handling the heavy lifting).",
     pts: ["One point of contact for everything", "One strategy across creative, marketing, and growth", "Decisions based on outcomes, not tasks"],
   },
   {

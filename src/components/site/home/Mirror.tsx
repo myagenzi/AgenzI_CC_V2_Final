@@ -23,6 +23,8 @@ export function Mirror() {
                 className="font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground"
                 style={{ fontSize: "clamp(28px, 4.6vw, 54px)" }}
               >
+                Take a second.
+                <br />
                 You didn't start your business{" "}
                 <span className="text-primary">to do this.</span>
               </h2>
@@ -47,7 +49,10 @@ export function Mirror() {
           </ul>
 
           <Reveal delay={3}>
-            <p className="mt-10 font-display text-[clamp(20px,2.4vw,28px)] font-bold leading-snug text-foreground">
+            <p className="mt-10 text-[15px] leading-relaxed text-muted-foreground">
+              That's not a people problem. It's a system problem.
+            </p>
+            <p className="mt-4 font-display text-[clamp(20px,2.4vw,28px)] font-bold leading-snug text-foreground">
               You're not lacking effort. You're stuck in a system that doesn't scale.
             </p>
           </Reveal>
