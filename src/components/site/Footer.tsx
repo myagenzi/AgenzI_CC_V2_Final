@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="border-t border-foreground/[0.06]">
       <div className="mx-auto flex max-w-[1100px] flex-col items-center gap-6 px-6 py-12 text-center lg:px-12">
-        <img src={logo} alt="AgenzI" className="h-6 w-auto opacity-80" />
+        <img src={logo} alt="AgenzI" className="h-24 w-auto opacity-80" />
         <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[13px] text-foreground/55" aria-label="Footer">
           <a href="#three-engines" className="hover:text-foreground">CaaS</a>
           <a href="#three-engines" className="hover:text-foreground">MaaS</a>
