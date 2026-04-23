@@ -52,9 +52,9 @@ const engines: EngineData[] = [
 
 // Per-card animation ranges across full section progress (0..1)
 const ranges: Array<{ inStart: number; inEnd: number; outStart: number; outEnd: number }> = [
-  { inStart: 0, inEnd: 0, outStart: 0.28, outEnd: 0.4 },
-  { inStart: 0.28, inEnd: 0.4, outStart: 0.6, outEnd: 0.72 },
-  { inStart: 0.6, inEnd: 0.72, outStart: 1, outEnd: 1 },
+  { inStart: 0, inEnd: 0, outStart: 0.3, outEnd: 0.4 },
+  { inStart: 0.3, inEnd: 0.4, outStart: 0.63, outEnd: 0.73 },
+  { inStart: 0.63, inEnd: 0.73, outStart: 1, outEnd: 1 },
 ];
 
 function StackedCard({
@@ -106,8 +106,8 @@ export function EnginesStack() {
 
   // Active card index for counter / dots
   const activeIndex = useTransform(scrollYProgress, (v) => {
-    if (v < 0.34) return 0;
-    if (v < 0.66) return 1;
+    if (v < 0.36) return 0;
+    if (v < 0.68) return 1;
     return 2;
   });
 
@@ -129,7 +129,7 @@ export function EnginesStack() {
       id="three-engines"
       ref={sectionRef}
       className="relative"
-      style={{ height: "320vh" }}
+      style={{ height: "360vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <div className="flex h-full flex-col">
