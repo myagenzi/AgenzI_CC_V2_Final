@@ -142,9 +142,9 @@ export function CursorMetaballs() {
       ctx.globalCompositeOperation = "lighter";
       for (const b of blobs) {
         const grad = ctx.createRadialGradient(b.pos.x, b.pos.y, 0, b.pos.x, b.pos.y, b.r);
-        grad.addColorStop(0, `hsla(${gold}, 1)`);
-        grad.addColorStop(0.45, `hsla(${royal}, 0.7)`);
-        grad.addColorStop(1, `hsla(${royal}, 0)`);
+        grad.addColorStop(0, `hsl(${gold} / 1)`);
+        grad.addColorStop(0.45, `hsl(${royal} / 0.7)`);
+        grad.addColorStop(1, `hsl(${royal} / 0)`);
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(b.pos.x, b.pos.y, b.r, 0, Math.PI * 2);
@@ -190,7 +190,7 @@ export function CursorMetaballs() {
       )}
 
       {!reduced && (
-        <div className="debug-panel pointer-events-none absolute bottom-5 left-5 hidden md:block">
+        <div className="debug-panel pointer-events-none absolute bottom-5 left-5 z-20 hidden md:block">
           <div className="font-mono-tech text-[10px] uppercase tracking-[0.25em] text-foreground/55">
             <div className="mb-1 text-foreground/70">METABALL · live</div>
             <div className="grid grid-cols-[auto_auto] gap-x-4">

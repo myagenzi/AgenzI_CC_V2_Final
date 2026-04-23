@@ -121,8 +121,8 @@ function Layer({ id, stickyLabel, eyebrow, headline, meta, keywords, items }: La
     >
       <div className="md:grid md:grid-cols-12 md:gap-10">
         {/* Sticky vertical layer label */}
-        <aside className="hidden md:col-span-2 md:block">
-          <div className="sticky top-28">
+        <aside className="hidden md:col-span-2 md:ml-2 md:block">
+          <div className="sticky top-24">
             <p
               className="font-mono-tech text-[10px] uppercase tracking-[0.35em] text-foreground/40"
               style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}

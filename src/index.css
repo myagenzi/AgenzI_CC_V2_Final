@@ -390,9 +390,9 @@
 /* Zenzai — metaballs canvas (true merge via blur + contrast) */
 .metaball-svg { pointer-events: none; }
 .metaball-canvas {
-  filter: blur(18px) contrast(22);
-  mix-blend-mode: screen;
-  opacity: 0.85;
+  filter: blur(18px) contrast(18);
+  mix-blend-mode: normal;
+  opacity: 0.9;
 }
 
 /* Zenzai — debug panel */
@@ -402,6 +402,7 @@
   border: 1px solid hsl(var(--foreground) / 0.12);
   padding: 10px 14px;
   border-radius: 4px;
+  z-index: 20;
 }
 
 /* Zenzai — three-layer cards */

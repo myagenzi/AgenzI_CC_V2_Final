@@ -9,8 +9,6 @@ import { CtaStripe } from "@/components/site/caas/CtaStripe";
 import { ZenzaiHero } from "@/components/site/zenzai/ZenzaiHero";
 import { ZenzaiAbout } from "@/components/site/zenzai/ZenzaiAbout";
 import { LayerServices } from "@/components/site/zenzai/LayerServices";
-import { ProjectsRail } from "@/components/site/zenzai/ProjectsRail";
-import { TopicsRow } from "@/components/site/zenzai/TopicsRow";
 
 const thumbs = {
   zenzai: {
@@ -38,10 +36,6 @@ export default function IntelligenceZenzai() {
           <ZenzaiAbout />
 
           <LayerServices />
-
-          <ProjectsRail />
-
-          <TopicsRow />
 
           <CtaStripe
             headline={

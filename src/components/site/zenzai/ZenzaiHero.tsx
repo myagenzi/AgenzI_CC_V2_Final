@@ -21,7 +21,7 @@ export function ZenzaiHero() {
       {/* Cursor-reactive metaballs */}
       <div className="pointer-events-none absolute inset-0 -z-0">
         <CursorMetaballs />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/15 to-background" />
       </div>
 
       <div className="relative z-10">
