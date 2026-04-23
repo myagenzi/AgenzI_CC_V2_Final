@@ -105,10 +105,10 @@ export function EnginesStack() {
     offset: ["start start", "end end"],
   });
 
-  // Active card index for counter / dots
+  // Active card index for counter / dots — aligned with the ranges above
   const activeIndex = useTransform(scrollYProgress, (v) => {
-    if (v < 0.36) return 0;
-    if (v < 0.68) return 1;
+    if (v < 0.32) return 0;
+    if (v < 0.64) return 1;
     return 2;
   });
 
