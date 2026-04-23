@@ -49,8 +49,8 @@ export function ZenzaiAbout() {
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6">
         {layers.map((l, i) => (
-          <Reveal key={l.title} delay={(i + 1) as 1 | 2 | 3}>
-            <article className={`layer-card group flex h-full flex-col ${l.span} ${l.offset}`}>
+          <Reveal key={l.title} delay={(i + 1) as 1 | 2 | 3} className={l.span}>
+            <article className={`layer-card group flex h-full flex-col ${l.offset}`}>
               <MediaPlaceholder
                 aspect="4/5"
                 kind="image"
