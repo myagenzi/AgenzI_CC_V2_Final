@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { Reveal } from "@/components/site/Reveal";
 import { ServiceAccordion, type ServiceItem } from "@/components/site/caas/ServiceAccordion";
-import { MediaPlaceholder } from "@/components/site/MediaPlaceholder";
 import { useScrollSetup, gsap } from "@/lib/scroll";
 
 type Props = {
@@ -19,7 +18,6 @@ export function SystemBlock({
   eyebrow,
   headline,
   items,
-  mediaLabel,
   metaLine,
   systemNumber,
 }: Props) {
@@ -48,39 +46,26 @@ export function SystemBlock({
   return (
     <section
       ref={sectionRef}
-      className="border-t border-foreground/[0.08] px-6 py-20 md:px-16 md:py-24"
+      className="relative border-t border-foreground/[0.08] px-6 py-24 md:px-16 md:py-32"
     >
-      {mediaLabel && (
-        <Reveal>
-          <div className="mb-12">
-            <MediaPlaceholder
-              aspect="16/9"
-              kind="video"
-              label={mediaLabel}
-              className="md:w-[78%]"
-            />
-          </div>
-        </Reveal>
-      )}
-
       <div className="grid grid-cols-12 gap-6">
-        {/* Sticky chapter label */}
-        <aside className="col-span-12 md:col-span-3">
+        {/* Sticky chapter rail */}
+        <aside className="col-span-12 md:col-span-4">
           <div className="md:sticky md:top-28">
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-5">
               <span
                 ref={barRef}
                 aria-hidden
-                className="hidden h-40 w-px origin-top bg-electric/60 md:inline-block"
+                className="hidden h-44 w-px origin-top bg-gradient-to-b from-electric to-electric/0 md:inline-block"
               />
               <div className="flex-1">
-                <p className="font-mono-tech mb-4 text-[11px] uppercase tracking-[0.3em] text-foreground/55">
+                <p className="font-mono-tech mb-6 text-[11px] uppercase tracking-[0.3em] text-foreground/55">
                   {eyebrow}
                 </p>
                 {systemNumber && (
                   <div
-                    className="font-display leading-[0.85] tracking-[-0.04em] text-electric/80"
-                    style={{ fontSize: "clamp(56px, 8vw, 120px)" }}
+                    className="num-outline-gold"
+                    style={{ fontSize: "clamp(96px, 11vw, 200px)" }}
                   >
                     {systemNumber}
                   </div>
@@ -90,20 +75,21 @@ export function SystemBlock({
           </div>
         </aside>
 
-        {/* Scrolling content */}
-        <div className="col-span-12 md:col-span-9">
+        {/* Content column */}
+        <div className="col-span-12 md:col-span-8">
           <Reveal>
-            <h2
-              className="font-display mb-6 font-bold uppercase leading-[0.95] tracking-[-0.03em]"
-              style={{ fontSize: "clamp(34px, 5.5vw, 84px)" }}
-            >
-              {headline}
-            </h2>
             {metaLine && (
-              <p className="font-mono-tech mb-12 text-[11px] uppercase tracking-[0.25em] text-foreground/55">
+              <p className="font-mono-tech mb-5 text-[11px] uppercase tracking-[0.25em] text-gold"
+                 style={{ color: "hsl(var(--gold))" }}>
                 {metaLine}
               </p>
             )}
+            <h2
+              className="font-display mb-12 font-bold uppercase leading-[0.95] tracking-[-0.03em] text-foreground"
+              style={{ fontSize: "clamp(32px, 5.2vw, 76px)" }}
+            >
+              {headline}
+            </h2>
           </Reveal>
 
           <ServiceAccordion items={items} />

@@ -14,7 +14,7 @@ export function Problem() {
       <div className="mx-auto max-w-[1100px]">
         <Reveal>
           <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
-            The Real Problem
+            The Problem
           </p>
         </Reveal>
         <Reveal delay={1}>
@@ -22,9 +22,9 @@ export function Problem() {
             className="mx-auto mb-5 max-w-3xl text-center font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground"
             style={{ fontSize: "clamp(32px, 5.4vw, 60px)" }}
           >
-            You don't need more tools.
+            You don't have a marketing problem.
             <br />
-            You need <span className="text-primary">one system.</span>
+            You have a <span className="text-primary">system problem.</span>
           </h2>
         </Reveal>
         <Reveal delay={2}>

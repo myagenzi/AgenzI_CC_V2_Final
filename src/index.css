@@ -651,3 +651,40 @@
   width: 100vw;
 }
 
+
+/* ---------- MaaS dark cosmic helpers ---------- */
+.tile-cosmic {
+  background:
+    radial-gradient(ellipse 90% 100% at 0% 0%, hsl(var(--nebula) / 0.18) 0%, transparent 60%),
+    linear-gradient(160deg, hsl(var(--navy)) 0%, hsl(var(--cosmic)) 100%);
+  border: 1px solid hsl(var(--peri) / 0.18);
+  border-radius: 1.25rem;
+  transition: transform 300ms ease, box-shadow 400ms ease, border-color 300ms ease;
+}
+.tile-cosmic:hover {
+  transform: translateY(-4px);
+  border-color: hsl(var(--gold) / 0.45);
+  box-shadow: 0 24px 60px -28px hsl(var(--gold) / 0.35), inset 0 1px 0 hsl(var(--peri) / 0.15);
+}
+.num-outline-gold {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px hsl(var(--gold) / 0.7);
+  text-stroke: 1.5px hsl(var(--gold) / 0.7);
+}
+.maas-hero-bg {
+  background:
+    radial-gradient(ellipse 70% 60% at 78% 28%, hsl(var(--royal) / 0.32) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 50% at 12% 78%, hsl(var(--nebula) / 0.30) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 35% at 50% 50%, hsl(var(--gold) / 0.08) 0%, transparent 70%);
+}
+.maas-hero-grid {
+  background-image:
+    linear-gradient(hsl(var(--peri) / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--peri) / 0.07) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 85%);
+}
