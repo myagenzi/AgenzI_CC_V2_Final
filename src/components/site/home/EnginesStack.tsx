@@ -68,11 +68,10 @@ function StackedCard({
   progress: MotionValue<number>;
 }) {
   const r = ranges[index];
-  // y: starts below (100%) then slides to 0 at inEnd, then to -40px at outEnd
   const y = useTransform(
     progress,
     [r.inStart, r.inEnd, r.outStart, r.outEnd],
-    index === 0 ? ["0%", "0%", "0%", "-6%"] : ["100%", "0%", "0%", "-6%"],
+    index === 0 ? [0, 0, 0, -40] : [600, 0, 0, -40],
   );
   const scale = useTransform(
     progress,
