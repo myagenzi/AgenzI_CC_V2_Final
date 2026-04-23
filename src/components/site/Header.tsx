@@ -1,18 +1,31 @@
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/logo-horizontal.png";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const navLinks = [
-  { label: "Solutions", href: "#three-engines" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "About", href: "#about" },
+const whatWeDo = [
+  { label: "Creative — CaaS", href: "/what-we-do/creative-caas", desc: "Creative as a Service" },
+  { label: "Marketing — MaaS", href: "/what-we-do/marketing-maas", desc: "Marketing as a Service" },
+  { label: "Intelligence — Zenzai", href: "/what-we-do/intelligence-zenzai", desc: "Intelligence as a Service" },
+];
+
+const otherLinks = [
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "About", href: "/#about" },
 ];
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileWWDOpen, setMobileWWDOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -35,12 +48,36 @@ export function Header() {
             scrolled && "shadow-[0_8px_32px_hsl(0_0%_0%/0.35)]",
           )}
         >
-          <a href="#top" className="flex items-center gap-2.5 shrink-0" aria-label="AgenzI home">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="AgenzI home">
             <img src={logo} alt="AgenzI" className="h-6 w-auto md:h-7" />
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
-            {navLinks.map((l) => (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="inline-flex items-center gap-1 rounded-full px-4 py-2 text-[13px] text-foreground/70 outline-none transition-colors hover:text-foreground data-[state=open]:text-foreground">
+                What We Do
+                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="center"
+                sideOffset={12}
+                className="glass-strong w-[280px] rounded-2xl border-white/10 p-2 text-foreground"
+              >
+                {whatWeDo.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link
+                      to={item.href}
+                      className="flex flex-col items-start gap-0.5 rounded-xl px-3 py-3 focus:bg-white/5"
+                    >
+                      <span className="text-[13px] font-semibold text-foreground">{item.label}</span>
+                      <span className="text-[11px] text-foreground/55">{item.desc}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {otherLinks.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
@@ -53,13 +90,13 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <a
-              href="#contact"
+              href="/#contact"
               className="hidden rounded-full px-4 py-2 text-[13px] text-foreground/70 transition hover:text-foreground sm:inline-flex"
             >
               Login
             </a>
             <a
-              href="#contact"
+              href="/#contact"
               className="cta-glow rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground"
             >
               Book Free Audit
@@ -80,11 +117,33 @@ export function Header() {
       {/* Mobile drawer */}
       <div
         className={cn(
-          "fixed inset-0 z-40 flex flex-col gap-1 bg-cosmic px-6 pb-10 pt-28 transition-opacity md:hidden",
+          "fixed inset-0 z-40 flex flex-col gap-1 overflow-y-auto bg-background px-6 pb-10 pt-28 transition-opacity md:hidden",
           mobileOpen ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       >
-        {navLinks.map((l) => (
+        <button
+          type="button"
+          onClick={() => setMobileWWDOpen((v) => !v)}
+          className="flex items-center justify-between border-b border-border py-4 font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
+        >
+          What We Do
+          <ChevronDown className={cn("h-5 w-5 transition-transform", mobileWWDOpen && "rotate-180")} />
+        </button>
+        {mobileWWDOpen && (
+          <div className="flex flex-col gap-1 border-b border-border py-2 pl-4">
+            {whatWeDo.map((item) => (
+              <Link
+                key={item.href}
+                to={item.href}
+                onClick={() => setMobileOpen(false)}
+                className="py-2 font-display text-lg text-foreground/70 hover:text-foreground"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        )}
+        {otherLinks.map((l) => (
           <a
             key={l.label}
             href={l.href}
@@ -95,7 +154,7 @@ export function Header() {
           </a>
         ))}
         <a
-          href="#contact"
+          href="/#contact"
           onClick={() => setMobileOpen(false)}
           className="mt-4 font-display text-2xl font-bold text-primary"
         >
