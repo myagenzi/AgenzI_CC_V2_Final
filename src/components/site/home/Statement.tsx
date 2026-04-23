@@ -2,10 +2,11 @@ import { Reveal } from "@/components/site/Reveal";
 
 export function Statement() {
   return (
-    <section className="bg-navy px-6 py-20 text-center lg:px-12">
+    <section className="px-6 py-32 text-center lg:px-12 lg:py-48">
       <Reveal>
-        <p className="mx-auto max-w-4xl font-display text-[clamp(22px,4vw,52px)] font-extrabold leading-[1.4] tracking-[-0.02em] text-foreground/30">
-          Most agencies give you <strong className="text-foreground">output.</strong>
+        <p className="mx-auto max-w-4xl font-display font-extrabold leading-[1.15] tracking-[-0.02em] text-foreground/35"
+           style={{ fontSize: "clamp(28px, 5vw, 64px)" }}>
+          Most agencies give you <span className="text-foreground">output.</span>
           <br />
           We give you a <em className="not-italic text-primary">system that keeps producing it.</em>
         </p>

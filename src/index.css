@@ -187,15 +187,15 @@
   /* Reveal-on-scroll utility */
   .reveal {
     opacity: 0;
-    transform: translateY(22px);
-    transition: opacity 650ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                transform 650ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translateY(24px);
+    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .reveal.is-visible { opacity: 1; transform: none; }
-  .reveal-d1 { transition-delay: 80ms; }
-  .reveal-d2 { transition-delay: 160ms; }
-  .reveal-d3 { transition-delay: 240ms; }
-  .reveal-d4 { transition-delay: 320ms; }
+  .reveal-d1 { transition-delay: 100ms; }
+  .reveal-d2 { transition-delay: 200ms; }
+  .reveal-d3 { transition-delay: 300ms; }
+  .reveal-d4 { transition-delay: 400ms; }
 
   /* Decorative animations */
   @keyframes ticker {
