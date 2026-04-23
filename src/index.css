@@ -271,6 +271,15 @@
   .surface-lavender .float-tile { animation: none; }
 }
 
+/* ---------- Custom cursor ---------- */
+@media (hover: hover) and (pointer: fine) {
+  body.cursor-none,
+  body.cursor-none * {
+    cursor: none !important;
+  }
+}
+.cursor-hover { /* opt-in hover-magnify target */ }
+
 @layer base {
   * { @apply border-border; }
 
