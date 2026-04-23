@@ -2,113 +2,90 @@
 
 ## Understood
 
-**Reference:** `https://monopo.london/services` (monopo London — Japanese minimalist meets European brutalist studio site).
+You want me to take the **real CaaS content from `base/_unpacked/index.html`** (the `#pg-caas` block) and pour it into the **monopo.london editorial layout** I already built — keeping the monochrome / oversized type / left rail / cursor portal / marquee aesthetic. Plus fix the **header dropdown** to match the base file: each item shows a **glyph + name + sub-label** (`✦ CaaS — Creative as a Service`, `◈ MaaS — Marketing as a Service`, `⬡ Zenzai — AI · Automation · Tech`).
 
-**What you want — confirmed:**
-1. Header nav: rename "Solutions" → **"What We Do"** as a **dropdown** with 3 items: Creative—CaaS, Marketing—MaaS, Intelligence—Zenzai. Same glass-pill header on every page.
-2. Build only the **Creative—CaaS page** now, in the monopo aesthetic — but keep our existing AgenzI shell (header + footer + nav).
-3. Aesthetic switch on this page only: monochrome (black / white / studio grey) with one electric accent, oversized type, mono labels, fixed left rail, floating cursor portal on service hover, smooth scroll, scroll-reveals, grain overlay.
-4. Other pages (MaaS, Zenzai) stub-routed to "coming soon" so the dropdown works end-to-end.
+## Content I'm pulling from `base/index.html` (verbatim, just re-typeset)
+
+**Hero (replaces the placeholder "WE BUILD EXPRESSIVE BRANDS")**
+- Eyebrow: `01 / ENGINE · CaaS`
+- Headline: *"You know what your brand needs to say. You just can't say it fast enough."* (last line in electric accent)
+- Sub: "Your competitor posted four times this week. You're still in the approval loop for last month's reel. CaaS is the creative system that fixes that."
+- CTAs: `Book Free Audit →` · `See services ↓`
+
+**Why CaaS** — 3-up flat grid: Speed · Cost · Consistency (full copy from base)
+
+**Delivery Modes** — 3 tabs: Capture (Human-led) / AI-Augmented / Automated (full copy from base)
+
+**What We Build · Phase 1 — Live Now** — 8 numbered accordion rows (`01`–`08`):
+01 Social Media Content Pack · 02 Repurposing Engine · 03 Photography + AI Edit Sprint · 04 Commercial Ad Production · 05 Event Reel + Same-Day Delivery · 06 Founder Content Engine · 07 Product Photography + Catalogue Video · 08 Corporate Event Branding + Content
+Each: short tagline, full description, bullet list (where present), price tag · market-rate tag · audience tag.
+
+**Phase 2 · Arriving This Year** — 4 dimmed accordion rows (`09`–`12`): AI Avatar Spokesperson · Multilingual Dubbing · Podcast Production Suite · UGC Simulation Pack.
+
+**CTA Strip** — *"Traditional agency: ₹20k–1.5L/month. CaaS starts at ₹2,999/month. Same output. Faster. No chaos."* + Book Free Audit / Full pricing buttons.
+
+**Footer ribbon** — `© 2026 AgenzI · CaaS` + cross-links to MaaS / Zenzai / Pricing.
 
 ## Build Plan
 
-### 1. Header dropdown (sitewide)
-Rewrite `src/components/site/Header.tsx`:
-- "What We Do" becomes a hover/click dropdown (Radix `DropdownMenu`, glass styling).
-- 3 items → `/what-we-do/creative-caas`, `/what-we-do/marketing-maas`, `/what-we-do/intelligence-zenzai`.
-- Other links convert from `#anchor` to `/#anchor` so they work from sub-pages.
-- Mobile drawer: nested expandable "What We Do" group.
-- Logo links to `/`.
+### 1. Header dropdown — fix glyphs + sub-labels
+`src/components/site/Header.tsx`
+- Update `whatWeDo` array entries to: `{ glyph, label, sub, href }` with `✦ / ◈ / ⬡`.
+- Render each `DropdownMenuItem` as `[glyph circle] [name + sub]`, matching the base file's `ndd-i` layout. Glass-pill keeps current styling.
+- Mobile drawer: same glyph prefix on each row.
 
-### 2. Routes (`src/App.tsx`)
-```text
-/                                     → Index (homepage, unchanged)
-/what-we-do/creative-caas             → CreativeCaaS (new, full build)
-/what-we-do/marketing-maas            → ComingSoon stub
-/what-we-do/intelligence-zenzai      → ComingSoon stub
-*                                     → NotFound
-```
-
-### 3. Creative—CaaS page (`src/pages/what-we-do/CreativeCaaS.tsx`)
-
-**Layout shell** — page-scoped class `.surface-mono` that overrides tokens to monochrome (deep black `#0A0A0A`, pure white, studio grey `#F4F4F4`, one electric blue accent `#1E40FF`). Keeps shared `<Header />` + `<Footer />` floating on top.
+### 2. Creative—CaaS page — full content rewrite
+Rewrite `src/pages/what-we-do/CreativeCaaS.tsx` keeping the monopo shell (LeftRail, CursorPortal, MarqueeStatement, Reveal) but replacing every section:
 
 ```text
-┌──────┬───────────────────────────────────────────────┐
-│      │  HERO                                         │
-│ FIX  │   01 / SERVICES                               │
-│ ED   │   WE BUILD                                    │
-│ RAIL │   EXPRESSIVE                                  │
-│      │   BRANDS.                  ↘ split-text reveal│
-│ logo │                                               │
-│ MENU ├───────────────────────────────────────────────┤
-│ ●    │  INTRO PARAGRAPH (max-w-2xl, mono caption)    │
-│      ├───────────────────────────────────────────────┤
-│      │  03 SERVICE GROUPS (Branding / Digital /      │
-│      │  Communications) — numbered, hover reveals    │
-│      │  cursor-following ghost image                 │
-│      ├───────────────────────────────────────────────┤
-│      │  CAPABILITIES — multi-column lists with →     │
-│      ├───────────────────────────────────────────────┤
-│      │  PROCESS / CTA                                │
-└──────┴───────────────────────────────────────────────┘
+HERO          → real CaaS hero copy + two CTAs
+MARQUEE       → "Speed · Cost · Consistency · 48-Hour Turnaround · Human-directed"
+WHY CAAS      → 3-card flat grid (Speed / Cost / Consistency)
+DELIVERY      → 3 horizontal tabs (Capture / Augmented / Automated)
+                — uses Radix Tabs, monochrome styling, hairline underline
+LIVE NOW      → "Phase 1 · Live Now" — 8 accordion rows (Radix Accordion)
+                Numbered (01–08), title, sub, expand to full copy + tags.
+                Hover binds CursorPortal ghost preview per row.
+ARRIVING      → "Phase 2 · Arriving This Year" — 4 rows at opacity 60
+CTA STRIP     → big monochrome statement + 2 buttons
+FOOTER NOTE   → cross-links to MaaS / Zenzai / Pricing inside main, then shared <Footer />
 ```
 
-**Components** (`src/components/site/caas/`):
-- `LeftRail.tsx` — fixed 88px sidebar, vertical AGENZI wordmark (writing-mode), MENU trigger that opens an overlay with staggered link reveals.
-- `CaasHero.tsx` — split-text reveal headline using existing `Reveal` primitive + per-word stagger.
-- `ServiceGroup.tsx` — numbered (`01.`, `02.`, `03.`) row; on hover binds to `CursorPortal` to display a ghost thumbnail that follows the cursor (mousemove transform, no extra deps).
-- `CapabilityList.tsx` — multi-col grid, `→` arrows that translate-x on hover.
-- `CursorPortal.tsx` — single mounted div listening to mousemove; service rows register an image via context.
-- `MarqueeStatement.tsx` — slow horizontal "EXPRESSIVE · CONFIDENT · CRAFTED" marquee divider.
+### 3. New / supporting components
+- **`src/components/site/caas/ServiceAccordion.tsx`** (NEW) — Radix `Accordion` styled monochrome: number column, title + subtitle row, `↓` glyph that rotates, body with description + tag pills (`tgp` price / `tgg` market / `tgn` audience). Replaces the static `ServiceGroup` for the live-services section.
+- **`src/components/site/caas/DeliveryTabs.tsx`** (NEW) — three pill triggers, monochrome underline indicator, animated panel swap. Uses Radix `Tabs`.
+- **`src/components/site/caas/WhyGrid.tsx`** (NEW) — 3 hairline-bordered cards with glyph + title + copy.
+- Keep existing `LeftRail`, `CursorPortal`, `MarqueeStatement`, `CaasHero` — but `CaasHero` headline gets replaced with the real two-line statement; eyebrow becomes `01 / ENGINE · CaaS`.
 
-**Motion:**
-- Reuse existing `Reveal` (already 800ms cubic-bezier).
-- Smooth scroll: native `html { scroll-behavior: smooth }` is already on. Skip Lenis (no new deps) — feel achieved via slow eases.
-- Hover underline-grow via `.story-link` utility (added to index.css).
-- Grain: keep global `body::after` noise; on `.surface-mono` raise opacity slightly.
+### 4. Styling tweaks (`src/index.css`)
+- Add 3 tag pill utilities scoped to `.surface-mono`: `.tag-price` (electric outline), `.tag-market` (foreground/40 outline), `.tag-audience` (foreground/20 outline).
+- Add `.acc-row` hairline borders + hover `bg-foreground/[0.02]`.
+- No new keyframes; reuse existing motion.
 
-**Typography:**
-- Display: keep Bricolage Grotesque (existing, fits brutalist scale).
-- Mono labels: add **JetBrains Mono** via Google Fonts `<link>` in `index.html` (single file change, no npm).
-- Section titles: `clamp(64px, 11vw, 200px)`, `tracking-[-0.04em]`, uppercase, mixed weights.
-
-**Content** (from your three groups):
-- 01 / BRANDING — Brand Strategy · Identity Systems · Naming · Verbal Identity · Guidelines
-- 02 / DIGITAL — UI/UX · Web Design · Web Development · Motion Design · Prototyping
-- 03 / COMMUNICATIONS — Campaign · Art Direction · Content Production · Social · Editorial
-(Refine copy from monopo reference + AgenzI's CaaS positioning.)
-
-### 4. Token additions (`src/index.css`)
-- `.surface-mono` scope: monochrome semantic tokens + `--electric: 230 100% 56%`.
-- `.story-link` underline-grow utility.
-- `@keyframes marquee` for statement bar.
-- JetBrains Mono `@import` (Google Fonts) or `<link>` in `index.html`.
-
-### 5. Stub pages
-`src/pages/what-we-do/ComingSoon.tsx` — minimal centered page reusing header/footer; used by both MaaS and Zenzai routes until built.
+### 5. Typography & color rules (already in place, just confirming)
+- Display: Bricolage Grotesque, uppercase headlines `clamp(48–180px)`, `tracking-[-0.04em]`.
+- Mono labels: JetBrains Mono `text-[11px] tracking-[0.3em]`.
+- Palette: `#0A0A0A` bg, `#FFFFFF` fg, `#F4F4F4` studio grey, electric `#1E40FF` for accents only (price tags, hover states, hero last-line).
+- All scoped under `.surface-mono` — homepage untouched.
 
 ### 6. Verify
-- Dropdown opens on hover + click, mobile drawer nested, all 3 routes resolve.
-- Creative-CaaS renders cleanly at 1106px and 390px.
-- No console errors. No new npm deps.
+- `/what-we-do/creative-caas` renders all sections at 1106px and 390px.
+- Dropdown shows glyph + name + sub on every link, matches base layout.
+- Accordions open/close; tabs switch; cursor portal still triggers on service hover.
+- No console errors. No new npm deps (Radix Accordion + Tabs already shipped via shadcn).
 
 ## Files Touched
-- `src/components/site/Header.tsx` — dropdown rewrite
-- `src/App.tsx` — 3 new routes
-- `src/pages/what-we-do/CreativeCaaS.tsx` — new
-- `src/pages/what-we-do/ComingSoon.tsx` — new
-- `src/components/site/caas/LeftRail.tsx` — new
-- `src/components/site/caas/CaasHero.tsx` — new
-- `src/components/site/caas/ServiceGroup.tsx` — new
-- `src/components/site/caas/CapabilityList.tsx` — new
-- `src/components/site/caas/CursorPortal.tsx` — new
-- `src/components/site/caas/MarqueeStatement.tsx` — new
-- `src/index.css` — `.surface-mono`, `.story-link`, marquee keyframes
-- `index.html` — JetBrains Mono link tag
+- `src/components/site/Header.tsx` — glyph + sub-label dropdown items (desktop + mobile)
+- `src/pages/what-we-do/CreativeCaaS.tsx` — full rewrite with base content
+- `src/components/site/caas/CaasHero.tsx` — swap headline + eyebrow + CTAs
+- `src/components/site/caas/ServiceAccordion.tsx` — NEW
+- `src/components/site/caas/DeliveryTabs.tsx` — NEW
+- `src/components/site/caas/WhyGrid.tsx` — NEW
+- `src/components/site/caas/MarqueeStatement.tsx` — update word list
+- `src/index.css` — `.surface-mono` tag pill + accordion row utilities
 
 ## Out of Scope
-- Building MaaS / Zenzai pages (stubs only).
-- Changing the homepage.
-- Adding Framer Motion or Lenis (achieved with existing Reveal + CSS — no new deps).
+- MaaS and Zenzai pages (still ComingSoon stubs).
+- Homepage, header pill shell, footer.
+- New dependencies — using existing Radix Accordion + Tabs.
 
