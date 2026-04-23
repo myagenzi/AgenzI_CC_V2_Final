@@ -1,126 +1,55 @@
 
-# Fix the engine stack bug and remove the current console errors
 
-## What is actually broken
+# Hero copy sync + footer logo + fix engines stack animation
 
-There are two separate issues:
+Three changes in one pass.
 
-1. **The Zenzai card timing is still fragile**
-   - The current Framer Motion mapping in `src/components/site/home/EnginesStack.tsx` leaves the third card dependent on a narrow entry window plus sticky release timing.
-   - On real scroll, that can still feel like only CaaS and MaaS appear properly.
+## 1. Restore homepage hero copy (`src/components/site/home/Hero.tsx`)
 
-2. **There is a real React ref warning unrelated to Zenzai**
-   - Console logs show: `Function components cannot be given refs`
-   - Root cause is `src/components/site/Reveal.tsx`
-   - `Reveal` renders `<Tag ref={ref} />`, and when `Tag` is not a native tag or when React treats the polymorphic prop loosely, this pattern can trigger ref warnings.
-   - The warnings are currently surfacing from `Mirror` and `HowItWorks`, so even if the stack animation is adjusted, the page still looks “broken” in dev.
+- Eyebrow: `Human + AI · One System · Built for Your Business`
+- Add sub-headline between H1 and body: *"The question is — how long can you afford to stay where you are?"* (clamp 17–22px, muted-foreground/85, medium weight)
+- Expand body to: *"While you're managing vendors, chasing updates, and juggling tools — they've already streamlined everything. AgenzI replaces agencies, tools, and manual work with **one intelligent system** built for your business."*
+- Add stats strip below CTA row (4 cols desktop / 2 cols mobile, top border `border-foreground/10`):
+  - **70%** — Lower cost than traditional agencies
+  - **48h** — From brief to live creative
+  - **3** — Services. One integrated system.
+  - **90D** — Performance guarantee in writing
+- Keep CTA buttons, HeroTiles, lavender surface, and layout unchanged.
 
-## Implementation plan
+## 2. Footer logo 4× (`src/components/site/Footer.tsx`)
 
-### 1. Make the stacked card animation deterministic
-Update `src/components/site/home/EnginesStack.tsx` so the three-card sequence is easier to read and the last card always gets a full settled state.
+- `<img>` className: `h-6 w-auto opacity-80` → `h-24 w-auto opacity-80`
 
-Changes:
-- Increase the section scroll space slightly again if needed, but more importantly:
-- Rework the animation ranges so each card gets:
-  - an entry phase
-  - a stable fully-visible phase
-  - an exit phase
-- Give **Zenzai** a full visible resting range before the sticky section unpins
-- Keep the counter/dots thresholds perfectly aligned to the same ranges
+## 3. Fix the engines stack animation (`src/components/site/home/EnginesStack.tsx`)
 
-Recommended shape:
-- Card 1: visible immediately, exits during first transition
-- Card 2: enters from below, holds, then exits
-- Card 3: enters from below earlier than it does now, then holds until section end
+The current pinned-stack approach with `useTransform` on absolutely-positioned cards keeps producing fragile sequencing (Zenzai still not landing cleanly). Replace it with a simpler, deterministic pattern that's been battle-tested for this exact "stacked cards on scroll" effect:
 
-Net effect:
-- No “flash by” on the last card
-- Clear scrubbed wipe between all three cards
-- Counter and dots remain synchronized with the visible card
+**New approach — sticky cards in normal flow:**
+- Section becomes a vertical container (no fixed `400vh` + sticky viewport hack).
+- Each engine card wraps in a `sticky top-[12vh]` div with its own scroll spacer (`h-[100vh]`).
+- Cards naturally stack as the user scrolls: each new card slides up from below and lands on top of the previous one because each has a slightly higher `z-index` and its sticky position.
+- Apply a subtle Framer Motion fade/scale on the previous card using `useScroll` per-card with `target: cardRef, offset: ["start start", "end start"]` — fully scoped, no global progress range coordination.
+- Counter + dots driven by an `IntersectionObserver` on each card's sticky wrapper (whichever card's center is closest to viewport center wins).
 
-### 2. Fix the `Reveal` ref warning at the source
-Refactor `src/components/site/Reveal.tsx` so it no longer attaches a ref directly to an arbitrary polymorphic component.
+**Why this fixes it:**
+- No more globally-shared `scrollYProgress` ranges that have to be hand-tuned.
+- Each card owns its own enter/rest/exit lifecycle independently.
+- Zenzai naturally rests at the top until the section fully exits — guaranteed by sticky behavior, not interpolation math.
+- Removes the WAAPI/`useTransform` edge cases that caused the prior runtime errors.
 
-Safer approach:
-- Keep `Reveal` responsible for the intersection observer state only
-- Always attach the observer ref to a real DOM wrapper element
-- Render the requested `as` element inside that wrapper, or constrain `as` to intrinsic HTML tags and type it accordingly
+**Mobile (`<lg`)**: keep the existing simple stacked list (no sticky).
 
-Best fit for this codebase:
-- Replace the current polymorphic ref pattern with a guaranteed DOM node wrapper
-- Preserve existing animation classes and delay behavior
-- Ensure current usages in `Mirror`, `HowItWorks`, and elsewhere continue to work without changing content structure significantly
-
-### 3. Preserve semantic layout where `Reveal as="article"` is used
-Because `HowItWorks` and `ThreeEngines` use `Reveal as="article"`, the ref-safe `Reveal` update needs to avoid breaking semantics or spacing.
-
-Implementation detail:
-- Either:
-  - make `Reveal` render the chosen intrinsic tag directly while safely typing it, or
-  - move `Reveal` one level inside and let the semantic parent (`article`) remain outside
-- For this project, the cleaner option is:
-  - keep `article` / semantic containers outside where needed
-  - use `Reveal` on inner content blocks
-
-Files likely needing small cleanup:
-- `src/components/site/home/HowItWorks.tsx`
-- `src/components/site/home/ThreeEngines.tsx` if still retained
-- Any other `Reveal as="article"` usage found during implementation
-
-### 4. Improve the stack structure for desktop vs mobile
-The current section still uses one pinned structure for all breakpoints with only a decorative mobile fallback node.
-
-Update `src/components/site/home/EnginesStack.tsx` to explicitly split behavior:
-- **Desktop (`lg+`)**: sticky pinned Framer Motion stack
-- **Mobile (`< lg`)**: regular vertical list of three cards, no sticky layering
-
-Why:
-- Avoid unnecessary animation logic on smaller viewports
-- Make behavior clearer and less brittle
-- Reduce chances of the third card being visually obscured on intermediate widths
-
-### 5. Verify layering and clipping rules
-While updating `EnginesStack.tsx`, confirm:
-- stacked cards are absolutely centered in the same plane
-- higher index cards sit above lower ones
-- parent containers do not clip the incoming card unexpectedly
-- the stack area has enough vertical room below the heading and above the counter
-
-Specific checks:
-- `zIndex` order
-- `overflow-hidden` only on the intended sticky viewport, not on a container that trims Zenzai too early
-- stack container height leaves enough visible card space
+**Preserved**: the `EngineCard` component, header copy, counter + dots styling, and overall section visual language.
 
 ## Files to update
 
-- `src/components/site/home/EnginesStack.tsx`
-  - rebalance scroll progress ranges
-  - align active index thresholds
-  - separate desktop/mobile rendering paths more cleanly
-  - verify stacking/layering behavior
-
-- `src/components/site/Reveal.tsx`
-  - remove the unsafe ref-to-polymorphic-component pattern
-  - keep reveal animation behavior intact
-
-- `src/components/site/home/HowItWorks.tsx`
-  - adjust any `Reveal as="article"` usage if needed after the `Reveal` refactor
-
-- `src/components/site/home/ThreeEngines.tsx`
-  - only if needed for consistency or to remove the same pattern from the unused legacy section
-
-## Expected outcome
-
-After implementation:
-- All three engine cards, including **Zenzai**, appear smoothly in the sticky scrub sequence
-- The last card remains visible long enough to read before unpinning
-- Counter/dots match the visible card
-- The React console warnings about refs disappear
-- The section remains premium on desktop and stable on mobile
+- `src/components/site/home/Hero.tsx` — eyebrow, sub-headline, body, stats strip
+- `src/components/site/Footer.tsx` — logo `h-6` → `h-24`
+- `src/components/site/home/EnginesStack.tsx` — rewrite to sticky-per-card pattern, IntersectionObserver-driven active index
 
 ## Out of scope
 
-- Redesigning the card content/layout
-- Replacing placeholder visuals
-- Changing other sections’ animation language beyond the `Reveal` warning cleanup
+- CaaS / MaaS / Zenzai page redesigns (waiting on screenshots)
+- Other homepage sections
+- EngineCard internals
+
