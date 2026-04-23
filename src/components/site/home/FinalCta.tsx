@@ -20,7 +20,7 @@ export function FinalCta() {
         </p>
       </Reveal>
       <Reveal delay={1}>
-        <h2 className="mx-auto mb-8 max-w-4xl font-display font-extrabold leading-[1.02] tracking-[-0.04em] text-foreground"
+        <h2 className="mx-auto mb-8 max-w-4xl font-display font-extrabold leading-[1.02] tracking-[-0.04em] text-gradient-light"
             style={{ fontSize: "clamp(40px, 7vw, 88px)" }}>
           A 30-minute
           <br />
@@ -35,7 +35,7 @@ export function FinalCta() {
       <Reveal delay={3}>
         <a
           href="mailto:hello@agenzi.io"
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-px hover:bg-primary-bright"
+          className="cta-glow inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground"
         >
           Book Your Free AI Audit →
         </a>

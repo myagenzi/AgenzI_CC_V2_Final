@@ -56,7 +56,7 @@ export function Problem() {
             <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary">
               Now imagine this instead
             </p>
-            <div className="rounded-2xl border border-peri/15 p-8">
+            <div className="glass-card rounded-2xl p-8">
               <h3 className="mb-4 font-display text-2xl font-extrabold text-foreground">AgenzI</h3>
               <p className="mb-6 text-[14px] leading-relaxed text-foreground/60">
                 One system running your creative, marketing, and automation. One point of contact who sees the full picture. No chasing. No coordination. No disconnected tools.

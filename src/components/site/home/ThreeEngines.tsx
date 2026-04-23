@@ -51,7 +51,7 @@ export function ThreeEngines() {
         <div className="grid gap-6 md:grid-cols-3">
           {engines.map((e, i) => (
             <Reveal key={e.title} delay={(Math.min(i + 1, 4)) as 1 | 2 | 3 | 4} as="article">
-              <div className="group flex h-full flex-col rounded-2xl border border-peri/15 p-8 transition hover:border-peri/30">
+              <div className="glass-card group flex h-full flex-col rounded-2xl p-8 transition hover:border-white/15 hover:bg-white/[0.04]">
                 <div className="mb-6 font-display text-2xl font-extrabold leading-none tracking-[-0.04em] text-primary">
                   {e.num}
                 </div>
