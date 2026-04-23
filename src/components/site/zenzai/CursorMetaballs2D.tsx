@@ -17,7 +17,7 @@ const ANGULAR_DAMPING = 0.94;
 const CURSOR_STRENGTH = 1800;
 const CURSOR_MAX_FORCE = 2.4;
 
-export function CursorMetaballs() {
+export function CursorMetaballs2D() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef({ x: -9999, y: -9999, active: false });
