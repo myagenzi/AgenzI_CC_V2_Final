@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import CreativeCaaS from "./pages/what-we-do/CreativeCaaS.tsx";
+import MarketingMaaS from "./pages/what-we-do/MarketingMaaS.tsx";
 import ComingSoon from "./pages/what-we-do/ComingSoon.tsx";
 
 const queryClient = new QueryClient();
@@ -19,10 +20,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/what-we-do/creative-caas" element={<CreativeCaaS />} />
-          <Route
-            path="/what-we-do/marketing-maas"
-            element={<ComingSoon title="Marketing — MaaS" eyebrow="02 / Marketing as a Service" />}
-          />
+          <Route path="/what-we-do/marketing-maas" element={<MarketingMaaS />} />
           <Route
             path="/what-we-do/intelligence-zenzai"
             element={<ComingSoon title="Intelligence — Zenzai" eyebrow="03 / Intelligence as a Service" />}

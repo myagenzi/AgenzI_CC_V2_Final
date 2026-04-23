@@ -143,9 +143,9 @@ export default function CreativeCaaS() {
   }, []);
 
   return (
-    <div className="surface-mono min-h-screen">
+    <div className="min-h-screen">
       <Header />
-      <LeftRail />
+      <LeftRail currentEngine="Creative — CaaS" />
 
       <CursorPortal thumbs={thumbs}>
         <main className="md:pl-[88px]">
