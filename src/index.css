@@ -346,5 +346,15 @@
 }
 .surface-mono .text-electric { color: hsl(var(--electric)); }
 .surface-mono .bg-electric { background-color: hsl(var(--electric)); }
+.surface-mono .border-electric { border-color: hsl(var(--electric)); }
 .surface-mono .hover-electric:hover { color: hsl(var(--electric)); }
+
+/* Accordion row hover for mono surface */
+.surface-mono .acc-row { transition: background-color 280ms ease; }
+.surface-mono .acc-row:hover { background-color: hsl(var(--foreground) / 0.025); }
+
+/* Tag pills (mono) */
+.surface-mono .tag-price { box-shadow: inset 0 0 0 1px hsl(var(--electric) / 0.5); }
+.surface-mono .tag-market { box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.25); }
+.surface-mono .tag-audience { box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.15); }
 
