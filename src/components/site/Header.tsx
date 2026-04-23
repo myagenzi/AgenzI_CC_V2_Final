@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const whatWeDo = [
-  { label: "Creative — CaaS", href: "/what-we-do/creative-caas", desc: "Creative as a Service" },
-  { label: "Marketing — MaaS", href: "/what-we-do/marketing-maas", desc: "Marketing as a Service" },
-  { label: "Intelligence — Zenzai", href: "/what-we-do/intelligence-zenzai", desc: "Intelligence as a Service" },
+  { glyph: "✦", label: "CaaS", desc: "Creative as a Service", href: "/what-we-do/creative-caas" },
+  { glyph: "◈", label: "MaaS", desc: "Marketing as a Service", href: "/what-we-do/marketing-maas" },
+  { glyph: "⬡", label: "Zenzai", desc: "AI · Automation · Tech", href: "/what-we-do/intelligence-zenzai" },
 ];
 
 const otherLinks = [
@@ -67,10 +67,15 @@ export function Header() {
                   <DropdownMenuItem key={item.href} asChild>
                     <Link
                       to={item.href}
-                      className="flex flex-col items-start gap-0.5 rounded-xl px-3 py-3 focus:bg-white/5"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 focus:bg-white/5"
                     >
-                      <span className="text-[13px] font-semibold text-foreground">{item.label}</span>
-                      <span className="text-[11px] text-foreground/55">{item.desc}</span>
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-base text-foreground/85">
+                        {item.glyph}
+                      </span>
+                      <span className="flex flex-col">
+                        <span className="text-[13px] font-semibold text-foreground">{item.label}</span>
+                        <span className="text-[11px] text-foreground/55">{item.desc}</span>
+                      </span>
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -136,9 +141,15 @@ export function Header() {
                 key={item.href}
                 to={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="py-2 font-display text-lg text-foreground/70 hover:text-foreground"
+                className="flex items-center gap-3 py-2 font-display text-lg text-foreground/70 hover:text-foreground"
               >
-                {item.label}
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-sm">
+                  {item.glyph}
+                </span>
+                <span>
+                  {item.label}
+                  <span className="ml-2 text-[11px] font-normal text-foreground/45">{item.desc}</span>
+                </span>
               </Link>
             ))}
           </div>
