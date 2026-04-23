@@ -22,8 +22,7 @@ export function MarqueeStatement({ words }: Props) {
     };
     lenis.on("scroll", onScroll);
     return () => {
-      // @ts-expect-error lenis types accept callback removal
-      lenis.off?.("scroll", onScroll);
+      (lenis as unknown as { off?: (e: string, cb: unknown) => void }).off?.("scroll", onScroll);
     };
   }, [lenis]);
 
