@@ -688,3 +688,25 @@
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 85%);
 }
+
+/* ---------- Lavender MaaS additions ---------- */
+.surface-lavender .lav-row-active {
+  background: linear-gradient(90deg, hsl(var(--lav-purple)), hsl(var(--lav-magenta)) 60%, hsl(var(--lav-pink)));
+  color: #fff;
+}
+.surface-lavender .lav-num-outline {
+  -webkit-text-stroke: 1.5px hsl(var(--lav-purple) / 0.55);
+  color: transparent;
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.85;
+}
+.surface-lavender .lav-ghost-text {
+  -webkit-text-stroke: 1.5px hsl(var(--lav-purple) / 0.35);
+  color: transparent;
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
