@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo-horizontal.png";
@@ -24,15 +24,30 @@ const otherLinks = [
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileWWDOpen, setMobileWWDOpen] = useState(false);
+  const lastY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 8);
+      if (mobileOpen) {
+        setHidden(false);
+      } else if (y < 8) {
+        setHidden(false);
+      } else if (y > lastY.current && y > 80) {
+        setHidden(true);
+      } else if (y < lastY.current) {
+        setHidden(false);
+      }
+      lastY.current = y;
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [mobileOpen]);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -41,15 +56,20 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-6 lg:pt-10">
+      <header
+        className={cn(
+          "fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-6 lg:pt-10 transition-transform duration-300 ease-out",
+          hidden && "-translate-y-[140%]",
+        )}
+      >
         <div
           className={cn(
-            "glass flex w-full max-w-[1100px] items-center justify-between gap-4 rounded-full px-3 py-2 pl-5 transition-all",
-            scrolled && "shadow-[0_8px_32px_hsl(0_0%_0%/0.35)]",
+            "flex w-full max-w-[1100px] items-center justify-between gap-4 rounded-full border border-white/60 bg-white/55 px-3 py-2 pl-4 backdrop-blur-xl backdrop-saturate-150 transition-all",
+            scrolled && "shadow-[0_8px_32px_rgba(76,42,153,0.14)]",
           )}
         >
           <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="AgenzI home">
-            <img src={logo} alt="AgenzI" className="h-9 w-auto md:h-11" />
+            <img src={logo} alt="AgenzI" className="h-11 w-auto md:h-14" />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
