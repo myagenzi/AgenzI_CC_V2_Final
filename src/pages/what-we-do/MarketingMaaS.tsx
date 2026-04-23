@@ -9,6 +9,7 @@ import { CtaStripe } from "@/components/site/caas/CtaStripe";
 import { MaasHero } from "@/components/site/maas/MaasHero";
 import { SystemsManifesto } from "@/components/site/maas/SystemsManifesto";
 import { SystemBlock } from "@/components/site/maas/SystemBlock";
+import { ClientWall } from "@/components/site/maas/ClientWall";
 import type { ServiceItem } from "@/components/site/caas/ServiceAccordion";
 
 const performance: ServiceItem[] = [
@@ -131,6 +132,8 @@ export default function MarketingMaaS() {
           <SystemBlock
             first
             eyebrow="System 01 · Performance"
+            mediaLabel="Performance reel"
+            metaLine="Performance · Attribution · Paid Media · 04 services"
             headline={
               <>
                 Stop paying for eyeballs.
@@ -143,6 +146,8 @@ export default function MarketingMaaS() {
 
           <SystemBlock
             eyebrow="System 02 · Growth"
+            mediaLabel="Growth pipeline"
+            metaLine="SEO · Email · CRO · Referral · 04 services"
             headline={
               <>
                 A lead list is not a pipeline.
@@ -155,6 +160,8 @@ export default function MarketingMaaS() {
 
           <SystemBlock
             eyebrow="System 03 · Perception"
+            mediaLabel="Perception case study"
+            metaLine="Brand · PR · Personal Brand · Reputation · 04 services"
             headline={
               <>
                 Your market already has
@@ -166,6 +173,8 @@ export default function MarketingMaaS() {
             }
             items={perception}
           />
+
+          <ClientWall />
 
           <CtaStripe
             headline={

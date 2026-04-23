@@ -3,19 +3,16 @@ import { Reveal } from "@/components/site/Reveal";
 const systems = [
   {
     n: "01",
-    glyph: "◎",
     title: "Performance",
     desc: "Every rupee traced to a customer. Paid search, paid social, AI-optimised bidding. Revenue attribution first.",
   },
   {
     n: "02",
-    glyph: "⟳",
     title: "Growth Systems",
     desc: "SEO, email, lead gen, CRO. A pipeline that fills itself. Your happiest customers become your best salespeople.",
   },
   {
     n: "03",
-    glyph: "◐",
     title: "Perception",
     desc: "Your market forms an opinion before they talk to you. We control that opinion — brand strategy, PR, positioning.",
   },
@@ -38,29 +35,21 @@ export function SystemsManifesto() {
         </h2>
       </Reveal>
 
-      <div className="mt-16 border-t border-foreground/[0.08]">
+      <div className="mt-16">
         {systems.map((s, i) => (
           <Reveal key={s.n} delay={(i + 1) as 1 | 2 | 3}>
             <div className="manifesto-row grid grid-cols-12 items-start gap-6">
-              <div className="col-span-12 md:col-span-3">
+              <div className="col-span-12 md:col-span-2">
                 <div className="num-display">.{s.n}</div>
               </div>
-              <div className="col-span-12 md:col-span-2">
-                <div
-                  className="font-display text-5xl text-foreground/60"
-                  aria-hidden
-                >
-                  {s.glyph}
-                </div>
-              </div>
-              <div className="col-span-12 md:col-span-7">
+              <div className="col-span-12 md:col-span-9 md:col-start-4">
                 <h3
                   className="font-display font-bold uppercase leading-[1] tracking-[-0.025em]"
                   style={{ fontSize: "clamp(28px, 3.6vw, 56px)" }}
                 >
                   {s.title}
                 </h3>
-                <p className="mt-4 max-w-xl text-base leading-relaxed text-foreground/70 md:text-lg">
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground/70 md:text-lg">
                   {s.desc}
                 </p>
               </div>
