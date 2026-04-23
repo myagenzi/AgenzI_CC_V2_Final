@@ -9,6 +9,7 @@ import { WhyGrid } from "@/components/site/caas/WhyGrid";
 import { DeliveryTabs } from "@/components/site/caas/DeliveryTabs";
 import { ServiceAccordion, type ServiceItem } from "@/components/site/caas/ServiceAccordion";
 import { Reveal } from "@/components/site/Reveal";
+import { CtaStripe } from "@/components/site/caas/CtaStripe";
 import { Link } from "react-router-dom";
 
 const phase1: ServiceItem[] = [
@@ -192,39 +193,19 @@ export default function CreativeCaaS() {
             </Reveal>
           </section>
 
-          {/* CTA Strip */}
-          <section className="border-t border-white/10 px-6 py-24 md:px-16 md:py-36">
-            <Reveal>
-              <h2
-                className="font-display font-bold uppercase leading-[0.95] tracking-[-0.035em]"
-                style={{ fontSize: "clamp(36px, 6.5vw, 104px)" }}
-              >
+          <CtaStripe
+            headline={
+              <>
                 Traditional agency: ₹20k–1.5L/month.
                 <br />
                 CaaS starts at ₹2,999/month.
                 <br />
                 <span className="text-electric">Same output. Faster. No chaos.</span>
-              </h2>
-              <p className="mt-6 max-w-xl text-base text-foreground/60">
-                Not a discount. A different cost structure entirely.
-              </p>
-
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-                <a
-                  href="/#contact"
-                  className="cta-glow inline-flex items-center gap-3 rounded-full bg-foreground px-8 py-4 text-sm font-semibold text-background transition hover:bg-electric hover:text-foreground"
-                >
-                  Book Free Audit <span aria-hidden>→</span>
-                </a>
-                <a
-                  href="/#pricing"
-                  className="story-link font-mono-tech text-xs uppercase tracking-[0.25em] text-foreground/70 hover:text-foreground"
-                >
-                  Full pricing →
-                </a>
-              </div>
-            </Reveal>
-          </section>
+              </>
+            }
+            sub="Not a discount. A different cost structure entirely."
+            secondaryLabel="Full pricing →"
+          />
 
           {/* Footer ribbon */}
           <section className="border-t border-white/10 px-6 py-10 md:px-16">
