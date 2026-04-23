@@ -1,74 +1,99 @@
 
 
-## Audit + Realignment Plan
+# Zenzai — Reference-Grade Rebuild
 
-Two-part fix: (A) finish the Zenzai structural realignment from the previous plan and strip sections that aren't in base content, (B) audit CaaS, MaaS, and Home for the same class of issues (broken physics, hsla canvas crash risk, sticky-label collisions, mosaic gaps, invented content).
-
----
-
-## Part A — Zenzai (`/what-we-do/intelligence-zenzai`)
-
-### A1. Kill the runtime crash (BLOCKER)
-`CursorMetaballs.tsx` passes CSS variables (`35 84% 67%`) to canvas via legacy `hsla()` → SyntaxError, hero never renders.
-- Replace `hsla(${gold}, 1)` → `hsl(${gold} / 1)` (modern syntax canvas accepts) for all 3 stops.
-- Add a hard fallback if `getPropertyValue` returns empty.
-- Lift `.debug-panel` z-index above the hero gradient overlay.
-
-### A2. Remove sections that aren't in base content
-Base `#pg-zenzai` has only: Hero → Three Layers cards → Layer 01/02/03 accordions → CTA. The `ProjectsRail` and `TopicsRow` we added are invented placeholders the user no longer wants on-page.
-- Delete `ProjectsRail.tsx` and `TopicsRow.tsx`.
-- Remove their imports/usages from `IntelligenceZenzai.tsx`.
-- Page becomes: Hero → Marquee → ZenzaiAbout → LayerServices → CtaStripe → footer ribbon.
-
-### A3. Visual fixes
-- `index.css` `.metaball-canvas`: `mix-blend-mode: screen` → `normal`; `contrast(22)` → `contrast(18)` so gold/royal reads instead of going grey.
-- `ZenzaiHero.tsx`: soften overlay `from-background/40 via-background/30` → `from-transparent via-background/15`.
-- `ZenzaiAbout.tsx`: move mosaic offsets (`md:mt-16`, `md:mt-8`) from the Reveal wrapper onto the inner `<article>` so reveal-translate doesn't clip on first paint.
-- `LayerServices.tsx`: sticky label `top-28` → `top-24`, add `md:ml-2` to clear LeftRail at 1106px.
-- `CtaStripe.tsx`: copy already says "actually costing you" — verify, no change if correct.
+Direction: **cellinteractive.jp = motion + layout grammar**, **base HTML = content source**. Goal is mercury-liquid metaballs, scrubbed scroll choreography, pinned asymmetric layouts — at the fidelity of the reference, not a CSS approximation.
 
 ---
 
-## Part B — Cross-page audit (CaaS, MaaS, Home)
+## New dependencies (greenlight required, all small + battle-tested)
 
-### B1. CaaS (`/what-we-do/creative-caas`)
-- Verify no `hsla(${var})` canvas usage in any CaaS component (CursorMetaballs is Zenzai-only, but double-check `CursorPortal` and `CaasHero`).
-- Check `LeftRail` collision with any sticky elements at 1106px.
-- Verify all section copy still maps to `base/_unpacked/index.html#pg-caas`. Any invented sections get the same treatment as Zenzai (flagged for removal, asked before deleting if ambiguous).
+| Lib | Size | Used for |
+|---|---|---|
+| `gsap` + `ScrollTrigger` | ~70KB | Pinned sections, scrubbed reveals, timeline sequencing |
+| `@studio-freight/lenis` | ~5KB | Smooth scroll (drives ScrollTrigger) |
+| `ogl` | ~30KB | Real WebGL fragment-shader metaballs |
 
-### B2. MaaS (`/what-we-do/marketing-maas`)
-- Same canvas/hsla check.
-- `SystemBlock` sticky-label / `LeftRail` clearance at md.
-- Verify section list against `base/_unpacked/index.html#pg-maas`. The earlier MaaS rebuild used reference grammar — confirm no orphan placeholder sections remain.
-- `ClientWall` order in page tree.
+No three.js, no GSAP paid plugins. Pure runtime, no build changes.
 
-### B3. Home (`/`)
-- `Hero.tsx` halo / Mirror / FinalCta — confirm no canvas crash path.
-- Verify shared `CtaStripe` copy doesn't regress on any page.
-- No structural changes unless an actual bug surfaces.
+---
 
-### B4. Shared components
-- `CtaStripe`, `MarqueeStatement`, `Reveal`, `MediaPlaceholder`, `LeftRail` — confirm a single fix here doesn't break consumers.
-- `Header` mobile drawer + LeftRail — confirm both render together cleanly on every page at 1106px and 390px.
+## Section-by-section build
+
+### 1. Hero — WebGL fragment-shader metaballs (replaces canvas hack)
+
+**New:** `src/components/site/zenzai/MetaballsGL.tsx`
+- OGL `Renderer` + full-viewport quad with a fragment shader.
+- Shader: signed-distance-field merge of N metaballs (5–7), cursor as an additional charge, smooth-min for liquid merge, gradient sampled `--gold → --royal → transparent` at the iso-surface.
+- Cursor input from JS uniform (normalized + lerped for smoothness).
+- Scroll uniform (0→1) drives a slow internal warp so the field "breathes" as you scroll past.
+- WebGPU/WebGL detect: `if (!gl)` → falls back to existing `CursorMetaballs` 2D canvas → static halo for `prefers-reduced-motion`.
+- Debug overlay kept (gold/royal mono panel) but values now read from shader uniforms (cursor pos, blob count, merge factor, scroll t).
+
+`ZenzaiHero.tsx`:
+- Headline gets **per-line scrubbed reveal** (GSAP `ScrollTrigger` with `scrub: true`) instead of one-shot timeout. Each line drifts in with mass-weighted easing; second clause (gold) lags 200ms.
+- Hero pin: section pins for ~80vh of scroll while the metaballs warp + headline settles, then releases. Mirrors cellinteractive's hero pin.
+- Eyebrow row gets a hairline that **draws left→right** during pin, then sub-paragraph + CTA row fade in.
+
+### 2. Marquee — kept, but tied to scroll velocity
+
+`MarqueeStatement` already exists. Wrap with a Lenis velocity reader so marquee speed reacts to scroll velocity (faster scroll = faster drift, idle = slow). Cellinteractive does this on their word ribbons.
+
+### 3. Three Layers — true asymmetric mosaic with scrubbed parallax
+
+`ZenzaiAbout.tsx` rewrite:
+- 12-col grid: card 1 `col-span-5 row-start-1`, card 2 `col-span-4 col-start-7 row-start-1 mt-32`, card 3 `col-span-6 col-start-4 row-start-2 -mt-16`. Real overlap, intentional negative space.
+- Each card's media block parallaxes at a different rate (`y: -40 to 40` via ScrollTrigger scrub) — cards drift past each other as you scroll.
+- Glyph (⚡/⟳/◈) becomes oversized SVG that **rotates slowly with scroll** (continuous, not on-trigger).
+- Card hover: media tile scales 1.03, gold hairline draws across bottom, copy lifts 4px. All transform-based, 60fps.
+
+### 4. Layer Services — sticky-label vertical scroll choreography
+
+`LayerServices.tsx` refine:
+- Each `Layer` becomes a **pinned section** (~120vh): the sticky vertical label stays locked while the eyebrow → headline → keyword strip → accordion sequence reveals top-down with scrubbed timeline.
+- Keyword strip animates as a **horizontal char-by-char reveal** (split text, GSAP stagger) tied to scroll progress 0.2→0.5.
+- Accordion items fade up one-at-a-time as scroll passes, not all at once.
+- Sticky label gains a thin progress bar (vertical line that fills as you scroll the layer) — the "engineered build log" feel from the reference.
+
+### 5. CTA stripe — scrubbed reveal with letter-mass settle
+
+`CtaStripe` (Zenzai instance only): headline split into characters, each letter drops in with random y-offset 20→0 driven by scroll, settles into baseline. Gold clause lights up last. Subcopy + buttons fade in after 70% reveal.
+
+### 6. Footer ribbon — kept as-is.
+
+---
+
+## Shared infrastructure additions
+
+**New:** `src/lib/lenis.tsx` — Lenis provider + ScrollTrigger sync. Mounted once in `IntelligenceZenzai.tsx` for now (not global, so CaaS/MaaS/Home stay untouched).
+
+**New:** `src/lib/scroll.ts` — small wrapper exposing `useScrollTrigger(ref, options)` hook so components stay clean.
+
+**Cleanup:** Old `CursorMetaballs.tsx` becomes `CursorMetaballs2D.tsx` (kept as fallback path, no longer the primary).
 
 ---
 
 ## Files Touched
 
-| File | Change |
+| File | Action |
 |---|---|
-| `src/components/site/zenzai/CursorMetaballs.tsx` | Fix `hsla → hsl(... / a)` (kills crash); debug-panel z-index |
-| `src/components/site/zenzai/ProjectsRail.tsx` | DELETE (not in base) |
-| `src/components/site/zenzai/TopicsRow.tsx` | DELETE (not in base) |
-| `src/components/site/zenzai/ZenzaiHero.tsx` | Soften gradient overlay |
-| `src/components/site/zenzai/ZenzaiAbout.tsx` | Move mosaic offsets onto `<article>` |
-| `src/components/site/zenzai/LayerServices.tsx` | Sticky-label top + LeftRail clearance |
-| `src/pages/what-we-do/IntelligenceZenzai.tsx` | Remove ProjectsRail + TopicsRow; clean imports |
-| `src/index.css` | `.metaball-canvas` blend/contrast; `.debug-panel` z-index |
-| CaaS / MaaS / Home files | Read-only audit first; only edit if a real bug or base-content mismatch is found (will list specifics in commit) |
+| `package.json` | Add `gsap`, `@studio-freight/lenis`, `ogl` |
+| `src/lib/lenis.tsx` | NEW — Lenis provider + ScrollTrigger bridge |
+| `src/lib/scroll.ts` | NEW — `useScrollTrigger` hook |
+| `src/components/site/zenzai/MetaballsGL.tsx` | NEW — OGL fragment-shader metaballs + debug uniforms |
+| `src/components/site/zenzai/CursorMetaballs.tsx` | Renamed → `CursorMetaballs2D.tsx`, kept as fallback |
+| `src/components/site/zenzai/ZenzaiHero.tsx` | Per-line scrubbed reveal, hero pin, MetaballsGL swap |
+| `src/components/site/zenzai/ZenzaiAbout.tsx` | True asymmetric 12-col mosaic, scrubbed parallax, glyph scroll-rotate |
+| `src/components/site/zenzai/LayerServices.tsx` | Pinned layers, scrubbed timeline, keyword char-stagger, sticky progress bar |
+| `src/components/site/caas/CtaStripe.tsx` | Optional `scrub` prop for Zenzai instance only (others untouched) |
+| `src/components/site/caas/MarqueeStatement.tsx` | Read Lenis velocity, no-op if no provider (CaaS/MaaS unaffected) |
+| `src/pages/what-we-do/IntelligenceZenzai.tsx` | Wrap with `LenisProvider`, pass `scrub` to `CtaStripe` |
+| `src/index.css` | `.metaball-gl` canvas styles, `.layer-progress` sticky bar, mosaic parallax helpers |
 
 ## Out of Scope
-- New components, new dependencies, new content
-- Real images / project artwork (placeholders stay where used)
-- Any rewrite of base HTML content
+
+- Real project artwork (placeholders stay)
+- CaaS / MaaS / Home (this plan is Zenzai-only; same toolkit applied to those after Zenzai is signed off)
+- Custom cursor system, page transitions, magnetic buttons (next pass)
+- Font swap (separate decision)
 
