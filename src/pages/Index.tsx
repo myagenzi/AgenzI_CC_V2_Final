@@ -3,7 +3,7 @@ import { Footer } from "@/components/site/Footer";
 import { Hero } from "@/components/site/home/Hero";
 import { StatPanel } from "@/components/site/home/StatPanel";
 import { Stats } from "@/components/site/home/Stats";
-import { ThreeEngines } from "@/components/site/home/ThreeEngines";
+import { EnginesStack } from "@/components/site/home/EnginesStack";
 import { Problem } from "@/components/site/home/Problem";
 import { Mirror } from "@/components/site/home/Mirror";
 import { HowItWorks } from "@/components/site/home/HowItWorks";
@@ -19,7 +19,7 @@ const Index = () => {
         <Hero />
         <StatPanel />
         <Stats />
-        <ThreeEngines />
+        <EnginesStack />
         <Problem />
         <Mirror />
         <HowItWorks />
