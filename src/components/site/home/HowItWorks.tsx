@@ -78,7 +78,7 @@ export function HowItWorks() {
                   ))}
                 </ul>
                 {s.foot && <p className="mt-auto text-[12px] italic text-muted-foreground">{s.foot}</p>}
-              </div>
+              </article>
             </Reveal>
           ))}
         </div>
