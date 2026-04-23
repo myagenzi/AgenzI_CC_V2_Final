@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState, type ReactNode, type ElementType } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type RevealProps = {
-  as?: ElementType;
   className?: string;
   delay?: 0 | 1 | 2 | 3 | 4;
   children: ReactNode;
@@ -10,9 +9,10 @@ type RevealProps = {
 
 /**
  * Fades + slides in once when scrolled into view. Honors reduced motion.
+ * Always renders a <div> wrapper to guarantee a stable DOM ref target.
  */
-export function Reveal({ as: Tag = "div", className, delay = 0, children }: RevealProps) {
-  const ref = useRef<HTMLElement | null>(null);
+export function Reveal({ className, delay = 0, children }: RevealProps) {
+  const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -42,8 +42,8 @@ export function Reveal({ as: Tag = "div", className, delay = 0, children }: Reve
 
   const delayCls = delay ? `reveal-d${delay}` : "";
   return (
-    <Tag ref={ref as never} className={cn("reveal", delayCls, visible && "is-visible", className)}>
+    <div ref={ref} className={cn("reveal", delayCls, visible && "is-visible", className)}>
       {children}
-    </Tag>
+    </div>
   );
 }
