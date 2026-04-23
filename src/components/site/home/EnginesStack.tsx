@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Reveal } from "@/components/site/Reveal";
 import { EngineCard, type EngineData } from "./EngineCard";
 import { cn } from "@/lib/utils";
@@ -50,70 +50,76 @@ const engines: EngineData[] = [
   },
 ];
 
-// Per-card animation ranges across full section progress (0..1)
-// Each non-first card: enter, hold, exit. Last card holds until end (no exit).
-const ranges: Array<{ inStart: number; inEnd: number; outStart: number; outEnd: number }> = [
-  { inStart: 0,     inEnd: 0.001, outStart: 0.28, outEnd: 0.36 },
-  { inStart: 0.28,  inEnd: 0.36,  outStart: 0.60, outEnd: 0.68 },
-  { inStart: 0.60,  inEnd: 0.68,  outStart: 0.999, outEnd: 1 },
-];
-
-function StackedCard({
+function StickyEngine({
   data,
   index,
-  progress,
+  total,
+  onActive,
 }: {
   data: EngineData;
   index: number;
-  progress: MotionValue<number>;
+  total: number;
+  onActive: (i: number) => void;
 }) {
-  const r = ranges[index];
-  const y = useTransform(
-    progress,
-    [r.inStart, r.inEnd, r.outStart, r.outEnd],
-    index === 0 ? [0, 0, 0, -40] : [600, 0, 0, -40],
-  );
-  const scale = useTransform(
-    progress,
-    [r.inStart, r.inEnd, r.outStart, r.outEnd],
-    index === 0 ? [1, 1, 1, 0.94] : [0.96, 1, 1, 0.94],
-  );
-  const opacity = useTransform(
-    progress,
-    [r.inStart, r.inEnd, r.outStart, r.outEnd],
-    index === 0 ? [1, 1, 1, 0.5] : [0, 1, 1, 0.5],
-  );
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isLast = index === total - 1;
+
+  // Per-card scroll progress over its own scroll spacer.
+  const { scrollYProgress } = useScroll({
+    target: wrapRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Last card never fades — it stays as the final resting state.
+  const scale = useTransform(scrollYProgress, [0, 1], isLast ? [1, 1] : [1, 0.92]);
+  const opacity = useTransform(scrollYProgress, [0, 0.85, 1], isLast ? [1, 1, 1] : [1, 0.6, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], isLast ? [0, 0] : [0, -40]);
+
+  // Active-index detection via IntersectionObserver on the sticky card.
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            onActive(index);
+          }
+        }
+      },
+      { threshold: [0.5, 0.75, 0.95], rootMargin: "-15% 0px -15% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [index, onActive]);
 
   return (
-    <motion.div
-      style={{ y, scale, opacity, zIndex: 10 + index }}
-      className="absolute inset-0 flex items-center justify-center px-4 md:px-8"
+    <div
+      ref={wrapRef}
+      className="relative"
+      style={{ height: isLast ? "110vh" : "150vh", zIndex: 10 + index }}
     >
-      <div className="w-full max-w-[1180px]">
-        <EngineCard data={data} />
+      <div className="sticky top-[12vh] flex items-start justify-center px-4 md:px-8">
+        <motion.div
+          ref={cardRef}
+          style={{ scale, opacity, y }}
+          className="w-full max-w-[1180px]"
+        >
+          <EngineCard data={data} />
+        </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 export function EnginesStack() {
-  const sectionRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-
-  // Active card index for counter / dots — aligned with the ranges above
-  const activeIndex = useTransform(scrollYProgress, (v) => {
-    if (v < 0.32) return 0;
-    if (v < 0.64) return 1;
-    return 2;
-  });
+  const [active, setActive] = useState(0);
 
   if (reduced) {
     return (
-      <section className="px-6 py-24 lg:px-12 lg:py-32">
+      <section id="three-engines" className="px-6 py-24 lg:px-12 lg:py-32">
         <Header />
         <div className="mx-auto mt-12 grid max-w-[1180px] gap-6">
           {engines.map((e) => (
@@ -126,8 +132,8 @@ export function EnginesStack() {
 
   return (
     <>
-      {/* Mobile: simple stacked list, no pin */}
-      <section className="px-6 py-20 lg:hidden">
+      {/* Mobile: simple stacked list */}
+      <section id="three-engines" className="px-6 py-20 lg:hidden">
         <Header />
         <div className="mx-auto mt-10 grid max-w-[680px] gap-6">
           {engines.map((e) => (
@@ -136,32 +142,39 @@ export function EnginesStack() {
         </div>
       </section>
 
-      {/* Desktop: pinned scrub stack */}
-      <section
-        id="three-engines"
-        ref={sectionRef}
-        className="relative hidden lg:block"
-        style={{ height: "400vh" }}
-      >
-        <div className="sticky top-0 h-screen w-full overflow-hidden">
-          <div className="flex h-full flex-col">
-            {/* Heading */}
-            <div className="px-6 pt-20 lg:px-12 lg:pt-24">
-              <Header />
-            </div>
+      {/* Desktop: per-card sticky stack */}
+      <section className="relative hidden lg:block">
+        <div className="px-6 pb-12 pt-20 lg:px-12 lg:pt-24">
+          <Header />
+        </div>
 
-            {/* Stack */}
-            <div className="relative flex-1">
-              {engines.map((e, i) => (
-                <StackedCard key={e.name} data={e} index={i} progress={scrollYProgress} />
-              ))}
-            </div>
+        <div className="relative">
+          {engines.map((e, i) => (
+            <StickyEngine
+              key={e.name}
+              data={e}
+              index={i}
+              total={engines.length}
+              onActive={setActive}
+            />
+          ))}
+        </div>
 
-            {/* Counter + dots */}
-            <div className="flex items-center justify-center gap-4 pb-10">
-              <Counter activeIndex={activeIndex} />
-              <Dots activeIndex={activeIndex} />
-            </div>
+        {/* Counter + dots */}
+        <div className="sticky bottom-6 z-50 flex items-center justify-center gap-4 pb-6">
+          <span className="font-mono-tech rounded-full bg-background/70 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-muted-foreground backdrop-blur">
+            {`0${active + 1} / 03`}
+          </span>
+          <div className="flex items-center gap-2 rounded-full bg-background/70 px-3 py-1.5 backdrop-blur">
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full bg-primary transition-all",
+                  active === i ? "scale-125 opacity-100" : "opacity-30",
+                )}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -186,35 +199,5 @@ function Header() {
         </h2>
       </Reveal>
     </div>
-  );
-}
-
-function Counter({ activeIndex }: { activeIndex: MotionValue<number> }) {
-  const display = useTransform(activeIndex, (i) => `0${i + 1} / 03`);
-  return (
-    <motion.span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-      {display}
-    </motion.span>
-  );
-}
-
-function Dots({ activeIndex }: { activeIndex: MotionValue<number> }) {
-  return (
-    <div className="flex items-center gap-2">
-      {[0, 1, 2].map((i) => (
-        <Dot key={i} i={i} activeIndex={activeIndex} />
-      ))}
-    </div>
-  );
-}
-
-function Dot({ i, activeIndex }: { i: number; activeIndex: MotionValue<number> }) {
-  const opacity = useTransform(activeIndex, (a) => (a === i ? 1 : 0.3));
-  const scale = useTransform(activeIndex, (a) => (a === i ? 1.2 : 1));
-  return (
-    <motion.span
-      style={{ opacity, scale }}
-      className={cn("h-1.5 w-1.5 rounded-full bg-primary")}
-    />
   );
 }

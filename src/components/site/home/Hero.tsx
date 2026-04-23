@@ -13,7 +13,7 @@ export function Hero() {
           <Reveal>
             <div className="glass-lavender mb-8 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[12px] text-foreground/75">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-[hsl(var(--lav-lilac))]" />
-              Human + AI · One System
+              Human + AI · One System · Built for Your Business
             </div>
           </Reveal>
 
@@ -28,8 +28,19 @@ export function Hero() {
           </Reveal>
 
           <Reveal delay={2}>
-            <p className="mt-7 max-w-xl text-[clamp(15px,1.5vw,18px)] leading-relaxed text-muted-foreground">
-              AgenzI replaces agencies, tools, and manual work with one intelligent system built for your business.
+            <p
+              className="mt-6 max-w-xl font-medium text-foreground/85"
+              style={{ fontSize: "clamp(17px, 1.7vw, 22px)", lineHeight: 1.4 }}
+            >
+              The question is — how long can you afford to stay where you are?
+            </p>
+          </Reveal>
+
+          <Reveal delay={2}>
+            <p className="mt-5 max-w-xl text-[clamp(15px,1.5vw,18px)] leading-relaxed text-muted-foreground">
+              While you're managing vendors, chasing updates, and juggling tools — they've already streamlined everything. AgenzI replaces agencies, tools, and manual work with{" "}
+              <span className="font-semibold text-foreground">one intelligent system</span>{" "}
+              built for your business.
             </p>
           </Reveal>
 
@@ -47,6 +58,26 @@ export function Hero() {
               >
                 See how it works <span aria-hidden>↓</span>
               </a>
+            </div>
+          </Reveal>
+
+          <Reveal delay={3}>
+            <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-foreground/10 pt-8 sm:grid-cols-4">
+              {[
+                { stat: "70%", label: "Lower cost than traditional agencies" },
+                { stat: "48h", label: "From brief to live creative" },
+                { stat: "3", label: "Services. One integrated system." },
+                { stat: "90D", label: "Performance guarantee in writing" },
+              ].map((s) => (
+                <div key={s.stat}>
+                  <div className="font-display text-[clamp(28px,3.2vw,40px)] font-extrabold leading-none tracking-tight text-foreground">
+                    {s.stat}
+                  </div>
+                  <div className="mt-2 text-[12px] leading-snug text-muted-foreground">
+                    {s.label}
+                  </div>
+                </div>
+              ))}
             </div>
           </Reveal>
         </div>
