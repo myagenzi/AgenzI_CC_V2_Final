@@ -691,7 +691,7 @@
 
 /* ---------- Lavender MaaS additions ---------- */
 .surface-lavender .lav-row-active {
-  background: linear-gradient(90deg, hsl(var(--lav-purple)), hsl(var(--lav-magenta)) 60%, hsl(var(--lav-pink)));
+  background: linear-gradient(90deg, hsl(var(--lav-purple)) 0%, hsl(var(--lav-magenta)) 55%, hsl(var(--lav-pink)) 100%);
   color: #fff;
 }
 .surface-lavender .lav-num-outline {

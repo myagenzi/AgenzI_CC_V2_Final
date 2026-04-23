@@ -39,12 +39,18 @@ export function MaasCategoryList() {
           {cats.map((c, i) => {
             const open = i === active;
             return (
-              <div key={c.n} className={cn("border-b border-border last:border-b-0")}>
+              <div
+                key={c.n}
+                className={cn(
+                  "border-b border-border last:border-b-0",
+                  open && "lav-row-active",
+                )}
+              >
                 <button
                   onClick={() => setActive(i)}
                   className={cn(
                     "group flex w-full items-center justify-between gap-6 px-6 py-6 text-left transition md:px-10 md:py-8",
-                    open ? "lav-row-active" : "hover:bg-muted",
+                    !open && "hover:bg-muted",
                   )}
                 >
                   <div className="flex items-center gap-6 md:gap-10">
@@ -85,7 +91,7 @@ export function MaasCategoryList() {
                     <p
                       className={cn(
                         "max-w-2xl px-6 pb-8 text-[15px] leading-relaxed md:px-10 md:pb-10 md:text-[17px]",
-                        open ? "lav-row-active text-white/90" : "text-muted-foreground",
+                        open ? "text-white/90" : "text-muted-foreground",
                       )}
                     >
                       {c.body}
