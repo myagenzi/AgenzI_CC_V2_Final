@@ -387,3 +387,37 @@
   background-color: hsl(var(--foreground) / 0.04);
 }
 
+/* Zenzai — metaballs canvas */
+.metaball-svg {
+  pointer-events: none;
+}
+
+/* Zenzai — three-layer cards */
+.layer-card {
+  transition: transform 360ms ease;
+}
+.layer-card:hover {
+  transform: translateY(-3px);
+}
+.layer-card:hover .media-ph {
+  border-color: hsl(var(--gold) / 0.55);
+}
+
+/* Zenzai — project mosaic tile */
+.project-tile {
+  transition: opacity 240ms ease;
+}
+.project-tile:hover {
+  opacity: 0.96;
+}
+
+/* Zenzai — topic card */
+.topic-card {
+  border-top: 1px solid hsl(var(--foreground) / 0);
+  padding-top: 0;
+  transition: border-color 240ms ease;
+}
+.topic-card:hover h3 {
+  color: hsl(var(--gold));
+}
+
