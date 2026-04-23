@@ -1,55 +1,61 @@
 
 
-# Hero copy sync + footer logo + fix engines stack animation
+# Make engine cards swipe over each other (deck-of-cards stack)
 
-Three changes in one pass.
+## What changes
 
-## 1. Restore homepage hero copy (`src/components/site/home/Hero.tsx`)
+Rewrite `src/components/site/home/EnginesStack.tsx` to use a single shared pinned stage so cards physically stack on top of one another as you scroll.
 
-- Eyebrow: `Human + AI · One System · Built for Your Business`
-- Add sub-headline between H1 and body: *"The question is — how long can you afford to stay where you are?"* (clamp 17–22px, muted-foreground/85, medium weight)
-- Expand body to: *"While you're managing vendors, chasing updates, and juggling tools — they've already streamlined everything. AgenzI replaces agencies, tools, and manual work with **one intelligent system** built for your business."*
-- Add stats strip below CTA row (4 cols desktop / 2 cols mobile, top border `border-foreground/10`):
-  - **70%** — Lower cost than traditional agencies
-  - **48h** — From brief to live creative
-  - **3** — Services. One integrated system.
-  - **90D** — Performance guarantee in writing
-- Keep CTA buttons, HeroTiles, lavender surface, and layout unchanged.
+## How it works
 
-## 2. Footer logo 4× (`src/components/site/Footer.tsx`)
+**Structure:**
+```text
+<section>            ← tall scroll container, height: ~300vh
+  <div sticky>       ← pinned viewport (h-screen, top-0)
+    <Card 1 />       ← z-10, always at rest position
+    <Card 2 />       ← z-20, starts translateY(110%), animates to 0
+    <Card 3 />       ← z-30, starts translateY(110%), animates to 0
+  </div>
+</section>
+```
 
-- `<img>` className: `h-6 w-auto opacity-80` → `h-24 w-auto opacity-80`
+**Animation:**
+- One `useScroll` on the outer section (`offset: ["start start", "end end"]`) → single `scrollYProgress` 0→1.
+- Card 1: static, no transform. Sits at the bottom of the z-stack as the base.
+- Card 2: `y` interpolates from `110%` → `0%` over progress range `[0.15, 0.45]`. Slides up over Card 1 and rests there.
+- Card 3: `y` interpolates from `110%` → `0%` over progress range `[0.55, 0.85]`. Slides up over Card 2 and rests there.
+- **No opacity changes. No scale changes.** Cards stay solid and full-size — they just get covered.
+- Final 15% of scroll = all three landed and held before the section unpins.
 
-## 3. Fix the engines stack animation (`src/components/site/home/EnginesStack.tsx`)
+**Why this matches the reference:**
+- Shared sticky stage means all 3 cards live in the same pinned frame for the entire scroll duration (no card "leaves" early).
+- Pure `translateY` on solid cards = the deck-of-cards covering effect.
+- Increasing `z-index` per card guarantees newer cards land on top.
 
-The current pinned-stack approach with `useTransform` on absolutely-positioned cards keeps producing fragile sequencing (Zenzai still not landing cleanly). Replace it with a simpler, deterministic pattern that's been battle-tested for this exact "stacked cards on scroll" effect:
+**Active index / counter:**
+- Derived from `scrollYProgress` via `useMotionValueEvent`:
+  - progress < 0.30 → active = 0
+  - 0.30 ≤ progress < 0.65 → active = 1
+  - progress ≥ 0.65 → active = 2
+- Counter + dots styling preserved as-is.
 
-**New approach — sticky cards in normal flow:**
-- Section becomes a vertical container (no fixed `400vh` + sticky viewport hack).
-- Each engine card wraps in a `sticky top-[12vh]` div with its own scroll spacer (`h-[100vh]`).
-- Cards naturally stack as the user scrolls: each new card slides up from below and lands on top of the previous one because each has a slightly higher `z-index` and its sticky position.
-- Apply a subtle Framer Motion fade/scale on the previous card using `useScroll` per-card with `target: cardRef, offset: ["start start", "end start"]` — fully scoped, no global progress range coordination.
-- Counter + dots driven by an `IntersectionObserver` on each card's sticky wrapper (whichever card's center is closest to viewport center wins).
+**Mobile (`<lg`):** unchanged — simple stacked list, no sticky/pin behavior.
 
-**Why this fixes it:**
-- No more globally-shared `scrollYProgress` ranges that have to be hand-tuned.
-- Each card owns its own enter/rest/exit lifecycle independently.
-- Zenzai naturally rests at the top until the section fully exits — guaranteed by sticky behavior, not interpolation math.
-- Removes the WAAPI/`useTransform` edge cases that caused the prior runtime errors.
-
-**Mobile (`<lg`)**: keep the existing simple stacked list (no sticky).
-
-**Preserved**: the `EngineCard` component, header copy, counter + dots styling, and overall section visual language.
+**Reduced motion:** unchanged — flat list of all three cards.
 
 ## Files to update
 
-- `src/components/site/home/Hero.tsx` — eyebrow, sub-headline, body, stats strip
-- `src/components/site/Footer.tsx` — logo `h-6` → `h-24`
-- `src/components/site/home/EnginesStack.tsx` — rewrite to sticky-per-card pattern, IntersectionObserver-driven active index
+- `src/components/site/home/EnginesStack.tsx` — replace per-card sticky pattern with single shared sticky stage + absolute-positioned cards using pure translateY.
+
+## Preserved
+
+- `EngineCard` component and all card content
+- Header copy ("One system. Three engines." + H2)
+- Counter + dots visual style
+- Mobile + reduced-motion fallbacks
 
 ## Out of scope
 
-- CaaS / MaaS / Zenzai page redesigns (waiting on screenshots)
-- Other homepage sections
-- EngineCard internals
+- CaaS / MaaS / Zenzai page updates (still waiting on screenshots)
+- Any card visual/content changes
 
