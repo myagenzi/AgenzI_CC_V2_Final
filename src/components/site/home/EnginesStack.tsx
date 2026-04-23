@@ -126,37 +126,47 @@ export function EnginesStack() {
   }
 
   return (
-    <section
-      id="three-engines"
-      ref={sectionRef}
-      className="relative"
-      style={{ height: "360vh" }}
-    >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div className="flex h-full flex-col">
-          {/* Heading */}
-          <div className="px-6 pt-20 lg:px-12 lg:pt-24">
-            <Header />
-          </div>
+    <>
+      {/* Mobile: simple stacked list, no pin */}
+      <section className="px-6 py-20 lg:hidden">
+        <Header />
+        <div className="mx-auto mt-10 grid max-w-[680px] gap-6">
+          {engines.map((e) => (
+            <EngineCard key={e.name} data={e} />
+          ))}
+        </div>
+      </section>
 
-          {/* Stack */}
-          <div className="relative flex-1">
-            {engines.map((e, i) => (
-              <StackedCard key={e.name} data={e} index={i} progress={scrollYProgress} />
-            ))}
-          </div>
+      {/* Desktop: pinned scrub stack */}
+      <section
+        id="three-engines"
+        ref={sectionRef}
+        className="relative hidden lg:block"
+        style={{ height: "400vh" }}
+      >
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          <div className="flex h-full flex-col">
+            {/* Heading */}
+            <div className="px-6 pt-20 lg:px-12 lg:pt-24">
+              <Header />
+            </div>
 
-          {/* Counter + dots */}
-          <div className="flex items-center justify-center gap-4 pb-10">
-            <Counter activeIndex={activeIndex} />
-            <Dots activeIndex={activeIndex} />
+            {/* Stack */}
+            <div className="relative flex-1">
+              {engines.map((e, i) => (
+                <StackedCard key={e.name} data={e} index={i} progress={scrollYProgress} />
+              ))}
+            </div>
+
+            {/* Counter + dots */}
+            <div className="flex items-center justify-center gap-4 pb-10">
+              <Counter activeIndex={activeIndex} />
+              <Dots activeIndex={activeIndex} />
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Mobile fallback (below lg, no pin) */}
-      <div className="lg:hidden absolute inset-0 -z-10" aria-hidden />
-    </section>
+      </section>
+    </>
   );
 }
 
