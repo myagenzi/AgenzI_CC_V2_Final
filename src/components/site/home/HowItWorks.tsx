@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/site/Reveal";
+import { HorizontalSteps } from "@/components/site/effects/HorizontalSteps";
 
 const steps = [
   {
@@ -28,9 +29,40 @@ const steps = [
   },
 ];
 
+function Step({ s }: { s: typeof steps[number] }) {
+  return (
+    <div className="grid h-full grid-cols-[auto_1fr] gap-8 sm:gap-12">
+      <div className="font-display text-6xl font-extrabold leading-none tracking-[-0.04em] text-primary sm:text-8xl">
+        {s.num}
+      </div>
+      <div>
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/40">
+          Step {s.num} — {s.badge}
+        </p>
+        <h3 className="mb-3 font-display text-[clamp(28px,3.6vw,44px)] font-extrabold tracking-[-0.02em] text-foreground">
+          {s.title}
+        </h3>
+        <p className="mb-4 text-[15px] font-medium text-foreground/70">{s.sub}</p>
+        <p className="mb-6 max-w-xl text-[14px] leading-relaxed text-foreground/55">{s.body}</p>
+        {s.pts && (
+          <ul className="mb-4 space-y-2">
+            {s.pts.map((p) => (
+              <li key={p} className="flex items-start gap-2.5 text-[13px] text-foreground/55">
+                <span className="text-primary">→</span>
+                {p}
+              </li>
+            ))}
+          </ul>
+        )}
+        {s.foot && <p className="text-[12px] italic text-foreground/40">{s.foot}</p>}
+      </div>
+    </div>
+  );
+}
+
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="px-6 py-32 lg:px-12 lg:py-48">
+    <section id="how-it-works" className="px-6 pt-32 lg:px-12 lg:pt-48">
       <div className="mx-auto max-w-[1100px]">
         <Reveal>
           <p className="mb-4 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
@@ -38,54 +70,28 @@ export function HowItWorks() {
           </p>
         </Reveal>
         <Reveal delay={1}>
-          <h2 className="mx-auto mb-6 max-w-3xl text-center font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground"
-              style={{ fontSize: "clamp(36px, 6vw, 68px)" }}>
+          <h2
+            className="mx-auto mb-6 max-w-3xl text-center font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground"
+            style={{ fontSize: "clamp(36px, 6vw, 68px)" }}
+          >
             We don't add more tools. We replace
             <br />
             the chaos with <em className="not-italic text-primary">one system.</em>
           </h2>
         </Reveal>
         <Reveal delay={2}>
-          <p className="mx-auto mb-24 max-w-2xl text-center text-[15px] leading-relaxed text-moondust">
+          <p className="mx-auto mb-16 max-w-2xl text-center text-[15px] leading-relaxed text-moondust">
             Most agencies give you advice. We install a system that runs your business — Creative, Marketing, and Automation, powered by Human Strategy and AI Execution working as one.
           </p>
         </Reveal>
-
-        <ol className="mx-auto max-w-3xl space-y-20">
-          {steps.map((s, i) => (
-            <Reveal key={s.num} delay={(Math.min(i + 1, 4)) as 1 | 2 | 3 | 4} as="li" className="block">
-              <div className="grid grid-cols-[auto_1fr] gap-8 sm:gap-12">
-                <div className="font-display text-5xl font-extrabold leading-none tracking-[-0.04em] text-primary sm:text-6xl">
-                  {s.num}
-                </div>
-                <div>
-                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/40">
-                    Step {s.num} — {s.badge}
-                  </p>
-                  <h3 className="mb-3 font-display text-[clamp(24px,3.2vw,36px)] font-extrabold tracking-[-0.02em] text-foreground">
-                    {s.title}
-                  </h3>
-                  <p className="mb-4 text-[15px] font-medium text-foreground/70">{s.sub}</p>
-                  <p className="mb-6 max-w-xl text-[14px] leading-relaxed text-foreground/55">{s.body}</p>
-
-                  {s.pts && (
-                    <ul className="mb-4 space-y-2">
-                      {s.pts.map((p) => (
-                        <li key={p} className="flex items-start gap-2.5 text-[13px] text-foreground/55">
-                          <span className="text-primary">→</span>
-                          {p}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {s.foot && <p className="text-[12px] italic text-foreground/40">{s.foot}</p>}
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </ol>
       </div>
+
+      {/* Pinned horizontal scroll over steps */}
+      <HorizontalSteps>
+        {steps.map((s) => (
+          <Step key={s.num} s={s} />
+        ))}
+      </HorizontalSteps>
     </section>
   );
 }

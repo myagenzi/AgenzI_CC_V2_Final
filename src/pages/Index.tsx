@@ -10,25 +10,28 @@ import { HowItWorks } from "@/components/site/home/HowItWorks";
 import { Statement } from "@/components/site/home/Statement";
 import { ProofWebinar } from "@/components/site/home/ProofWebinar";
 import { FinalCta } from "@/components/site/home/FinalCta";
+import { LenisProvider } from "@/lib/lenis";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <main>
-        <Hero />
-        <Ticker />
-        <Stats />
-        <ThreeEngines />
-        <Problem />
-        <Mirror />
-        <HowItWorks />
-        <Statement />
-        <ProofWebinar />
-        <FinalCta />
-      </main>
-      <Footer />
-    </div>
+    <LenisProvider>
+      <div className="min-h-screen bg-background text-foreground">
+        <Header />
+        <main>
+          <Hero />
+          <Ticker />
+          <Stats />
+          <ThreeEngines />
+          <Problem />
+          <Mirror />
+          <HowItWorks />
+          <Statement />
+          <ProofWebinar />
+          <FinalCta />
+        </main>
+        <Footer />
+      </div>
+    </LenisProvider>
   );
 };
 
