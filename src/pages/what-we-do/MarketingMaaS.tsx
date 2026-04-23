@@ -11,6 +11,7 @@ import { SystemsManifesto } from "@/components/site/maas/SystemsManifesto";
 import { SystemBlock } from "@/components/site/maas/SystemBlock";
 import { ClientWall } from "@/components/site/maas/ClientWall";
 import type { ServiceItem } from "@/components/site/caas/ServiceAccordion";
+import { LenisProvider } from "@/lib/lenis";
 
 const performance: ServiceItem[] = [
   {
@@ -115,114 +116,120 @@ export default function MarketingMaaS() {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <Header />
-      <LeftRail currentEngine="Marketing — MaaS" />
+    <LenisProvider>
+      <div className="min-h-screen">
+        <Header />
+        <LeftRail currentEngine="Marketing — MaaS" />
 
-      <CursorPortal thumbs={thumbs}>
-        <main className="md:pl-[88px]" id="maas-svcs">
-          <MaasHero />
+        <CursorPortal thumbs={thumbs}>
+          <main className="md:pl-[88px]" id="maas-svcs">
+            <MaasHero />
 
-          <MarqueeStatement
-            words={["Revenue", "Pipeline", "Performance", "Perception", "Attribution"]}
-          />
+            <MarqueeStatement
+              words={["Revenue", "Pipeline", "Performance", "Perception", "Attribution"]}
+            />
 
-          <SystemsManifesto />
+            <SystemsManifesto />
 
-          <SystemBlock
-            first
-            eyebrow="System 01 · Performance"
-            mediaLabel="Performance reel"
-            metaLine="Performance · Attribution · Paid Media · 04 services"
-            headline={
-              <>
-                Stop paying for eyeballs.
-                <br />
-                Start paying for <span className="text-electric">customers.</span>
-              </>
-            }
-            items={performance}
-          />
+            <SystemBlock
+              first
+              eyebrow="System 01 · Performance"
+              systemNumber="01"
+              mediaLabel="Performance reel"
+              metaLine="Performance · Attribution · Paid Media · 04 services"
+              headline={
+                <>
+                  Stop paying for eyeballs.
+                  <br />
+                  Start paying for <span className="text-electric">customers.</span>
+                </>
+              }
+              items={performance}
+            />
 
-          <SystemBlock
-            eyebrow="System 02 · Growth"
-            mediaLabel="Growth pipeline"
-            metaLine="SEO · Email · CRO · Referral · 04 services"
-            headline={
-              <>
-                A lead list is not a pipeline.
-                <br />
-                A pipeline is a <span className="text-electric">system.</span>
-              </>
-            }
-            items={growth}
-          />
+            <SystemBlock
+              eyebrow="System 02 · Growth"
+              systemNumber="02"
+              mediaLabel="Growth pipeline"
+              metaLine="SEO · Email · CRO · Referral · 04 services"
+              headline={
+                <>
+                  A lead list is not a pipeline.
+                  <br />
+                  A pipeline is a <span className="text-electric">system.</span>
+                </>
+              }
+              items={growth}
+            />
 
-          <SystemBlock
-            eyebrow="System 03 · Perception"
-            mediaLabel="Perception case study"
-            metaLine="Brand · PR · Personal Brand · Reputation · 04 services"
-            headline={
-              <>
-                Your market already has
-                <br />
-                an opinion about you.
-                <br />
-                <span className="text-electric">We control it.</span>
-              </>
-            }
-            items={perception}
-          />
+            <SystemBlock
+              eyebrow="System 03 · Perception"
+              systemNumber="03"
+              mediaLabel="Perception case study"
+              metaLine="Brand · PR · Personal Brand · Reputation · 04 services"
+              headline={
+                <>
+                  Your market already has
+                  <br />
+                  an opinion about you.
+                  <br />
+                  <span className="text-electric">We control it.</span>
+                </>
+              }
+              items={perception}
+            />
 
-          <ClientWall />
+            <ClientWall />
 
-          <CtaStripe
-            headline={
-              <>
-                Your marketing budget is either
-                <br />
-                building your pipeline
-                <br />
-                <span className="text-electric">or leaking.</span>
-              </>
-            }
-            sub="30 minutes. We look at your current setup. You leave knowing exactly where the gaps are."
-          />
+            <CtaStripe
+              scrub
+              headlineText="Your marketing budget is either building your pipeline or leaking."
+              headline={
+                <>
+                  Your marketing budget is either
+                  <br />
+                  building your pipeline
+                  <br />
+                  <span className="text-electric">or leaking.</span>
+                </>
+              }
+              sub="30 minutes. We look at your current setup. You leave knowing exactly where the gaps are."
+            />
 
-          {/* Footer ribbon */}
-          <section className="border-t border-foreground/[0.08] px-6 py-10 md:px-16">
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
-                © 2026 AgenzI · MaaS
-              </span>
-              <div className="flex flex-wrap gap-6">
-                <Link
-                  to="/what-we-do/creative-caas"
-                  className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
-                >
-                  CaaS →
-                </Link>
-                <Link
-                  to="/what-we-do/intelligence-zenzai"
-                  className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
-                >
-                  Zenzai →
-                </Link>
-                <a
-                  href="/#pricing"
-                  className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
-                >
-                  Pricing →
-                </a>
+            <section className="border-t border-foreground/[0.08] px-6 py-10 md:px-16">
+              <div className="flex flex-wrap items-center justify-between gap-6">
+                <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
+                  © 2026 AgenzI · MaaS
+                </span>
+                <div className="flex flex-wrap gap-6">
+                  <Link
+                    to="/what-we-do/creative-caas"
+                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+                  >
+                    CaaS →
+                  </Link>
+                  <Link
+                    to="/what-we-do/intelligence-zenzai"
+                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+                  >
+                    Zenzai →
+                  </Link>
+                  <a
+                    href="/#pricing"
+                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+                  >
+                    Pricing →
+                  </a>
+                </div>
               </div>
-            </div>
-          </section>
-        </main>
-      </CursorPortal>
+            </section>
+          </main>
+        </CursorPortal>
 
-      <div className="md:pl-[88px]">
-        <Footer />
+        <div className="md:pl-[88px]">
+          <Footer />
+        </div>
       </div>
-    </div>
+    </LenisProvider>
   );
 }

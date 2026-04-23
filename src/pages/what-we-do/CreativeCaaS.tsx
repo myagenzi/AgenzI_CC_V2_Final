@@ -8,9 +8,9 @@ import { MarqueeStatement } from "@/components/site/caas/MarqueeStatement";
 import { WhyGrid } from "@/components/site/caas/WhyGrid";
 import { DeliveryTabs } from "@/components/site/caas/DeliveryTabs";
 import { ServiceAccordion, type ServiceItem } from "@/components/site/caas/ServiceAccordion";
-import { Reveal } from "@/components/site/Reveal";
 import { CtaStripe } from "@/components/site/caas/CtaStripe";
 import { Link } from "react-router-dom";
+import { LenisProvider } from "@/lib/lenis";
 
 const phase1: ServiceItem[] = [
   {
@@ -144,103 +144,127 @@ export default function CreativeCaaS() {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <Header />
-      <LeftRail currentEngine="Creative — CaaS" />
+    <LenisProvider>
+      <div className="min-h-screen">
+        <Header />
+        <LeftRail currentEngine="Creative — CaaS" />
 
-      <CursorPortal thumbs={thumbs}>
-        <main className="md:pl-[88px]">
-          <CaasHero />
+        <CursorPortal thumbs={thumbs}>
+          <main className="md:pl-[88px]">
+            <CaasHero />
 
-          <MarqueeStatement
-            words={["Speed", "Cost", "Consistency", "48-Hour Turnaround", "Human-Directed"]}
-          />
+            <MarqueeStatement
+              words={["Speed", "Cost", "Consistency", "48-Hour Turnaround", "Human-Directed"]}
+            />
 
-          <WhyGrid />
+            <WhyGrid />
 
-          <div className="border-t border-white/10">
-            <DeliveryTabs />
-          </div>
-
-          {/* Services */}
-          <section id="caas-svcs" className="border-t border-white/10 px-6 py-20 md:px-16 md:py-28">
-            <div className="mb-12">
-              <p className="font-mono-tech mb-4 text-[11px] uppercase tracking-[0.3em] text-foreground/50">
-                04 / What We Build
-              </p>
-              <h2
-                className="font-display font-bold uppercase leading-[0.95] tracking-[-0.03em]"
-                style={{ fontSize: "clamp(40px, 7vw, 110px)" }}
-              >
-                Eight services live now.
-                <br />
-                <span className="text-electric">Eight more this year.</span>
-              </h2>
+            <div className="border-t border-white/10">
+              <DeliveryTabs />
             </div>
 
-            <Reveal>
-              <p className="font-mono-tech mb-4 text-[11px] uppercase tracking-[0.3em] text-foreground/50">
-                Phase 1 · Live Now
-              </p>
-              <ServiceAccordion items={phase1} />
-            </Reveal>
-
-            <Reveal>
-              <p className="font-mono-tech mb-4 mt-16 text-[11px] uppercase tracking-[0.3em] text-foreground/40">
-                Phase 2 · Arriving This Year
-              </p>
-              <ServiceAccordion items={phase2} dimmed />
-            </Reveal>
-          </section>
-
-          <CtaStripe
-            headline={
-              <>
-                Traditional agency: ₹20k–1.5L/month.
-                <br />
-                CaaS starts at ₹2,999/month.
-                <br />
-                <span className="text-electric">Same output. Faster. No chaos.</span>
-              </>
-            }
-            sub="Not a discount. A different cost structure entirely."
-            secondaryLabel="Full pricing →"
-          />
-
-          {/* Footer ribbon */}
-          <section className="border-t border-white/10 px-6 py-10 md:px-16">
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
-                © 2026 AgenzI · CaaS
-              </span>
-              <div className="flex flex-wrap gap-6">
-                <Link
-                  to="/what-we-do/marketing-maas"
-                  className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+            {/* Services with sticky vertical phase labels (monopo signature) */}
+            <section
+              id="caas-svcs"
+              className="border-t border-white/10 px-6 py-20 md:px-16 md:py-28"
+            >
+              <div className="mb-12">
+                <p className="font-mono-tech mb-4 text-[11px] uppercase tracking-[0.3em] text-foreground/50">
+                  04 / What We Build
+                </p>
+                <h2
+                  className="font-display font-bold uppercase leading-[0.95] tracking-[-0.03em]"
+                  style={{ fontSize: "clamp(40px, 7vw, 110px)" }}
                 >
-                  MaaS →
-                </Link>
-                <Link
-                  to="/what-we-do/intelligence-zenzai"
-                  className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
-                >
-                  Zenzai →
-                </Link>
-                <a
-                  href="/#pricing"
-                  className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
-                >
-                  Pricing →
-                </a>
+                  Eight services live now.
+                  <br />
+                  <span className="text-electric">Eight more this year.</span>
+                </h2>
               </div>
-            </div>
-          </section>
-        </main>
-      </CursorPortal>
 
-      <div className="md:pl-[88px]">
-        <Footer />
+              {/* Phase 1 — sticky vertical label */}
+              <div className="grid grid-cols-12 gap-6">
+                <aside className="col-span-12 md:col-span-2">
+                  <div className="md:sticky md:top-32">
+                    <p
+                      className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/65 md:[writing-mode:vertical-rl] md:rotate-180"
+                    >
+                      Phase 1 · Live Now
+                    </p>
+                  </div>
+                </aside>
+                <div className="col-span-12 md:col-span-10">
+                  <ServiceAccordion items={phase1} />
+                </div>
+              </div>
+
+              {/* Phase 2 — sticky vertical label */}
+              <div className="mt-24 grid grid-cols-12 gap-6">
+                <aside className="col-span-12 md:col-span-2">
+                  <div className="md:sticky md:top-32">
+                    <p
+                      className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/40 md:[writing-mode:vertical-rl] md:rotate-180"
+                    >
+                      Phase 2 · Arriving This Year
+                    </p>
+                  </div>
+                </aside>
+                <div className="col-span-12 md:col-span-10">
+                  <ServiceAccordion items={phase2} dimmed />
+                </div>
+              </div>
+            </section>
+
+            <CtaStripe
+              scrub
+              headlineText="Traditional agency: ₹20k–1.5L/month. CaaS starts at ₹2,999/month. Same output. Faster. No chaos."
+              headline={
+                <>
+                  Traditional agency: ₹20k–1.5L/month.
+                  <br />
+                  CaaS starts at ₹2,999/month.
+                  <br />
+                  <span className="text-electric">Same output. Faster. No chaos.</span>
+                </>
+              }
+              sub="Not a discount. A different cost structure entirely."
+              secondaryLabel="Full pricing →"
+            />
+
+            <section className="border-t border-white/10 px-6 py-10 md:px-16">
+              <div className="flex flex-wrap items-center justify-between gap-6">
+                <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
+                  © 2026 AgenzI · CaaS
+                </span>
+                <div className="flex flex-wrap gap-6">
+                  <Link
+                    to="/what-we-do/marketing-maas"
+                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+                  >
+                    MaaS →
+                  </Link>
+                  <Link
+                    to="/what-we-do/intelligence-zenzai"
+                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+                  >
+                    Zenzai →
+                  </Link>
+                  <a
+                    href="/#pricing"
+                    className="story-link font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/70 hover:text-foreground"
+                  >
+                    Pricing →
+                  </a>
+                </div>
+              </div>
+            </section>
+          </main>
+        </CursorPortal>
+
+        <div className="md:pl-[88px]">
+          <Footer />
+        </div>
       </div>
-    </div>
+    </LenisProvider>
   );
 }

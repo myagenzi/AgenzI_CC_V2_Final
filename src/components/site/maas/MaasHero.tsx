@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { MediaPlaceholder } from "@/components/site/MediaPlaceholder";
+import { useScrollSetup, gsap, ScrollTrigger } from "@/lib/scroll";
 
 const lines: { text: string; accent?: boolean }[] = [
   { text: "Marketing that doesn't" },
@@ -10,23 +11,51 @@ const lines: { text: string; accent?: boolean }[] = [
 ];
 
 export function MaasHero() {
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    const t = window.setTimeout(() => setShown(true), 80);
-    return () => window.clearTimeout(t);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const bgRef = useRef<HTMLDivElement | null>(null);
+  const subRef = useRef<HTMLDivElement | null>(null);
+
+  useScrollSetup(sectionRef, (el) => {
+    const heads = el.querySelectorAll<HTMLElement>("[data-maas-line]");
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    tl.fromTo(
+      heads,
+      { yPercent: 105, opacity: 0 },
+      { yPercent: 0, opacity: 1, duration: 1.0, stagger: 0.11 },
+      0,
+    );
+    if (subRef.current) tl.fromTo(subRef.current, { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, 0.55);
+
+    // Cinematic background scale 1.0 → 1.08 across pin
+    if (bgRef.current) {
+      gsap.fromTo(
+        bgRef.current,
+        { scale: 1 },
+        {
+          scale: 1.08,
+          ease: "none",
+          scrollTrigger: { trigger: el, start: "top top", end: "+=80%", scrub: true },
+        },
+      );
+    }
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: "top top",
+      end: "+=80%",
+      pin: true,
+      pinSpacing: true,
+    });
   }, []);
 
   return (
-    <section className="relative overflow-hidden px-6 pb-16 pt-40 md:px-16 md:pb-24 md:pt-48">
-      {/* Background media placeholder */}
-      <div className="pointer-events-none absolute inset-0 -z-0 opacity-30">
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden px-6 pb-16 pt-40 md:px-16 md:pb-24 md:pt-48"
+    >
+      <div ref={bgRef} className="pointer-events-none absolute inset-0 -z-0 opacity-30 will-change-transform">
         <div className="absolute inset-0">
-          <MediaPlaceholder
-            aspect="21/9"
-            label="Hero loop"
-            kind="video"
-            className="h-full"
-          />
+          <MediaPlaceholder aspect="21/9" label="Hero loop" kind="video" className="h-full" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
       </div>
@@ -46,15 +75,9 @@ export function MaasHero() {
           {lines.map((l, i) => (
             <span key={i} className="block overflow-hidden">
               <span
-                className={cn(
-                  "inline-block transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
-                  shown ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
-                  l.accent && "text-electric",
-                )}
-                style={{
-                  fontSize: "clamp(40px, 7.2vw, 124px)",
-                  transitionDelay: `${i * 110}ms`,
-                }}
+                data-maas-line
+                className={cn("inline-block", l.accent && "text-electric")}
+                style={{ fontSize: "clamp(40px, 7.2vw, 124px)" }}
               >
                 {l.text}
               </span>
@@ -62,7 +85,7 @@ export function MaasHero() {
           ))}
         </h1>
 
-        <div className="mt-14 grid grid-cols-12 gap-6">
+        <div ref={subRef} className="mt-14 grid grid-cols-12 gap-6">
           <div className="col-span-12 md:col-span-6 md:col-start-7">
             <p className="font-mono-tech mb-3 text-[11px] uppercase tracking-[0.25em] text-foreground/50">
               ↓ Manifesto

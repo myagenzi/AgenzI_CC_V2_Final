@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { Reveal } from "@/components/site/Reveal";
+import { useScrollSetup, ScrollTrigger } from "@/lib/scroll";
 
 const before = [
   "A social media agency",
@@ -9,8 +11,25 @@ const before = [
 ];
 
 export function Problem() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const rightRef = useRef<HTMLDivElement | null>(null);
+
+  useScrollSetup(sectionRef, (el) => {
+    if (!rightRef.current) return;
+    // Right panel stays pinned while left scrolls past (desktop only)
+    const mm = window.matchMedia("(min-width: 768px)");
+    if (!mm.matches) return;
+    ScrollTrigger.create({
+      trigger: el,
+      start: "top top+=80",
+      end: "bottom bottom-=80",
+      pin: rightRef.current,
+      pinSpacing: false,
+    });
+  }, []);
+
   return (
-    <section id="problem" className="px-6 py-32 lg:px-12 lg:py-48">
+    <section ref={sectionRef} id="problem" className="px-6 py-32 lg:px-12 lg:py-48">
       <div className="mx-auto max-w-[1100px]">
         <Reveal>
           <p className="mb-4 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
@@ -18,8 +37,10 @@ export function Problem() {
           </p>
         </Reveal>
         <Reveal delay={1}>
-          <h2 className="mx-auto mb-6 max-w-3xl text-center font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground"
-              style={{ fontSize: "clamp(36px, 6vw, 68px)" }}>
+          <h2
+            className="mx-auto mb-6 max-w-3xl text-center font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground"
+            style={{ fontSize: "clamp(36px, 6vw, 68px)" }}
+          >
             You don't need more tools.
             <br />
             You need <em className="not-italic text-primary">one system.</em>
@@ -52,33 +73,35 @@ export function Problem() {
             </p>
           </Reveal>
 
-          <Reveal delay={3}>
-            <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary">
-              Now imagine this instead
-            </p>
-            <div className="glass-card rounded-2xl p-8">
-              <h3 className="mb-4 font-display text-2xl font-extrabold text-foreground">AgenzI</h3>
-              <p className="mb-6 text-[14px] leading-relaxed text-foreground/60">
-                One system running your creative, marketing, and automation. One point of contact who sees the full picture. No chasing. No coordination. No disconnected tools.
+          <div ref={rightRef}>
+            <Reveal delay={3}>
+              <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary">
+                Now imagine this instead
               </p>
-              <p className="mb-6 text-[14px] font-semibold leading-relaxed text-foreground">
-                Just consistent output — without the overhead.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {["Creative", "Marketing", "AI + Automation", "One system"].map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full border border-peri/20 px-3 py-1 text-[11px] font-medium text-foreground/70"
-                  >
-                    {tag}
-                  </span>
-                ))}
+              <div className="glass-card rounded-2xl p-8">
+                <h3 className="mb-4 font-display text-2xl font-extrabold text-foreground">AgenzI</h3>
+                <p className="mb-6 text-[14px] leading-relaxed text-foreground/60">
+                  One system running your creative, marketing, and automation. One point of contact who sees the full picture. No chasing. No coordination. No disconnected tools.
+                </p>
+                <p className="mb-6 text-[14px] font-semibold leading-relaxed text-foreground">
+                  Just consistent output — without the overhead.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {["Creative", "Marketing", "AI + Automation", "One system"].map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-peri/20 px-3 py-1 text-[11px] font-medium text-foreground/70"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-            <p className="mt-6 text-[13px] leading-relaxed text-foreground/45">
-              That's what AgenzI builds. One system. 70% lower cost. Results that compound every month.
-            </p>
-          </Reveal>
+              <p className="mt-6 text-[13px] leading-relaxed text-foreground/45">
+                That's what AgenzI builds. One system. 70% lower cost. Results that compound every month.
+              </p>
+            </Reveal>
+          </div>
         </div>
       </div>
     </section>

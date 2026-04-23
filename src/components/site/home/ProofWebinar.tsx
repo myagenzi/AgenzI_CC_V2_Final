@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/site/Reveal";
+import { CountUp } from "@/components/site/effects/CountUp";
 
 const proof = [
   { num: "70%", title: "Lower cost", desc: "Vs. running multiple agencies and vendor stacks." },
@@ -18,8 +19,10 @@ export function ProofWebinar() {
           </p>
         </Reveal>
         <Reveal delay={1}>
-          <h2 className="mx-auto mb-20 max-w-3xl text-center font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground"
-              style={{ fontSize: "clamp(36px, 6vw, 68px)" }}>
+          <h2
+            className="mx-auto mb-20 max-w-3xl text-center font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-foreground"
+            style={{ fontSize: "clamp(36px, 6vw, 68px)" }}
+          >
             Three numbers that <em className="not-italic text-primary">change the math.</em>
           </h2>
         </Reveal>
@@ -29,7 +32,7 @@ export function ProofWebinar() {
             <Reveal key={p.title} delay={(i + 1) as 1 | 2 | 3} as="article">
               <div className="glass-card rounded-2xl p-8">
                 <div className="mb-4 font-display text-5xl font-extrabold tracking-[-0.04em] text-primary">
-                  {p.num}
+                  <CountUp value={p.num} />
                 </div>
                 <h3 className="mb-2 font-display text-base font-semibold text-foreground">{p.title}</h3>
                 <p className="text-[13px] leading-relaxed text-foreground/55">{p.desc}</p>
@@ -43,10 +46,11 @@ export function ProofWebinar() {
             <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/40">
               Built for
             </span>
-            {trustTags.map((t) => (
+            {trustTags.map((t, i) => (
               <span
                 key={t}
-                className="rounded-full border border-peri/15 px-3.5 py-1.5 text-[12px] text-foreground/65"
+                className="rounded-full border border-peri/15 px-3.5 py-1.5 text-[12px] text-foreground/65 animate-fade-in"
+                style={{ animationDelay: `${i * 80}ms`, animationFillMode: "both" }}
               >
                 {t}
               </span>
