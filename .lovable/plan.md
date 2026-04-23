@@ -1,69 +1,106 @@
 
 
 ## Goal
-Decode `base/index.html` (a packed self-extracting bundle) into readable source, then convert the **homepage** into a clean React + Tailwind foundation using AgenzI's brand palette, guided by the Reflect.app reference now in `references/01-home/links.md`.
+Rebuild the AgenzI homepage to match the **layout, rhythm, and minimalism of Reflect.app** — keeping all current AgenzI content, the navy + gold palette, and the brand fonts. Same words, completely Reflect-style presentation.
 
-## Step 1 — Unpack the base bundle
-Create `scripts/unpack-base.mjs` that:
-1. Parses `<script type="__bundler/manifest">`, `__bundler/template`, and `__bundler/ext_resources` blocks from `base/index.html`
-2. Base64-decodes + gunzips each asset (Node built-ins only — no new deps)
-3. Writes to `base/_unpacked/`:
-   ```text
-   base/_unpacked/
-   ├── index.html      ← real readable HTML
-   ├── styles/*.css
-   ├── scripts/*.js
-   └── assets/*
-   ```
+## Reflect Pattern We Are Adopting
 
-Original `base/index.html` stays untouched. Re-runnable if you upload a new base.
-
-## Step 2 — Study reference + unpacked source
-- Fetch `https://reflect.app/home?ref=godly` (markdown + screenshot) to capture layout, rhythm, type scale, motion cues
-- Read `base/_unpacked/index.html` end-to-end: identify home section, shared nav/footer, fonts, exact color usage
-
-## Step 3 — Establish design system (Option A — full replacement)
-Update `src/index.css` and `tailwind.config.ts` with AgenzI tokens in HSL:
-- `--background` Navy `#0A1033`
-- `--foreground` Cream `#F8F7F2`
-- `--primary` Gold `#F2B861`
-- `--accent` Purple `#7B5499`
-- `--secondary` Periwinkle `#6870BD`
-- Derived: muted, border, ring, card, popover, sidebar variants
-- Register brand fonts found in unpacked CSS
-- Copy `logo-horizontal.png`, `logo-stacked.png`, `logo-symbol.png` into `src/assets/`
-
-Generic light/dark theme is fully replaced. shadcn `Button` variants stay token-driven so they pick up the new palette automatically.
-
-## Step 4 — Build the homepage
 ```text
-src/pages/Index.tsx
-src/components/site/
-├── Header.tsx           ← logo + nav, mobile sheet menu
-├── Footer.tsx           ← shared footer
-└── home/
-    ├── Hero.tsx
-    └── (additional sections as found in source)
+┌──────────────────────────────────────────────────┐
+│  Slim pill nav (logo · links · login + CTA)      │
+├──────────────────────────────────────────────────┤
+│                                                  │
+│              ◦ small eyebrow pill                │
+│                                                  │
+│        MASSIVE CENTERED HEADLINE (1-3 lines)     │
+│                                                  │
+│           one quiet centered sub-line            │
+│                                                  │
+│            ┌──────────────────┐                  │
+│            │   ONE hero visual │   ← glowing     │
+│            │   (halo / horizon)│     focal point │
+│            └──────────────────┘                  │
+└──────────────────────────────────────────────────┘
+        (huge whitespace before next section)
 ```
-- Semantic HTML, fully responsive, accessible
-- Tailwind tokens only — no hardcoded hex
-- shadcn `Button` for CTAs
-- Wire `/` route in `src/App.tsx` to new `Index.tsx`
-- Reference influence (Reflect.app): generous whitespace, restrained typography, soft motion — adapted to AgenzI's navy + gold palette
+Every subsequent section repeats this cadence: eyebrow → big centered title → one focused visual or a quiet 3-up grid. No decorative rails, no oversized wordmarks, no busy backgrounds.
 
-Other pages (What We Do, How It Works, Pricing, About) are NOT built in this step.
+## Step 1 — Header (rebuild)
+Convert the fixed full-width navy bar into Reflect's **floating pill nav**:
+- Transparent page bg, header centered with a max-width
+- Logo on far left, nav links inside a soft rounded-full pill in the center, "Login" + "Book Free Audit" CTA on the right
+- Subtle border, very faint backdrop-blur — no heavy shadow
+- Mobile: same pill collapses to logo + menu icon, drawer unchanged
 
-## Step 5 — Verify
-- Confirm preview renders cleanly at desktop + mobile widths
+## Step 2 — Hero (full rewrite)
+Replace the current dense hero with Reflect's centered composition:
+- Remove: giant `AGENZI` background wordmark, off-center halo cluster, 4-column stat strip, fixed bottom Hyderabad/IST bar
+- Keep + restyle:
+  - Small pill eyebrow `✦ Human + AI · One System` (centered, rounded-full, faint border)
+  - Headline centered, `clamp(56px, 9vw, 128px)`, tight tracking, gold italic accent on "better systems."
+  - One quiet centered sub-line in moondust
+  - Two centered CTAs (primary gold pill + ghost link with arrow)
+- **One hero visual centered below**: the existing animated halo nucleus, scaled larger and re-centered as the focal "horizon glow" (Reflect's signature). Soft radial gold/royal bloom, slow pulse, no rings clutter.
+- Generous vertical breathing room above and below (min-h-screen with content vertically centered)
+- Stats move OUT of hero into their own quiet strip lower on the page (Step 4)
+
+## Step 3 — Ticker (quiet down)
+Reduce visual weight: smaller text, lower opacity, single thin divider above and below, slower scroll. Same logos/words, Reflect-grade restraint.
+
+## Step 4 — Section rhythm (apply to every remaining section)
+Restructure `ThreeEngines`, `Problem`, `Mirror`, `HowItWorks`, `Statement`, `ProofWebinar`, `FinalCta` to share **one consistent rhythm**:
+
+```text
+   eyebrow (centered, gold, 11px tracking-widest)
+   ↓
+   big centered section title (display font, clamp 40-72px)
+   ↓
+   one quiet centered intro line (max-w-2xl, moondust)
+   ↓
+   the section's content (grid, cards, or visual)
+   ↓
+   massive bottom padding (py-32 lg:py-48)
+```
+- Cards: flat, 1px border at `peri/15`, generous internal padding, no gradients on the card surface itself — only one accent (icon or number) carries color
+- Numbers/steps: thin, large, gold, no boxes
+- Stats strip: single horizontal row, centered, hairline dividers, lots of whitespace (relocated from hero)
+- Remove most decorative gradients/grids inside sections — keep ONE subtle radial glow per page maximum
+
+## Step 5 — Motion
+Match Reflect's soft, slow feel:
+- Reveal: 800ms ease-out, 24px translateY, stagger 100ms
+- Hero halo: existing pulse, slowed to 5s, no spin clutter
+- Hover on CTAs: 1px lift + brighten gold, no scale
+- Remove the spinning concentric rings on the halo
+
+## Step 6 — Footer (light polish)
+Centered layout, smaller logo, single row of links, hairline top border, no columns of marketing fluff. Quiet.
+
+## Step 7 — Verify
+- Desktop (1106 viewport) and mobile (390) render cleanly
+- Vertical rhythm feels like Reflect: lots of air, one focal point per section
+- All AgenzI content preserved verbatim
 - No console errors, no broken assets
-- Report what shipped + what's ready for the next page
+- Tokens only — zero hardcoded hex
 
-## Technical Notes
-- Unpack script: Node `zlib` + `fs` only, zero new dependencies
-- If bundle format deviates from gzip+base64, script logs the manifest shape so I can adapt in one follow-up
-- Brand colors converted to HSL for shadcn token compatibility
-- Reference fetch uses `code--fetch_website` (markdown + screenshot)
+## Files Touched
+- `src/components/site/Header.tsx` — pill nav rebuild
+- `src/components/site/Footer.tsx` — minimal centered polish
+- `src/components/site/home/Hero.tsx` — full rewrite (centered, single focal halo)
+- `src/components/site/home/Ticker.tsx` — quiet restyle
+- `src/components/site/home/ThreeEngines.tsx` — rhythm + flat cards
+- `src/components/site/home/Problem.tsx` — rhythm
+- `src/components/site/home/Mirror.tsx` — rhythm
+- `src/components/site/home/HowItWorks.tsx` — rhythm + thin step numerals
+- `src/components/site/home/Statement.tsx` — centered minimal
+- `src/components/site/home/ProofWebinar.tsx` — rhythm
+- `src/components/site/home/FinalCta.tsx` — centered glow + single CTA
+- `src/pages/Index.tsx` — add a new `Stats` section between Ticker and ThreeEngines (relocated from hero)
+- `src/components/site/home/Stats.tsx` — NEW, hairline-divided 4-up strip
+- `src/index.css` — add `.pill-nav`, `.section-title` helpers; slow halo to 5s; tighten reveal timing
 
-## What Happens After Approval
-I switch to default mode and execute Steps 1–5 in order, reporting back when the homepage foundation is live in preview.
+## Out of Scope
+- No changes to colors, fonts, or content copy
+- No changes to other pages (What We Do, Pricing, etc.)
+- No new dependencies
 
