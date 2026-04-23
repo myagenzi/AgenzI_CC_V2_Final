@@ -1,5 +1,6 @@
-import { Reveal } from "@/components/site/Reveal";
+import { useRef } from "react";
 import { ServiceAccordion, type ServiceItem } from "@/components/site/caas/ServiceAccordion";
+import { useScrollSetup, gsap } from "@/lib/scroll";
 
 const automations: ServiceItem[] = [
   {
@@ -114,55 +115,114 @@ type LayerProps = {
 };
 
 function Layer({ id, stickyLabel, eyebrow, headline, meta, keywords, items }: LayerProps) {
+  const ref = useRef<HTMLElement | null>(null);
+
+  useScrollSetup(ref, (el) => {
+    const eyebrowEl = el.querySelector<HTMLElement>("[data-eyebrow]");
+    const headEl = el.querySelector<HTMLElement>("[data-head]");
+    const metaEl = el.querySelector<HTMLElement>("[data-meta]");
+    const chars = el.querySelectorAll<HTMLElement>("[data-kw-char]");
+    const accItems = el.querySelectorAll<HTMLElement>("[data-acc] > *");
+    const progress = el.querySelector<HTMLElement>("[data-progress]");
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: "top 70%",
+        end: "bottom 30%",
+        scrub: 0.6,
+      },
+    });
+
+    if (eyebrowEl) tl.fromTo(eyebrowEl, { y: 24, opacity: 0 }, { y: 0, opacity: 1 }, 0);
+    if (headEl) tl.fromTo(headEl, { y: 50, opacity: 0 }, { y: 0, opacity: 1 }, 0.05);
+    if (metaEl) tl.fromTo(metaEl, { y: 20, opacity: 0 }, { y: 0, opacity: 1 }, 0.15);
+    if (chars.length) {
+      tl.fromTo(
+        chars,
+        { y: 14, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.012 },
+        0.2,
+      );
+    }
+    if (accItems.length) {
+      tl.fromTo(
+        accItems,
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.06 },
+        0.4,
+      );
+    }
+
+    // Sticky-label progress bar fill
+    if (progress) {
+      gsap.fromTo(
+        progress,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          transformOrigin: "top center",
+          ease: "none",
+          scrollTrigger: { trigger: el, start: "top 80%", end: "bottom 20%", scrub: true },
+        },
+      );
+    }
+  }, []);
+
   return (
     <section
       id={id}
-      className="relative border-t border-foreground/[0.08] px-6 py-20 md:px-16 md:py-24"
+      ref={ref}
+      className="relative border-t border-foreground/[0.08] px-6 py-20 md:px-16 md:py-28"
     >
       <div className="md:grid md:grid-cols-12 md:gap-10">
-        {/* Sticky vertical layer label */}
+        {/* Sticky vertical layer label + progress */}
         <aside className="hidden md:col-span-2 md:ml-2 md:block">
-          <div className="sticky top-24">
+          <div className="sticky top-24 flex flex-col items-start gap-4">
             <p
               className="font-mono-tech text-[10px] uppercase tracking-[0.35em] text-foreground/40"
               style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
             >
               {stickyLabel}
             </p>
+            <div className="layer-progress relative h-40 w-px bg-foreground/[0.08]">
+              <span data-progress className="absolute inset-0 origin-top bg-electric" />
+            </div>
           </div>
         </aside>
 
         <div className="md:col-span-10">
-          <Reveal>
-            <p className="font-mono-tech mb-4 text-[11px] uppercase tracking-[0.3em] text-foreground/50">
-              {eyebrow}
-            </p>
-            <h2
-              className="font-display mb-6 font-bold uppercase leading-[0.95] tracking-[-0.03em]"
-              style={{ fontSize: "clamp(32px, 5.2vw, 78px)" }}
-            >
-              {headline}
-            </h2>
-            <p className="font-mono-tech mb-8 text-[11px] uppercase tracking-[0.25em] text-foreground/55">
-              {meta}
-            </p>
-          </Reveal>
+          <p data-eyebrow className="font-mono-tech mb-4 text-[11px] uppercase tracking-[0.3em] text-foreground/50">
+            {eyebrow}
+          </p>
+          <h2
+            data-head
+            className="font-display mb-6 font-bold uppercase leading-[0.95] tracking-[-0.03em]"
+            style={{ fontSize: "clamp(32px, 5.2vw, 78px)" }}
+          >
+            {headline}
+          </h2>
+          <p data-meta className="font-mono-tech mb-8 text-[11px] uppercase tracking-[0.25em] text-foreground/55">
+            {meta}
+          </p>
 
-          <Reveal delay={1}>
-            <div className="layer-keyword-strip mb-10 flex flex-wrap gap-x-4 gap-y-2 border-y border-foreground/[0.08] py-4">
-              {keywords.map((k, i) => (
-                <span key={k} className="font-mono-tech text-[10px] uppercase tracking-[0.25em] text-foreground/55">
-                  <span className="mr-3 text-electric">{String(i + 1).padStart(2, "0")}</span>
-                  {k}
-                  {i < keywords.length - 1 && <span className="ml-4 text-foreground/25">·</span>}
-                </span>
-              ))}
-            </div>
-          </Reveal>
+          <div className="layer-keyword-strip mb-10 flex flex-wrap gap-x-4 gap-y-2 border-y border-foreground/[0.08] py-4">
+            {keywords.map((k, i) => (
+              <span key={k} className="font-mono-tech text-[10px] uppercase tracking-[0.25em] text-foreground/55">
+                <span className="mr-3 text-electric">{String(i + 1).padStart(2, "0")}</span>
+                {k.split("").map((ch, ci) => (
+                  <span key={ci} data-kw-char className="inline-block">
+                    {ch === " " ? "\u00A0" : ch}
+                  </span>
+                ))}
+                {i < keywords.length - 1 && <span className="ml-4 text-foreground/25">·</span>}
+              </span>
+            ))}
+          </div>
 
-          <Reveal delay={2}>
+          <div data-acc>
             <ServiceAccordion items={items} />
-          </Reveal>
+          </div>
         </div>
       </div>
     </section>

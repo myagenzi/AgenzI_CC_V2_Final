@@ -387,12 +387,27 @@
   background-color: hsl(var(--foreground) / 0.04);
 }
 
-/* Zenzai — metaballs canvas (true merge via blur + contrast) */
+/* Zenzai — metaballs canvas (2D fallback path) */
 .metaball-svg { pointer-events: none; }
 .metaball-canvas {
   filter: blur(18px) contrast(18);
   mix-blend-mode: normal;
   opacity: 0.9;
+}
+
+/* Zenzai — WebGL metaballs canvas */
+.metaball-gl {
+  display: block;
+  pointer-events: none;
+  opacity: 0.95;
+  mix-blend-mode: screen;
+}
+
+/* Zenzai — sticky layer progress bar */
+.layer-progress > span {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* Zenzai — debug panel */

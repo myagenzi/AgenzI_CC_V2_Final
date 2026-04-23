@@ -9,6 +9,7 @@ import { CtaStripe } from "@/components/site/caas/CtaStripe";
 import { ZenzaiHero } from "@/components/site/zenzai/ZenzaiHero";
 import { ZenzaiAbout } from "@/components/site/zenzai/ZenzaiAbout";
 import { LayerServices } from "@/components/site/zenzai/LayerServices";
+import { LenisProvider } from "@/lib/lenis";
 
 const thumbs = {
   zenzai: {
@@ -23,6 +24,7 @@ export default function IntelligenceZenzai() {
   }, []);
 
   return (
+    <LenisProvider>
     <div className="min-h-screen">
       <Header />
       <LeftRail currentEngine="Intelligence — Zenzai" />
@@ -38,17 +40,9 @@ export default function IntelligenceZenzai() {
           <LayerServices />
 
           <CtaStripe
-            headline={
-              <>
-                Your business is running on
-                <br />
-                repetition AI should be doing.
-                <br />
-                <span className="text-electric">
-                  Let's find out how much that's actually costing you.
-                </span>
-              </>
-            }
+            scrub
+            headlineText="Your business is running on repetition AI should be doing. Let's find out how much that's actually costing you."
+            headline={null}
             sub="30 minutes. We look at your operations. You leave knowing exactly where AI fits."
           />
 
@@ -87,5 +81,6 @@ export default function IntelligenceZenzai() {
         <Footer />
       </div>
     </div>
+    </LenisProvider>
   );
 }

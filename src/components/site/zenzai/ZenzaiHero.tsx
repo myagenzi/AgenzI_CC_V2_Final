@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { CursorMetaballs } from "./CursorMetaballs";
+import { MetaballsGL } from "./MetaballsGL";
+import { useScrollSetup, gsap, ScrollTrigger } from "@/lib/scroll";
 
 const lines: { text: string; accent?: boolean }[] = [
   { text: "You've already" },
@@ -10,17 +11,94 @@ const lines: { text: string; accent?: boolean }[] = [
 ];
 
 export function ZenzaiHero() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const ruleRef = useRef<HTMLSpanElement | null>(null);
+  const subRef = useRef<HTMLDivElement | null>(null);
   const [shown, setShown] = useState(false);
+
   useEffect(() => {
     const t = window.setTimeout(() => setShown(true), 80);
     return () => window.clearTimeout(t);
   }, []);
 
+  useScrollSetup(sectionRef, (el) => {
+    const lineEls = el.querySelectorAll<HTMLElement>("[data-hero-line]");
+    // Per-line scrubbed drift as the user scrolls past the hero
+    lineEls.forEach((line, i) => {
+      gsap.fromTo(
+        line,
+        { yPercent: 18, opacity: 0.55 },
+        {
+          yPercent: 0,
+          opacity: 1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top top",
+            end: "+=80%",
+            scrub: 1,
+          },
+          delay: i * 0.04,
+        },
+      );
+    });
+
+    // Hairline draws across during pin
+    if (ruleRef.current) {
+      gsap.fromTo(
+        ruleRef.current,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          transformOrigin: "left center",
+          ease: "none",
+          scrollTrigger: {
+            trigger: el,
+            start: "top top",
+            end: "+=60%",
+            scrub: true,
+          },
+        },
+      );
+    }
+
+    // Sub paragraph + CTA fade-in late in pin
+    if (subRef.current) {
+      gsap.fromTo(
+        subRef.current,
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top top",
+            end: "+=70%",
+            scrub: 1,
+          },
+        },
+      );
+    }
+
+    // Pin the hero for ~80vh of scroll
+    ScrollTrigger.create({
+      trigger: el,
+      start: "top top",
+      end: "+=80%",
+      pin: true,
+      pinSpacing: true,
+    });
+  }, []);
+
   return (
-    <section className="relative overflow-hidden px-6 pb-20 pt-40 md:px-16 md:pb-28 md:pt-48">
-      {/* Cursor-reactive metaballs */}
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden px-6 pb-20 pt-40 md:px-16 md:pb-28 md:pt-48"
+    >
+      {/* WebGL fragment-shader metaballs */}
       <div className="pointer-events-none absolute inset-0 -z-0">
-        <CursorMetaballs />
+        <MetaballsGL />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/15 to-background" />
       </div>
 
@@ -29,7 +107,7 @@ export function ZenzaiHero() {
           <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
             03 / Engine · Zenzai
           </span>
-          <span className="h-px flex-1 bg-foreground/[0.08]" />
+          <span ref={ruleRef} className="h-px flex-1 origin-left bg-foreground/[0.18]" />
           <span className="font-mono-tech text-[11px] uppercase tracking-[0.3em] text-foreground/50">
             AI · Automation · Tech
           </span>
@@ -39,6 +117,7 @@ export function ZenzaiHero() {
           {lines.map((l, i) => (
             <span key={i} className="block overflow-hidden">
               <span
+                data-hero-line
                 className={cn(
                   "inline-block transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
                   shown ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
@@ -55,7 +134,7 @@ export function ZenzaiHero() {
           ))}
         </h1>
 
-        <div className="mt-14 grid grid-cols-12 gap-6">
+        <div ref={subRef} className="mt-14 grid grid-cols-12 gap-6">
           <div className="col-span-12 md:col-span-6 md:col-start-7">
             <p className="font-mono-tech mb-3 text-[11px] uppercase tracking-[0.25em] text-foreground/50">
               ↓ Manifesto
