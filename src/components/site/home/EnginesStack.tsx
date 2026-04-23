@@ -53,9 +53,9 @@ const engines: EngineData[] = [
 // Per-card animation ranges across full section progress (0..1)
 // Each non-first card: enter, hold, exit. Last card holds until end (no exit).
 const ranges: Array<{ inStart: number; inEnd: number; outStart: number; outEnd: number }> = [
-  { inStart: 0,    inEnd: 0,    outStart: 0.28, outEnd: 0.36 },
-  { inStart: 0.28, inEnd: 0.36, outStart: 0.60, outEnd: 0.68 },
-  { inStart: 0.60, inEnd: 0.68, outStart: 1.01, outEnd: 1.01 },
+  { inStart: 0,     inEnd: 0.001, outStart: 0.28, outEnd: 0.36 },
+  { inStart: 0.28,  inEnd: 0.36,  outStart: 0.60, outEnd: 0.68 },
+  { inStart: 0.60,  inEnd: 0.68,  outStart: 0.999, outEnd: 1 },
 ];
 
 function StackedCard({
