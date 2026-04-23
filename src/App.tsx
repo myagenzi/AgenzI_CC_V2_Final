@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound.tsx";
 import CreativeCaaS from "./pages/what-we-do/CreativeCaaS.tsx";
 import MarketingMaaS from "./pages/what-we-do/MarketingMaaS.tsx";
 import IntelligenceZenzai from "./pages/what-we-do/IntelligenceZenzai.tsx";
+import { Cursor } from "./components/site/effects/Cursor.tsx";
 
 const queryClient = new QueryClient();
 
