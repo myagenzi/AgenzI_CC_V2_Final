@@ -2,104 +2,220 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ============================================================
+   AgenzI design system — full replacement of generic theme.
+   All colors in HSL. No client-side dark mode toggle: the brand
+   is dark by default. A `.light` scope is provided for sections
+   that need a cream background (uses semantic tokens cleanly).
+   ============================================================ */
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+/* ---------- Brand fonts (self-hosted, latin + latin-ext + vietnamese) ---------- */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("/src/assets/fonts/bricolage-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("/src/assets/fonts/bricolage-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("/src/assets/fonts/bricolage-vietnamese.woff2") format("woff2");
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/src/assets/fonts/spacegrotesk-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/src/assets/fonts/spacegrotesk-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/src/assets/fonts/spacegrotesk-vietnamese.woff2") format("woff2");
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  :root {
+    /* ----- AgenzI brand palette (dark by default) ----- */
+    --cosmic: 230 67% 12%;       /* #0A1033 */
+    --navy: 230 60% 23%;         /* #17225D */
+    --nebula: 228 51% 35%;       /* #2B3A86 */
+    --orbit: 215 44% 41%;        /* #385796 */
+    --peri: 234 38% 57%;         /* #6870BD */
+    --royal: 283 27% 47%;        /* #7B5499 */
+    --pink: 308 35% 57%;         /* #BA6AAA */
+    --gold: 35 84% 67%;          /* #F2B861 */
+    --gold-bright: 42 95% 62%;   /* #fac640 hover */
+    --starlight: 48 33% 96%;     /* #F8F7F2 */
+    --moondust: 230 18% 77%;     /* #B8BCD0 */
+    --off: 247 24% 96%;          /* #F2F1F8 */
+
+    /* ----- Semantic tokens (shadcn-compatible) ----- */
+    --background: var(--cosmic);
+    --foreground: var(--starlight);
+
+    --card: var(--navy);
+    --card-foreground: var(--starlight);
+
+    --popover: var(--navy);
+    --popover-foreground: var(--starlight);
+
+    --primary: var(--gold);
+    --primary-foreground: var(--cosmic);
+
+    --secondary: var(--peri);
+    --secondary-foreground: var(--starlight);
+
+    --muted: 230 30% 18%;
+    --muted-foreground: 230 18% 70%;
+
+    --accent: var(--royal);
+    --accent-foreground: var(--starlight);
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: var(--starlight);
+
+    --border: 234 38% 57% / 0.18;
+    --input: 234 38% 57% / 0.22;
+    --ring: var(--gold);
+
+    --radius: 1rem;
+
+    /* ----- Gradients & shadows (reusable design tokens) ----- */
+    --gradient-hero: radial-gradient(ellipse 60% 50% at 72% 38%, hsl(var(--nebula) / 0.22) 0%, transparent 60%),
+                     radial-gradient(ellipse 40% 55% at 12% 72%, hsl(var(--royal) / 0.10) 0%, transparent 55%);
+    --gradient-grid: linear-gradient(hsl(var(--peri) / 0.05) 1px, transparent 1px),
+                     linear-gradient(90deg, hsl(var(--peri) / 0.05) 1px, transparent 1px);
+    --gradient-engine: linear-gradient(140deg, hsl(var(--nebula)), hsl(var(--royal)));
+    --gradient-num: linear-gradient(135deg, hsl(var(--nebula)), hsl(var(--peri)));
+    --gradient-rail: linear-gradient(180deg, hsl(var(--gold)), hsl(var(--peri)));
+    --gradient-cta-glow: radial-gradient(circle, hsl(var(--nebula) / 0.15) 0%, transparent 70%);
+    --gradient-ai-card: linear-gradient(145deg, hsl(232 67% 8%), hsl(var(--navy)));
+
+    --shadow-gold: 0 10px 30px hsl(var(--gold) / 0.35);
+    --shadow-cta: 0 6px 24px hsl(var(--gold) / 0.4);
+    --shadow-card: 0 16px 48px hsl(0 0% 0% / 0.5);
+
+    --transition-base: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-out: 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Light surface scope — used inside sections that need cream/white bg */
+  .surface-cream,
+  .surface-white {
+    --background: var(--starlight);
+    --foreground: var(--cosmic);
+    --card: 0 0% 100%;
+    --card-foreground: var(--cosmic);
+    --muted: var(--off);
+    --muted-foreground: 230 12% 45%;
+    --border: 234 38% 57% / 0.12;
+    --input: 234 38% 57% / 0.18;
+  }
+  .surface-cream { background-color: hsl(var(--off)); color: hsl(var(--cosmic)); }
+  .surface-white { background-color: hsl(0 0% 100%); color: hsl(var(--cosmic)); }
+}
+
+@layer base {
+  * { @apply border-border; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
     @apply bg-background text-foreground;
+    font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: hsl(var(--gold) / 0.3);
+    color: hsl(var(--starlight));
+  }
+}
+
+@layer components {
+  /* Eyebrow label with leading rule */
+  .eyebrow {
+    @apply inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em];
+    color: hsl(var(--gold));
+  }
+  .eyebrow::before {
+    content: "";
+    width: 24px;
+    height: 1px;
+    background: hsl(var(--gold));
+  }
+  .eyebrow.center { @apply justify-center; }
+  .eyebrow.center::before { display: none; }
+
+  /* Reveal-on-scroll utility */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 650ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 650ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal.is-visible { opacity: 1; transform: none; }
+  .reveal-d1 { transition-delay: 80ms; }
+  .reveal-d2 { transition-delay: 160ms; }
+  .reveal-d3 { transition-delay: 240ms; }
+  .reveal-d4 { transition-delay: 320ms; }
+
+  /* Decorative animations */
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes greenpulse {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(142 71% 58% / 0.4); }
+    70%      { box-shadow: 0 0 0 8px hsl(142 71% 58% / 0); }
+  }
+  @keyframes wordIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes haloPulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50%      { transform: scale(1.04); opacity: 1; }
+  }
+  @keyframes haloRingSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
   }
 }
