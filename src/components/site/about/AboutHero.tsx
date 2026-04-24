@@ -44,7 +44,7 @@ export function AboutHero() {
           <Reveal delay={2}>
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <a
-                href="mailto:hello@agenzi.ai"
+                href="/book-audit"
                 data-magnify
                 className="cta-purple rounded-full px-6 py-3 text-[13px] font-semibold"
               >

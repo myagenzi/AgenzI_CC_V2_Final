@@ -55,7 +55,7 @@ export function PricingHero() {
               Start with a free 30-min audit
             </span>
             <a
-              href="mailto:hello@agenzi.ai"
+              href="/book-audit"
               data-magnify
               className="cta-purple shrink-0 rounded-full px-5 py-2.5 text-[12px] font-semibold"
             >

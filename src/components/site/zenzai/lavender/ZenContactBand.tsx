@@ -47,7 +47,7 @@ export function ZenContactBand() {
           <div className="lg:col-span-5">
             <div className="flex flex-col items-start gap-3 lg:items-end">
               <a
-                href="mailto:hello@agenzi.ai"
+                href="/book-audit"
                 data-magnify
                 className="cta-purple inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold"
               >

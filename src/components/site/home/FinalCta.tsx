@@ -34,7 +34,7 @@ export function FinalCta() {
         <div className="flex flex-wrap items-center justify-center gap-3">
           <a
             data-magnify
-            href="mailto:hello@agenzi.io"
+            href="/book-audit"
             className="cta-purple inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold"
           >
             Book Your Free AI Audit →
