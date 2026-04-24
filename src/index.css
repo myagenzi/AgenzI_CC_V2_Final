@@ -830,3 +830,28 @@
     0 1px 0 hsl(0 0% 100%) inset,
     0 18px 40px -28px hsl(var(--lav-purple) / 0.35);
 }
+
+/* Book Audit form fields */
+.surface-lavender .form-field {
+  background: hsl(0 0% 100% / 0.65);
+  border: 1px solid hsl(var(--lav-purple) / 0.18);
+  border-radius: 12px;
+  color: hsl(var(--foreground));
+  font-size: 14px;
+  padding: 12px 14px;
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+.surface-lavender .form-field:hover {
+  background: hsl(0 0% 100% / 0.85);
+  border-color: hsl(var(--lav-purple) / 0.32);
+}
+.surface-lavender .form-field:focus,
+.surface-lavender .form-field:focus-visible {
+  outline: none;
+  background: hsl(0 0% 100% / 0.95);
+  border-color: hsl(var(--lav-purple) / 0.55);
+  box-shadow: 0 0 0 4px hsl(var(--lav-purple) / 0.10);
+}
+.surface-lavender .form-field::placeholder {
+  color: hsl(var(--foreground) / 0.38);
+}
