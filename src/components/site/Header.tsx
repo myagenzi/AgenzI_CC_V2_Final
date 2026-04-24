@@ -17,7 +17,7 @@ const whatWeDo = [
 ];
 
 const otherLinks = [
-  { label: "How It Works", href: "/#how-it-works" },
+  { label: "How It Works", href: "/how-it-works" },
   { label: "Pricing", href: "/#pricing" },
   { label: "About", href: "/about" },
 ];
