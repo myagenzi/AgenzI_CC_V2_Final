@@ -13,18 +13,7 @@ export function AboutHero() {
         }}
       />
 
-      {/* Faint giant wordmark behind */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none text-center font-display font-black tracking-tighter"
-        style={{
-          fontSize: "clamp(180px, 28vw, 420px)",
-          color: "hsl(var(--lav-purple)/.05)",
-          lineHeight: 1,
-        }}
-      >
-        AGENZI
-      </div>
+
 
       <div className="relative mx-auto grid max-w-[1200px] grid-cols-1 gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-12">
         {/* Left: copy */}
