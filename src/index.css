@@ -300,6 +300,19 @@
   [data-mag-active] { transform: none; transition: none; }
 }
 
+/* ---------- Scroll teaser hairline ---------- */
+@keyframes scrollTeaserPulse {
+  0%, 100% { transform: scaleY(0.6); opacity: 0.4; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+.scroll-teaser-line {
+  transform-origin: top;
+  animation: scrollTeaserPulse 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-teaser-line { animation: none; }
+}
+
 @layer base {
   * { @apply border-border; }
 
