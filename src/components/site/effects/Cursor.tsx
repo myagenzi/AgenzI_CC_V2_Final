@@ -57,9 +57,30 @@ export function Cursor() {
       if (!lensRef.current) return;
       lensRef.current.classList.remove("is-active");
       lensRef.current.replaceChildren();
+      lensRef.current.style.backgroundColor = "";
+      if (sourceRef.current) {
+        sourceRef.current.removeAttribute("data-mag-source");
+      }
       cloneRef.current = null;
       sourceRef.current = null;
       sourceRect.current = null;
+    };
+
+    const findOpaqueBg = (el: HTMLElement): string => {
+      let node: HTMLElement | null = el;
+      while (node && node !== document.documentElement) {
+        const cs = window.getComputedStyle(node);
+        const bg = cs.backgroundColor;
+        // Match rgba(r,g,b,a) — accept if alpha is missing (rgb) or > 0.5
+        const m = bg.match(/rgba?\(([^)]+)\)/);
+        if (m) {
+          const parts = m[1].split(",").map((s) => parseFloat(s.trim()));
+          const a = parts.length === 4 ? parts[3] : 1;
+          if (a > 0.5) return bg;
+        }
+        node = node.parentElement;
+      }
+      return window.getComputedStyle(document.body).backgroundColor || "#ffffff";
     };
 
     const setupClone = (sourceEl: HTMLElement) => {
@@ -70,15 +91,26 @@ export function Cursor() {
         teardownClone();
         return;
       }
-      sourceRef.current = sourceEl;
       const rect = sourceEl.getBoundingClientRect();
+      // Skip oversized blocks (entire columns / hero text)
+      if (rect.width > 1200 || rect.height > 600 || rect.width < 8 || rect.height < 8) {
+        teardownClone();
+        return;
+      }
+      // Tear down previous source first (restore its text)
+      if (sourceRef.current && sourceRef.current !== sourceEl) {
+        sourceRef.current.removeAttribute("data-mag-source");
+      }
+      sourceRef.current = sourceEl;
       sourceRect.current = rect;
 
-      // Clone the source node, copy computed styles for top-level
       const clone = sourceEl.cloneNode(true) as HTMLElement;
-      // Strip ids to avoid duplicate-id collisions
       clone.removeAttribute("id");
+      clone.removeAttribute("data-mag-source");
       clone.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+      clone.querySelectorAll("[data-mag-source]").forEach((n) =>
+        n.removeAttribute("data-mag-source"),
+      );
 
       const cs = window.getComputedStyle(sourceEl);
       clone.style.position = "absolute";
@@ -87,6 +119,7 @@ export function Cursor() {
       clone.style.width = `${rect.width}px`;
       clone.style.height = `${rect.height}px`;
       clone.style.margin = "0";
+      clone.style.overflow = "hidden";
       clone.style.fontFamily = cs.fontFamily;
       clone.style.fontSize = cs.fontSize;
       clone.style.fontWeight = cs.fontWeight;
@@ -97,9 +130,14 @@ export function Cursor() {
       clone.style.padding = cs.padding;
       clone.style.boxSizing = cs.boxSizing;
 
+      // Opaque background so original text under the lens doesn't show through
+      lensRef.current.style.backgroundColor = findOpaqueBg(sourceEl);
       lensRef.current.replaceChildren(clone);
       cloneRef.current = clone;
       lensRef.current.classList.add("is-active");
+
+      // Hide original text while lens is over it (layout preserved)
+      sourceEl.setAttribute("data-mag-source", "");
     };
 
     const updateLens = (cx: number, cy: number) => {
