@@ -339,6 +339,7 @@
   top: 0;
   z-index: 9998;
   pointer-events: none;
+  isolation: isolate;
   will-change: transform, clip-path;
   filter: contrast(1.06) saturate(1.04);
   opacity: 0;
@@ -348,17 +349,13 @@
   opacity: 1;
   box-shadow: 0 0 0 1px hsl(var(--lav-purple) / 0.35);
 }
+.lens-clone > * {
+  background-color: inherit;
+}
 .lens-clone * {
   pointer-events: none !important;
   user-select: none !important;
   cursor: none !important;
-}
-[data-mag-source],
-[data-mag-source] * {
-  color: transparent !important;
-  text-shadow: none !important;
-  -webkit-text-fill-color: transparent !important;
-  caret-color: transparent !important;
 }
 .cursor-pulse-ring {
   position: absolute;
