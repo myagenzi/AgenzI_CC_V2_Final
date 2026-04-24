@@ -10,7 +10,7 @@ export function Footer() {
           <a data-magnify href="/what-we-do/marketing-maas" className="hover:text-foreground">MaaS</a>
           <a data-magnify href="/what-we-do/intelligence-zenzai" className="hover:text-foreground">Zenzai</a>
           <a data-magnify href="/how-it-works" className="hover:text-foreground">How It Works</a>
-          <a data-magnify href="/#pricing" className="hover:text-foreground">Pricing</a>
+          <a data-magnify href="/pricing" className="hover:text-foreground">Pricing</a>
           <a data-magnify href="/about" className="hover:text-foreground">About</a>
           <a data-magnify href="mailto:hello@agenzi.ai" className="hover:text-foreground">Book Audit →</a>
         </nav>
