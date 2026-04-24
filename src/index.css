@@ -280,6 +280,26 @@
 }
 .cursor-hover { /* opt-in hover-magnify target */ }
 
+/* ---------- Magnifier lens cursor ---------- */
+.cursor-lens {
+  width: 84px;
+  height: 84px;
+  border: 1.5px solid hsl(var(--lav-purple));
+  background: radial-gradient(circle at center, hsl(var(--lav-purple) / 0.06), transparent 70%);
+  box-shadow:
+    inset 0 0 24px hsl(var(--lav-purple) / 0.18),
+    0 6px 24px hsl(var(--lav-purple) / 0.25);
+  backdrop-filter: saturate(1.15);
+}
+[data-mag-active] {
+  transform: scale(1.06);
+  transition: transform 180ms ease-out;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-mag-active] { transform: none; transition: none; }
+}
+
 @layer base {
   * { @apply border-border; }
 
