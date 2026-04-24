@@ -1,103 +1,74 @@
-# Creative-CaaS — Total Rebuild (ARTIX physics)
 
-Rebuilds `/what-we-do/creative-caas` end-to-end with the motion vocabulary of the ARTIX reference (orbital floating tiles, browser-mockup how-it-works cards, full-bleed image strip, gradient-highlighted feature grid, ghost marquee). Existing page is deleted and replaced — no traces of the old CursorPortal / vertical phase rails / dark monopo skin remain. Uses the homepage **lavender system** (`surface-lavender`, Bricolage + Space Grotesk, gold + lav-purple/magenta/pink) and **content verbatim** from `base/_unpacked/index.html` (lines 1206–1269, verified).
 
-## Content lock — verbatim from base HTML
+# Homepage Content Sync + Magnifier Cursor
 
-**Hero (line 1209–1212)**
-- Eyebrow: `ENGINE 01 · CaaS`
-- H1: *You know what your brand needs to say.* / *<gold italic>You just can't say it fast enough.</gold italic>*
-- Sub: *Your competitor posted four times this week. You're still in the approval loop for last month's reel. CaaS is the creative system that fixes that.*
-- Buttons: `Book Free Audit →` · `See services ↓`
+Two things in one pass. No design tokens or layout change — just content fidelity to `base/_unpacked/index.html` plus a new global cursor behavior.
 
-**Why CaaS (1217–1223)** — eyebrow *Why CaaS*, H2 *Not short on ideas. / Short on infrastructure.*, three cards: Speed ⚡ · Cost ₹ · Consistency ◈ (full body copy preserved).
+## Part A — Content sync (lavender vibe preserved)
 
-**Delivery Modes (1229–1239)** — H2 *Not every job needs a film crew. / Not every job can skip one.*, three tabs Capture / AI-Augmented / Automated with full panel copy.
+### 1. `Hero.tsx` — status strip
+Slim bar under the stats grid:
+`• Hyderabad, India · IST HH:MM:SS · SYSTEMS ACTIVE`
+- Live clock via `setInterval` (1s), cleaned up on unmount.
+- Style: `font-mono-tech`, `text-[11px]`, lav-purple dot, muted separators.
 
-**What We Build (1244–1265)** — H2 *Eight services live now. / Eight more this year.*, **Phase 1** (8 items 01–08) and **Phase 2** (4 items 09–12). All titles, sub-titles, descriptions, bullets, and price/market/audience tags preserved exactly as in base.
+### 2. `ProofWebinar.tsx` — copy rewrite
+- Eyebrow → **Why It Works**
+- H2 → **Built by operators. Backed by numbers.** (gold accent on `Backed by numbers`)
+- Stat cards verbatim from source:
+  - **70%** — *AI changed the cost structure of creative production. We pass that saving to you — at 60–80% gross margin.*
+  - **48h** — *What takes an agency two weeks takes us 48 hours. AI doesn't sleep or wait for approval chains.*
+  - **90D** — *20–40% cost reduction or 2–5× output increase in 90 days. Or we work free until we deliver. No asterisks.*
+- "Built for" tags → **Founders · D2C Brands · SMBs · Coaches + Creators · Growth-stage startups · Enterprise** (6 chips, existing `chip-purple`)
+- New **philosophy quote** block in `glass-lavender` panel above webinar bar — large display type, last sentence in lilac accent:
+  *"AI won't replace your business. But a business using AI well will. The businesses that build the system now will be the ones everyone else is chasing in three years."*
+- New **urgency line** between philosophy and webinar bar (small uppercase eyebrow + body):
+  *We only onboard a small number of businesses each month. Limited spots available for May 2026.*
+- Webinar bar:
+  - Title → **See It In Action**
+  - Sub → *Watch us build a real AI system for a real business — live. 30 minutes. No pitch. You leave with a playbook.*
+  - Button → **Reserve your spot →**
 
-**CTA stripe (1268)** — *Traditional agency: ₹20k–1.5L/month. / CaaS starts at ₹2,999/month. / <gold>Same output. Faster. No chaos.</gold>* + sub *Not a discount. A different cost structure entirely.* + buttons.
+### 3. `FinalCta.tsx` — copy rewrite + dual CTA
+- Eyebrow → **Your Move**
+- H2 → **See what your system could look like.** (gold italic on *could look like*)
+- Body → *30 minutes. No pitch. Just a clear picture of what's possible — and a roadmap that's yours to keep regardless of what you decide.*
+- Two CTAs (existing pill styles):
+  - Primary `cta-purple`: **Book Your Free AI Audit →** (mailto)
+  - Secondary `glass-lavender` ghost pill: **See pricing** → `#pricing`
+- Note under CTAs (muted, centered): *We only onboard a small number of businesses each month. No commitment required.*
 
-**Footer row (1269)** — © + MaaS / Zenzai / Pricing links.
+### Explicitly NOT touched
+No Nucleus / orbital diagram. No reorder. `StatPanel`, `Stats`, `Ticker`, `Statement`, `EnginesStack`, `Problem`, `Mirror`, `HowItWorks`, `Footer` left as-is.
 
-## New section architecture & "physics"
+## Part B — Magnifier cursor (global)
 
-```text
-┌─ Header (existing) ─────────────────────────────────┐
-│                                                     │
-│ 1. CaasOrbitalHero                                  │
-│    Centered H1 + sub + CTAs                         │
-│    8 floating tiles drift on idle (CSS keyframes)   │
-│    + parallax-y on scroll (GSAP, 0.4 strength)      │
-│    Soft radial lavender→pink nebula background      │
-│                                                     │
-│ 2. CaasMarquee  (existing MarqueeStatement reused)  │
-│    Speed · Cost · Consistency · 48-Hour · Human-Led │
-│                                                     │
-│ 3. CaasWhyCards   ← NEW                             │
-│    3 browser-mockup cards w/ glyph + title + desc   │
-│    Hover lift + scale, stagger reveal               │
-│                                                     │
-│ 4. CaasDeliveryStrip   ← NEW                        │
-│    Edge-to-edge horizontal masonry (5 tiles, varied │
-│    heights). Three-tab control floats above.        │
-│    Active tab paints one tile w/ lav gradient and   │
-│    swaps the heading + lead copy below.             │
-│                                                     │
-│ 5. CaasServicesGrid   ← NEW                         │
-│    Phase 1 = 8-card responsive grid (4×2 desktop,   │
-│    2×4 tablet, 1-col mobile). Each card: number     │
-│    badge, title, sub, expand-toggle that morphs     │
-│    card into gradient-active state showing desc +   │
-│    bullets + tags (single-open behaviour).          │
-│    Phase 2 = same grid, dimmed 0.72, 4 cards.       │
-│                                                     │
-│ 6. CaasGhostMarquee   ← NEW                         │
-│    Massive outlined "creative as a service" text    │
-│    scroll, lav-purple stroke, with bullet glyphs.   │
-│                                                     │
-│ 7. CaasCtaStripe                                    │
-│    Reuse existing CtaStripe with verbatim copy.     │
-│                                                     │
-│ 8. CaasFootRow + Footer                             │
-└─────────────────────────────────────────────────────┘
-```
+Upgrade the existing `Cursor.tsx` so on hoverable elements the ring becomes a **magnifying lens** that visually enlarges whatever sits beneath it.
 
-## Motion physics (matches ARTIX reference)
+**Behavior**
+- Default state: existing small dot + lav-purple ring (unchanged).
+- On hover over targets: ring grows to a ~84px circular **lens** with a subtle lav-purple border + soft inner shadow + tiny "+" glyph in the corner. The dot hides.
+- Targets that trigger the lens: `a, button, [role="button"], nav a, footer a, .chip-purple, .pill, .eyebrow, .tag, [data-magnify]`.
+- Add `data-magnify` to small text highlights we want included (eyebrow lines, stat numbers, footer link rows, header nav links, menu items).
 
-- **Orbital tiles**: 8 absolutely-positioned tiles around hero. Each gets `animation: float-orbit Xs ease-in-out infinite` with random delay + per-tile rotation. GSAP adds `y: ±30px` parallax on scroll.
-- **Browser-mockup cards**: subtle browser-chrome dots, `translate-y-[-6px]` + `shadow-glow-lav` on hover, fade-in-up stagger (0.12s gap) on scroll-into-view.
-- **Image strip**: outer container `overflow-hidden`; inner row gets `x: -120px` GSAP scrub tied to section progress (horizontal-on-vertical-scroll).
-- **Active service card**: framer-style click toggle; the active card paints `linear-gradient(135deg, lav-purple → lav-magenta → lav-pink)` and animates height to reveal body.
-- **Ghost marquee**: pure CSS `animate-marquee` with `-webkit-text-stroke` outlined type.
+**Magnification technique (performance-safe)**
+- The lens is a fixed circular div following the cursor (already has lerp).
+- Inside the lens: `background-image: -webkit-canvas` is heavy. Instead use the **CSS approach**: when a hover target is detected, briefly apply `transform: scale(1.06)` + `transition: transform 180ms ease-out` to the hovered element via a `data-mag-active` attribute toggled in the existing `mousemove` handler. The lens visually frames the slight scale-up, giving the magnify illusion without canvas/SVG overhead.
+- `prefers-reduced-motion` → skip the scale, keep ring color change only.
+- Touch / coarse pointers → cursor stays disabled (already handled).
 
-## Cleanups
+**Files**
+- `src/components/site/effects/Cursor.tsx` — extend with lens mode, target detection, and `data-mag-active` toggle on the hovered element (cleanup on leave).
+- `src/index.css` — add `.cursor-lens` (lens visual: 84px circle, `border: 1.5px solid hsl(var(--lav-purple))`, `box-shadow: inset 0 0 24px rgba(108,63,207,0.18), 0 6px 24px rgba(108,63,207,0.25)`, backdrop-filter blur(0)) and `[data-mag-active]{ transform: scale(1.06); transition: transform .18s ease-out; will-change: transform; }`.
+- Add `data-magnify` to: `Header.tsx` nav links + CTAs, `Footer.tsx` link rows, `Hero.tsx` eyebrow + stat numbers, `ProofWebinar.tsx` chips + stat numbers, `FinalCta.tsx` CTAs + note.
 
-- Delete imports/usages of `CursorPortal`, `CaasHero`, `WhyGrid`, `DeliveryTabs`, `ServiceAccordion`, sticky vertical phase rails from the page (files left on disk untouched in case other pages reference them — verified none do).
-- Page wrapped in `<div className="surface-lavender">` to inherit homepage palette (already used by `/what-we-do/marketing-maas`).
-- No `LeftRail` (already removed in last pass).
+## Files modified
 
-## Files
+- `src/components/site/home/Hero.tsx`
+- `src/components/site/home/ProofWebinar.tsx`
+- `src/components/site/home/FinalCta.tsx`
+- `src/components/site/effects/Cursor.tsx`
+- `src/components/site/Header.tsx`
+- `src/components/site/Footer.tsx`
+- `src/index.css`
 
-**New** (under `src/components/site/caas/lavender/`)
-- `CaasOrbitalHero.tsx` — hero + 8 floating tiles
-- `CaasWhyCards.tsx` — 3 browser-mockup cards
-- `CaasDeliveryStrip.tsx` — tabbed image strip
-- `CaasServicesGrid.tsx` — 12-card expandable grid (handles Phase 1 + 2)
-- `CaasGhostMarquee.tsx` — outlined scroller
-
-**Edited**
-- `src/pages/what-we-do/CreativeCaaS.tsx` — full rewrite using new components, verbatim base copy
-- `src/index.css` — append: `@keyframes float-orbit`, `.tile-orbit`, `.browser-mock`, `.svc-card-active` (lavender gradient), `.shadow-glow-lav`
-
-## QA pass before delivery
-
-After build I will:
-1. Open `/what-we-do/creative-caas` in the preview.
-2. Screenshot at 1440 / 1024 / 768 / 390 viewports.
-3. Walk each section checking: container padding (`px-6 lg:px-12`), no overflow, no overlapping tiles vs headline, accordion expand height stable, marquee not clipped, CTA buttons reachable.
-4. Fix any alignment/overflow bugs in-place before reporting back.
-
-## Approval
-
-Reply approve and I'll execute end-to-end in one pass — rebuild + QA + bug-fix — and report back with the screenshot summary.
