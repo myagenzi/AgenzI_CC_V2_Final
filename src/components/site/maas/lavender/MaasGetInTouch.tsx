@@ -40,7 +40,7 @@ export function MaasGetInTouch() {
 
             <div className="md:col-span-4 md:text-right">
               <a
-                href="mailto:hello@agenzi.in"
+                href="/book-audit"
                 className="cta-purple inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold"
               >
                 Book Free Audit →

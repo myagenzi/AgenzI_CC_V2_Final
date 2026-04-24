@@ -115,20 +115,20 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <a
-              href="/#contact"
+            <Link
+              to="/book-audit"
               data-magnify
               className="hidden rounded-full px-4 py-2 text-[13px] text-foreground/70 transition hover:text-foreground sm:inline-flex"
             >
               Login
-            </a>
-            <a
-              href="/#contact"
+            </Link>
+            <Link
+              to="/book-audit"
               data-magnify
               className="cta-glow rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground"
             >
               Book Free Audit
-            </a>
+            </Link>
             <button
               type="button"
               className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground md:hidden"
@@ -187,13 +187,13 @@ export function Header() {
             {l.label}
           </a>
         ))}
-        <a
-          href="/#contact"
+        <Link
+          to="/book-audit"
           onClick={() => setMobileOpen(false)}
           className="mt-4 font-display text-2xl font-bold text-primary"
         >
           Book Free Audit →
-        </a>
+        </Link>
       </div>
     </>
   );

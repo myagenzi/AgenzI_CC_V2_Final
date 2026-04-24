@@ -37,7 +37,7 @@ export function AboutCta() {
             <div className="flex flex-col items-start gap-7 lg:items-end">
               <Reveal delay={1}>
                 <a
-                  href="mailto:hello@agenzi.ai"
+                  href="/book-audit"
                   data-magnify
                   className="cta-purple rounded-full px-7 py-3.5 text-[13px] font-semibold"
                 >

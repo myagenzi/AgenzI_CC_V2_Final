@@ -2,17 +2,27 @@ import { useEffect, useRef, useState } from "react";
 
 const SIGNAL_SELECTOR =
   'a, button, [role="button"], input, textarea, select, label, [data-magnify], .chip-purple, nav a, footer a, .pill, .eyebrow, .cursor-hover';
-const READING_SELECTOR = "p, li, blockquote, small, td, .lead, .sd";
+const READING_SELECTOR =
+  "p, li, blockquote, small, td, span.lead, span.sd, .lead, .sd";
 
 type Mode = "idle" | "signal" | "reading";
+
+const LENS_RADIUS = 42; // px on screen — matches .cursor-reading 84px
+const SCALE = 1.55;
 
 export function Cursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
+  const lensRef = useRef<HTMLDivElement | null>(null);
+  const cloneRef = useRef<HTMLElement | null>(null);
+  const sourceRef = useRef<HTMLElement | null>(null);
+  const sourceRect = useRef<DOMRect | null>(null);
+
   const target = useRef({ x: -100, y: -100 });
   const ring = useRef({ x: -100, y: -100 });
   const vel = useRef({ x: 0, y: 0 });
   const activeEl = useRef<HTMLElement | null>(null);
+  const modeRef = useRef<Mode>("idle");
   const [enabled, setEnabled] = useState(false);
   const [mode, setMode] = useState<Mode>("idle");
   const reducedRef = useRef(false);
@@ -25,6 +35,13 @@ export function Cursor() {
     setEnabled(true);
     document.body.classList.add("cursor-none");
 
+    // Create persistent lens portal
+    const lens = document.createElement("div");
+    lens.className = "lens-clone";
+    lens.setAttribute("aria-hidden", "true");
+    document.body.appendChild(lens);
+    lensRef.current = lens;
+
     const setActive = (el: HTMLElement | null) => {
       if (activeEl.current === el) return;
       if (activeEl.current && !reducedRef.current) {
@@ -36,6 +53,67 @@ export function Cursor() {
       }
     };
 
+    const teardownClone = () => {
+      if (!lensRef.current) return;
+      lensRef.current.classList.remove("is-active");
+      lensRef.current.replaceChildren();
+      cloneRef.current = null;
+      sourceRef.current = null;
+      sourceRect.current = null;
+    };
+
+    const setupClone = (sourceEl: HTMLElement) => {
+      if (!lensRef.current) return;
+      if (sourceRef.current === sourceEl) return;
+      // Skip cloning inside form controls
+      if (sourceEl.closest("input, textarea, select, [contenteditable]")) {
+        teardownClone();
+        return;
+      }
+      sourceRef.current = sourceEl;
+      const rect = sourceEl.getBoundingClientRect();
+      sourceRect.current = rect;
+
+      // Clone the source node, copy computed styles for top-level
+      const clone = sourceEl.cloneNode(true) as HTMLElement;
+      // Strip ids to avoid duplicate-id collisions
+      clone.removeAttribute("id");
+      clone.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+
+      const cs = window.getComputedStyle(sourceEl);
+      clone.style.position = "absolute";
+      clone.style.left = `${rect.left}px`;
+      clone.style.top = `${rect.top}px`;
+      clone.style.width = `${rect.width}px`;
+      clone.style.height = `${rect.height}px`;
+      clone.style.margin = "0";
+      clone.style.fontFamily = cs.fontFamily;
+      clone.style.fontSize = cs.fontSize;
+      clone.style.fontWeight = cs.fontWeight;
+      clone.style.lineHeight = cs.lineHeight;
+      clone.style.letterSpacing = cs.letterSpacing;
+      clone.style.color = cs.color;
+      clone.style.textAlign = cs.textAlign;
+      clone.style.padding = cs.padding;
+      clone.style.boxSizing = cs.boxSizing;
+
+      lensRef.current.replaceChildren(clone);
+      cloneRef.current = clone;
+      lensRef.current.classList.add("is-active");
+    };
+
+    const updateLens = (cx: number, cy: number) => {
+      if (!lensRef.current || !cloneRef.current || !sourceRect.current) return;
+      const rect = sourceRect.current;
+      // Local coordinates inside the source element
+      const localX = cx - rect.left;
+      const localY = cy - rect.top;
+      cloneRef.current.style.transformOrigin = `${localX}px ${localY}px`;
+      cloneRef.current.style.transform = `scale(${SCALE})`;
+      lensRef.current.style.clipPath = `circle(${LENS_RADIUS}px at ${cx}px ${cy}px)`;
+      (lensRef.current.style as any).webkitClipPath = `circle(${LENS_RADIUS}px at ${cx}px ${cy}px)`;
+    };
+
     const onMove = (e: MouseEvent) => {
       target.current.x = e.clientX;
       target.current.y = e.clientY;
@@ -45,30 +123,54 @@ export function Cursor() {
       const el = e.target as HTMLElement | null;
       const signal = el?.closest(SIGNAL_SELECTOR) as HTMLElement | null;
       if (signal) {
-        setMode("signal");
+        if (modeRef.current !== "signal") {
+          modeRef.current = "signal";
+          setMode("signal");
+        }
         setActive(signal);
+        teardownClone();
         return;
       }
       const reading = el?.closest(READING_SELECTOR) as HTMLElement | null;
-      if (reading) {
-        setMode("reading");
+      if (reading && !reducedRef.current && reading.textContent?.trim()) {
+        if (modeRef.current !== "reading") {
+          modeRef.current = "reading";
+          setMode("reading");
+        }
         setActive(null);
+        setupClone(reading);
+        updateLens(e.clientX, e.clientY);
         return;
       }
-      setMode("idle");
+      if (modeRef.current !== "idle") {
+        modeRef.current = "idle";
+        setMode("idle");
+      }
       setActive(null);
+      teardownClone();
+    };
+
+    const onScrollOrResize = () => {
+      if (sourceRef.current && cloneRef.current) {
+        const rect = sourceRef.current.getBoundingClientRect();
+        sourceRect.current = rect;
+        cloneRef.current.style.left = `${rect.left}px`;
+        cloneRef.current.style.top = `${rect.top}px`;
+        updateLens(target.current.x, target.current.y);
+      }
     };
 
     const onLeave = () => {
+      modeRef.current = "idle";
       setMode("idle");
       setActive(null);
+      teardownClone();
     };
 
     let raf = 0;
     const stiffness = 0.18;
     const damping = 0.72;
     const tick = () => {
-      // critically-damped spring
       vel.current.x += (target.current.x - ring.current.x) * stiffness;
       vel.current.y += (target.current.y - ring.current.y) * stiffness;
       vel.current.x *= damping;
@@ -83,11 +185,18 @@ export function Cursor() {
     raf = requestAnimationFrame(tick);
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mouseout", onLeave);
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseout", onLeave);
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
       setActive(null);
+      teardownClone();
+      lensRef.current?.remove();
+      lensRef.current = null;
       document.body.classList.remove("cursor-none");
     };
   }, []);

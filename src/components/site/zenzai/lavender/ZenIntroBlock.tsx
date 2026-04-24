@@ -66,7 +66,7 @@ export function ZenIntroBlock() {
             </Reveal>
             <Reveal delay={3}>
               <a
-                href="mailto:hello@agenzi.ai"
+                href="/book-audit"
                 data-magnify
                 className="cta-purple mt-8 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >

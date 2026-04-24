@@ -159,7 +159,7 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
             ))}
           </ul>
           <a
-            href="mailto:hello@agenzi.ai"
+            href="/book-audit"
             data-magnify
             className="cta-purple mt-8 inline-flex items-center justify-center rounded-full px-6 py-3.5 text-[13px] font-semibold"
           >
@@ -210,7 +210,7 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
         ))}
       </ul>
       <a
-        href="mailto:hello@agenzi.ai"
+        href="/book-audit"
         data-magnify
         className="mt-8 inline-flex items-center justify-center rounded-full border border-foreground/15 bg-white/40 px-6 py-3.5 text-[13px] font-semibold text-foreground transition hover:bg-white/70"
       >

@@ -63,7 +63,7 @@ export function ZenLavenderHero() {
           <Reveal delay={3}>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <a
-                href="mailto:hello@agenzi.ai"
+                href="/book-audit"
                 data-magnify
                 className="cta-purple inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold"
               >

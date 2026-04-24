@@ -1,8 +1,9 @@
+import { Link } from "react-router-dom";
 import { Reveal } from "@/components/site/Reveal";
 
-export function HowCta() {
+export function BookAuditCta() {
   return (
-    <section className="py-20 lg:py-28">
+    <section className="pb-24 lg:pb-32">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-12">
         <div className="tile-cosmic relative overflow-hidden rounded-[32px] p-10 lg:p-16">
           <div
@@ -18,35 +19,35 @@ export function HowCta() {
               <Reveal>
                 <h2
                   className="font-display font-bold leading-[0.98] tracking-[-0.02em] text-[hsl(var(--starlight))]"
-                  style={{ fontSize: "clamp(34px, 4.5vw, 56px)" }}
+                  style={{ fontSize: "clamp(32px, 4.2vw, 52px)" }}
                 >
-                  Step one is a
+                  Still on the fence?
                   <br />
                   <span style={{ color: "hsl(var(--gold))", fontStyle: "italic" }}>
-                    30-minute conversation.
+                    Read the playbook first.
                   </span>
                 </h2>
               </Reveal>
               <Reveal delay={1}>
                 <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[hsl(var(--starlight)/.7)]">
-                  No pitch. No commitment. Just a clear picture of what's possible —
-                  and a roadmap that's yours to keep.
+                  See exactly how the system is built — week by week — before
+                  you book the call.
                 </p>
               </Reveal>
             </div>
             <div className="flex flex-col items-start gap-7 lg:items-end">
               <Reveal delay={1}>
-                <a
-                  href="/book-audit"
+                <Link
+                  to="/how-it-works"
                   data-magnify
                   className="cta-purple rounded-full px-7 py-3.5 text-[13px] font-semibold"
                 >
-                  Book Your Free AI Audit →
-                </a>
+                  See How It Works →
+                </Link>
               </Reveal>
               <Reveal delay={2}>
                 <span className="font-mono-tech text-[10px] uppercase tracking-[0.3em] text-[hsl(var(--starlight)/.5)]">
-                  ◴ limited spots this quarter
+                  ◴ 4-min read · no email required
                 </span>
               </Reveal>
             </div>
