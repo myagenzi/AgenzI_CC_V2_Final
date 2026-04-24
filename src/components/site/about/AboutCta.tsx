@@ -34,7 +34,7 @@ export function AboutCta() {
                 </p>
               </Reveal>
             </div>
-            <div className="flex flex-col items-start gap-3 lg:items-end">
+            <div className="flex flex-col items-start gap-5 lg:items-end">
               <Reveal delay={1}>
                 <a
                   href="mailto:hello@agenzi.ai"
