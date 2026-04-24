@@ -344,11 +344,21 @@
   opacity: 0;
   transition: opacity 180ms ease-out;
 }
-.lens-clone.is-active { opacity: 1; }
+.lens-clone.is-active {
+  opacity: 1;
+  box-shadow: 0 0 0 1px hsl(var(--lav-purple) / 0.35);
+}
 .lens-clone * {
   pointer-events: none !important;
   user-select: none !important;
   cursor: none !important;
+}
+[data-mag-source],
+[data-mag-source] * {
+  color: transparent !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: transparent !important;
+  caret-color: transparent !important;
 }
 .cursor-pulse-ring {
   position: absolute;
