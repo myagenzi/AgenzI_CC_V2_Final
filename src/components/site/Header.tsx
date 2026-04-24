@@ -74,7 +74,7 @@ export function Header() {
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
             <DropdownMenu>
-              <DropdownMenuTrigger className="inline-flex items-center gap-1 rounded-full px-4 py-2 text-[13px] text-foreground/70 outline-none transition-colors hover:text-foreground data-[state=open]:text-foreground">
+              <DropdownMenuTrigger data-magnify className="inline-flex items-center gap-1 rounded-full px-4 py-2 text-[13px] text-foreground/70 outline-none transition-colors hover:text-foreground data-[state=open]:text-foreground">
                 What We Do
                 <ChevronDown className="h-3.5 w-3.5 opacity-70" />
               </DropdownMenuTrigger>
@@ -106,6 +106,7 @@ export function Header() {
               <a
                 key={l.label}
                 href={l.href}
+                data-magnify
                 className="rounded-full px-4 py-2 text-[13px] text-foreground/70 transition-colors hover:text-foreground"
               >
                 {l.label}
@@ -116,12 +117,14 @@ export function Header() {
           <div className="flex items-center gap-2">
             <a
               href="/#contact"
+              data-magnify
               className="hidden rounded-full px-4 py-2 text-[13px] text-foreground/70 transition hover:text-foreground sm:inline-flex"
             >
               Login
             </a>
             <a
               href="/#contact"
+              data-magnify
               className="cta-glow rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground"
             >
               Book Free Audit

@@ -1,7 +1,28 @@
+import { useEffect, useState } from "react";
 import { HeroTiles } from "@/components/site/home/HeroTiles";
 import { Reveal } from "@/components/site/Reveal";
 
+function useISTClock() {
+  const [time, setTime] = useState(() => formatIST(new Date()));
+  useEffect(() => {
+    const id = setInterval(() => setTime(formatIST(new Date())), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
+function formatIST(d: Date) {
+  return d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Kolkata",
+  });
+}
+
 export function Hero() {
+  const ist = useISTClock();
   return (
     <section
       id="top"
@@ -70,7 +91,7 @@ export function Hero() {
                 { stat: "90D", label: "Performance guarantee in writing" },
               ].map((s) => (
                 <div key={s.stat}>
-                  <div className="font-display text-[clamp(28px,3.2vw,40px)] font-extrabold leading-none tracking-tight text-foreground">
+                  <div data-magnify className="font-display text-[clamp(28px,3.2vw,40px)] font-extrabold leading-none tracking-tight text-foreground">
                     {s.stat}
                   </div>
                   <div className="mt-2 text-[12px] leading-snug text-muted-foreground">
@@ -78,6 +99,20 @@ export function Hero() {
                   </div>
                 </div>
               ))}
+            </div>
+          </Reveal>
+
+          <Reveal delay={4}>
+            <div
+              data-magnify
+              className="font-mono-tech mt-8 inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[hsl(var(--lav-purple))] shadow-[0_0_8px_hsl(var(--lav-purple))]" />
+              <span>Hyderabad, India</span>
+              <span className="opacity-40">·</span>
+              <span>IST {ist}</span>
+              <span className="opacity-40">·</span>
+              <span className="text-[hsl(var(--lav-purple))]">SYSTEMS ACTIVE</span>
             </div>
           </Reveal>
         </div>
