@@ -1,74 +1,93 @@
 
 
-# Homepage Content Sync + Magnifier Cursor
+# Zenzai Page Full Rebuild + CaaS Marquee Fix
 
-Two things in one pass. No design tokens or layout change — just content fidelity to `base/_unpacked/index.html` plus a new global cursor behavior.
+Inspiration: the uploaded MDS screenshot — calm white surface, soft purple/blue accents, large rounded media tiles, clean stat/feature cards with numbered chips, dark cosmic feature panel, dark contact band. Translated into our **lavender brand system** (Bricolage + Space Grotesk, lav-purple/magenta/pink + gold), **not** copied 1:1. Content lifted verbatim from `base/_unpacked/index.html` (Zenzai sections).
 
-## Part A — Content sync (lavender vibe preserved)
+---
 
-### 1. `Hero.tsx` — status strip
-Slim bar under the stats grid:
-`• Hyderabad, India · IST HH:MM:SS · SYSTEMS ACTIVE`
-- Live clock via `setInterval` (1s), cleaned up on unmount.
-- Style: `font-mono-tech`, `text-[11px]`, lav-purple dot, muted separators.
+## Part 1 — Zenzai page (full revamp)
 
-### 2. `ProofWebinar.tsx` — copy rewrite
-- Eyebrow → **Why It Works**
-- H2 → **Built by operators. Backed by numbers.** (gold accent on `Backed by numbers`)
-- Stat cards verbatim from source:
-  - **70%** — *AI changed the cost structure of creative production. We pass that saving to you — at 60–80% gross margin.*
-  - **48h** — *What takes an agency two weeks takes us 48 hours. AI doesn't sleep or wait for approval chains.*
-  - **90D** — *20–40% cost reduction or 2–5× output increase in 90 days. Or we work free until we deliver. No asterisks.*
-- "Built for" tags → **Founders · D2C Brands · SMBs · Coaches + Creators · Growth-stage startups · Enterprise** (6 chips, existing `chip-purple`)
-- New **philosophy quote** block in `glass-lavender` panel above webinar bar — large display type, last sentence in lilac accent:
-  *"AI won't replace your business. But a business using AI well will. The businesses that build the system now will be the ones everyone else is chasing in three years."*
-- New **urgency line** between philosophy and webinar bar (small uppercase eyebrow + body):
-  *We only onboard a small number of businesses each month. Limited spots available for May 2026.*
-- Webinar bar:
-  - Title → **See It In Action**
-  - Sub → *Watch us build a real AI system for a real business — live. 30 minutes. No pitch. You leave with a playbook.*
-  - Button → **Reserve your spot →**
+### Strip
+Remove `LeftRail`, `CursorPortal`, dark `ZenzaiHero` / `ZenzaiAbout` / `LayerServices`, hand-rolled footer ribbon. Page becomes a clean lavender stack like Home/CaaS.
 
-### 3. `FinalCta.tsx` — copy rewrite + dual CTA
-- Eyebrow → **Your Move**
-- H2 → **See what your system could look like.** (gold italic on *could look like*)
-- Body → *30 minutes. No pitch. Just a clear picture of what's possible — and a roadmap that's yours to keep regardless of what you decide.*
-- Two CTAs (existing pill styles):
-  - Primary `cta-purple`: **Book Your Free AI Audit →** (mailto)
-  - Secondary `glass-lavender` ghost pill: **See pricing** → `#pricing`
-- Note under CTAs (muted, centered): *We only onboard a small number of businesses each month. No commitment required.*
+### Keep
+**`MetaballsGL`** interactive WebGL — preserved as the hero's interactive element, re-tinted via lavender CSS vars. Reduced-motion fallback (`CursorMetaballs2D`) stays.
 
-### Explicitly NOT touched
-No Nucleus / orbital diagram. No reorder. `StatPanel`, `Stats`, `Ticker`, `Statement`, `EnginesStack`, `Problem`, `Mirror`, `HowItWorks`, `Footer` left as-is.
+### New components in `src/components/site/zenzai/lavender/`
 
-## Part B — Magnifier cursor (global)
+**1. `ZenLavenderHero.tsx`** — clean two-column hero (mirrors MDS hero rhythm)
+- Left: chip `Engine 03 · Zenzai`, H1 *"You've already tried AI."* + gradient italic line *"You just never built the system around it."*, sub copy verbatim from source, dual CTA (`cta-purple` Book Free Audit + ghost See services).
+- Right: large rounded `glass-lavender` media tile with `MetaballsGL` inside — same "framed media block" feel as MDS hero image, but lavender.
+- Tiny `ScrollTeaser` at bottom (CSS pulse, no JS).
 
-Upgrade the existing `Cursor.tsx` so on hoverable elements the ring becomes a **magnifying lens** that visually enlarges whatever sits beneath it.
+**2. `ZenPillars.tsx`** — 3-feature row (mirrors MDS "Індивідуальний підхід / Якість / Підтримка" row)
+- Three light cards with a small lav-purple/gold glyph plate on top, short title, 1-line sub.
+- Content from source: **Automate · Integrate · Build** taglines.
 
-**Behavior**
-- Default state: existing small dot + lav-purple ring (unchanged).
-- On hover over targets: ring grows to a ~84px circular **lens** with a subtle lav-purple border + soft inner shadow + tiny "+" glyph in the corner. The dot hides.
-- Targets that trigger the lens: `a, button, [role="button"], nav a, footer a, .chip-purple, .pill, .eyebrow, .tag, [data-magnify]`.
-- Add `data-magnify` to small text highlights we want included (eyebrow lines, stat numbers, footer link rows, header nav links, menu items).
+**3. `ZenIntroBlock.tsx`** — section intro + "6 reasons" style grid (mirrors MDS "6 переваг" panel)
+- Left column: eyebrow `Three Layers`, H2 *"Start with automations. Add integrations. Build what doesn't exist yet."* (gradient on last line), short body, CTA.
+- Right: a tall dark cosmic tile (`tile-cosmic`) labeled **Layer 01 — Automations** as the "highlighted" card.
+- Below: 5 numbered light cards (02–06) for the remaining layers/themes from source (Integrations, Custom AI, Compounding, Ownership, Speed). Numbers in gold display type, lav-purple bullet + title + 1-liner.
 
-**Magnification technique (performance-safe)**
-- The lens is a fixed circular div following the cursor (already has lerp).
-- Inside the lens: `background-image: -webkit-canvas` is heavy. Instead use the **CSS approach**: when a hover target is detected, briefly apply `transform: scale(1.06)` + `transition: transform 180ms ease-out` to the hovered element via a `data-mag-active` attribute toggled in the existing `mousemove` handler. The lens visually frames the slight scale-up, giving the magnify illusion without canvas/SVG overhead.
-- `prefers-reduced-motion` → skip the scale, keep ring color change only.
-- Touch / coarse pointers → cursor stays disabled (already handled).
+**4. `ZenLayerServices.tsx`** — full accordion stack (lavender skin of `ServiceAccordion`)
+- Three blocks (Layer 01 / 02 / 03) with eyebrow + gradient headline + accordion of all services from source lines 1351–1390 (verbatim copy + tags).
+- One-time scroll reveal only (no scroll-velocity scrub).
 
-**Files**
-- `src/components/site/effects/Cursor.tsx` — extend with lens mode, target detection, and `data-mag-active` toggle on the hovered element (cleanup on leave).
-- `src/index.css` — add `.cursor-lens` (lens visual: 84px circle, `border: 1.5px solid hsl(var(--lav-purple))`, `box-shadow: inset 0 0 24px rgba(108,63,207,0.18), 0 6px 24px rgba(108,63,207,0.25)`, backdrop-filter blur(0)) and `[data-mag-active]{ transform: scale(1.06); transition: transform .18s ease-out; will-change: transform; }`.
-- Add `data-magnify` to: `Header.tsx` nav links + CTAs, `Footer.tsx` link rows, `Hero.tsx` eyebrow + stat numbers, `ProofWebinar.tsx` chips + stat numbers, `FinalCta.tsx` CTAs + note.
+**5. `ZenContactBand.tsx`** — dark CTA band (mirrors MDS dark contact strip)
+- Dark cosmic background, left headline *"Your business is running on repetition AI should be doing."* + gradient *"Let's find out how much that's actually costing you."*, right side: `cta-purple` Book Free Audit + ghost See pricing + small "limited spots" note. Replaces previous footer ribbon.
 
-## Files modified
+**6. `ScrollTeaser.tsx`** (shared, also used on CaaS hero)
+- Small vertical hairline `h-10 w-px bg-[hsl(var(--lav-purple)/.4)]` + "Scroll" label in `font-mono-tech text-[10px]`, soft pulse keyframe. Pure CSS — never reacts to mouse/scroll.
 
-- `src/components/site/home/Hero.tsx`
-- `src/components/site/home/ProofWebinar.tsx`
-- `src/components/site/home/FinalCta.tsx`
-- `src/components/site/effects/Cursor.tsx`
-- `src/components/site/Header.tsx`
-- `src/components/site/Footer.tsx`
-- `src/index.css`
+### Page composition (`IntelligenceZenzai.tsx`)
+```
+<LenisProvider>
+  <div className="surface-lavender min-h-screen">
+    <Header />
+    <ZenLavenderHero/>           (MetaballsGL preserved inside)
+    <MarqueeStatement words={["Automate","Integrate","Build","Compound"]} />
+    <ZenPillars/>
+    <ZenIntroBlock/>             (id="zen-svcs")
+    <ZenLayerServices/>
+    <ZenContactBand/>
+    <Footer />
+  </div>
+</LenisProvider>
+```
+All interactive elements get `data-magnify` so the magnifier cursor works.
+
+---
+
+## Part 2 — CaaS scroll teaser fix (and global)
+
+**Problem**: `MarqueeStatement` listens to Lenis scroll velocity and rewrites `animationDuration` on every event → it speeds up wildly with the wheel and feels "vague / chasing the mouse".
+
+**Fix** (`src/components/site/caas/MarqueeStatement.tsx`):
+- Remove the Lenis velocity listener. Single fixed CSS speed, calm and constant.
+- Downsize: `text-3xl md:text-5xl` (was 5xl/7xl), `py-4` (was py-8), gap-8, lighter border, lav-purple dot. Becomes a refined small ticker — consistent with page vibe.
+
+**Add `ScrollTeaser`** at the bottom of `CaasOrbitalHero` (the same component used on Zenzai hero) — small, on-brand, never reacts to scroll.
+
+---
+
+## Files
+
+**Created**
+- `src/components/site/zenzai/lavender/ZenLavenderHero.tsx`
+- `src/components/site/zenzai/lavender/ZenPillars.tsx`
+- `src/components/site/zenzai/lavender/ZenIntroBlock.tsx`
+- `src/components/site/zenzai/lavender/ZenLayerServices.tsx`
+- `src/components/site/zenzai/lavender/ZenContactBand.tsx`
+- `src/components/site/zenzai/lavender/ScrollTeaser.tsx`
+
+**Modified**
+- `src/pages/what-we-do/IntelligenceZenzai.tsx` — full rewrite, lavender stack
+- `src/components/site/caas/MarqueeStatement.tsx` — remove velocity listener, downsize
+- `src/components/site/caas/lavender/CaasOrbitalHero.tsx` — append `<ScrollTeaser/>`
+- `src/index.css` — `.scroll-teaser` keyframe (pulse hairline) if needed
+
+**Untouched**
+- `MetaballsGL` (re-skinned via CSS vars only)
+- All Home/CaaS sections, Header, Footer, design tokens, magnifier cursor
 
