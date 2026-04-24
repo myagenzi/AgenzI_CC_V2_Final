@@ -69,7 +69,7 @@ export function HowSteps() {
           />
           <div className="flex flex-col gap-6">
             {steps.map((s, i) => (
-              <Reveal key={s.n} delay={i % 3}>
+              <Reveal key={s.n} delay={(i % 3) as 0 | 1 | 2}>
                 <div className="flex flex-col gap-4 md:flex-row md:items-stretch">
                   {/* Node */}
                   <div className="relative flex shrink-0 items-start md:w-[56px]">

@@ -73,7 +73,7 @@ export function HowFeatureGrid() {
           {/* 3 light glass tiles stacked */}
           <div className="grid grid-cols-1 gap-5">
             {tiles.map((t, i) => (
-              <Reveal key={t.t} delay={i}>
+              <Reveal key={t.t} delay={i as 0 | 1 | 2}>
                 <div
                   data-magnify
                   className="glass-lavender flex items-start gap-5 rounded-[24px] p-6 lg:p-7"
