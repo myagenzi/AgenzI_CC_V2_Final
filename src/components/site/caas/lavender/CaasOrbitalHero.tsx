@@ -1,5 +1,6 @@
 import { Reveal } from "@/components/site/Reveal";
 import { MediaPlaceholder } from "@/components/site/MediaPlaceholder";
+import { ScrollTeaser } from "@/components/site/zenzai/lavender/ScrollTeaser";
 
 const tiles = [
   { label: "Brand reel",       size: "w-24 h-24 md:w-32 md:h-32",  top: "4%",  left: "6%",  rot: -8, delay: "0s"   },
@@ -108,6 +109,11 @@ export function CaasOrbitalHero() {
               </a>
             </div>
           </Reveal>
+        </div>
+
+        {/* scroll teaser */}
+        <div className="mt-10 flex justify-center">
+          <ScrollTeaser />
         </div>
       </div>
     </section>
