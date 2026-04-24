@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 
-const MAGNIFY_SELECTOR =
-  'a, button, [role="button"], input, textarea, select, label, nav a, footer a, .chip-purple, .pill, .eyebrow, .tag, [data-magnify], .cursor-hover';
+const SIGNAL_SELECTOR =
+  'a, button, [role="button"], input, textarea, select, label, [data-magnify], .chip-purple, nav a, footer a, .pill, .eyebrow, .cursor-hover';
+const READING_SELECTOR = "p, li, blockquote, small, td, .lead, .sd";
+
+type Mode = "idle" | "signal" | "reading";
 
 export function Cursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const target = useRef({ x: -100, y: -100 });
   const ring = useRef({ x: -100, y: -100 });
+  const vel = useRef({ x: 0, y: 0 });
   const activeEl = useRef<HTMLElement | null>(null);
   const [enabled, setEnabled] = useState(false);
-  const [hovering, setHovering] = useState(false);
+  const [mode, setMode] = useState<Mode>("idle");
   const reducedRef = useRef(false);
 
   useEffect(() => {
@@ -39,21 +43,38 @@ export function Cursor() {
         dotRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
       }
       const el = e.target as HTMLElement | null;
-      const match = el?.closest(MAGNIFY_SELECTOR) as HTMLElement | null;
-      const isHover = !!match;
-      setHovering(isHover);
-      setActive(match);
+      const signal = el?.closest(SIGNAL_SELECTOR) as HTMLElement | null;
+      if (signal) {
+        setMode("signal");
+        setActive(signal);
+        return;
+      }
+      const reading = el?.closest(READING_SELECTOR) as HTMLElement | null;
+      if (reading) {
+        setMode("reading");
+        setActive(null);
+        return;
+      }
+      setMode("idle");
+      setActive(null);
     };
 
     const onLeave = () => {
-      setHovering(false);
+      setMode("idle");
       setActive(null);
     };
 
     let raf = 0;
+    const stiffness = 0.18;
+    const damping = 0.72;
     const tick = () => {
-      ring.current.x += (target.current.x - ring.current.x) * 0.18;
-      ring.current.y += (target.current.y - ring.current.y) * 0.18;
+      // critically-damped spring
+      vel.current.x += (target.current.x - ring.current.x) * stiffness;
+      vel.current.y += (target.current.y - ring.current.y) * stiffness;
+      vel.current.x *= damping;
+      vel.current.y *= damping;
+      ring.current.x += vel.current.x;
+      ring.current.y += vel.current.y;
       if (ringRef.current) {
         ringRef.current.style.transform = `translate3d(${ring.current.x}px, ${ring.current.y}px, 0) translate(-50%, -50%)`;
       }
@@ -73,27 +94,26 @@ export function Cursor() {
 
   if (!enabled) return null;
 
+  const ringClass =
+    mode === "reading"
+      ? "cursor-reading"
+      : mode === "signal"
+      ? "cursor-signal"
+      : "cursor-idle";
+
   return (
     <>
       <div
         ref={ringRef}
         aria-hidden
-        className={`pointer-events-none fixed left-0 top-0 z-[9999] rounded-full transition-[width,height,background-color,border-color,box-shadow] duration-200 ease-out ${
-          hovering ? "cursor-lens" : "h-8 w-8 border-[1.5px]"
-        }`}
-        style={
-          hovering
-            ? undefined
-            : {
-                borderColor: "hsl(var(--lav-purple))",
-                backgroundColor: "transparent",
-              }
-        }
+        className={`pointer-events-none fixed left-0 top-0 z-[9999] rounded-full ${ringClass}`}
       >
-        {hovering && (
-          <span className="pointer-events-none absolute right-2 top-2 font-mono-tech text-[10px] font-bold text-[hsl(var(--lav-purple))]">
-            +
-          </span>
+        {mode === "signal" && (
+          <>
+            <span className="cursor-pulse-ring" style={{ animationDelay: "0s" }} />
+            <span className="cursor-pulse-ring" style={{ animationDelay: "0.5s" }} />
+            <span className="cursor-pulse-ring" style={{ animationDelay: "1s" }} />
+          </>
         )}
       </div>
       <div
@@ -102,7 +122,8 @@ export function Cursor() {
         className="pointer-events-none fixed left-0 top-0 z-[9999] h-1.5 w-1.5 rounded-full transition-opacity duration-150"
         style={{
           backgroundColor: "hsl(var(--lav-purple))",
-          opacity: hovering ? 0 : 1,
+          opacity: mode === "reading" ? 0 : 1,
+          boxShadow: "0 0 0 2px hsl(var(--background) / 0.5)",
         }}
       />
     </>
