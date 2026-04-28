@@ -69,7 +69,7 @@ export function Header() {
           )}
         >
           <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="AgenzI home">
-            <img src={logo} alt="AgenzI" className="h-11 w-auto md:h-14" />
+            <img src={logo} alt="AgenzI" className="h-[88px] w-auto md:h-[112px]" />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
