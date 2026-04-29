@@ -208,6 +208,23 @@ export function Header() {
             {l.label}
           </a>
         ))}
+        {user ? (
+          <button
+            type="button"
+            onClick={() => { signOut(); setMobileOpen(false); }}
+            className="border-b border-border py-4 text-left font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
+          >
+            Sign out
+          </button>
+        ) : (
+          <Link
+            to="/auth"
+            onClick={() => setMobileOpen(false)}
+            className="border-b border-border py-4 font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
+          >
+            Login
+          </Link>
+        )}
         <Link
           to="/book-audit"
           onClick={() => setMobileOpen(false)}
