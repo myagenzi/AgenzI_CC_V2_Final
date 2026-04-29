@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo-horizontal.png";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +29,8 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileWWDOpen, setMobileWWDOpen] = useState(false);
   const lastY = useRef(0);
+  const { user, signOut } = useAuth();
+  const initial = user?.email?.[0]?.toUpperCase() ?? "U";
 
   useEffect(() => {
     const onScroll = () => {
@@ -115,13 +118,31 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link
-              to="/book-audit"
-              data-magnify
-              className="hidden rounded-full px-4 py-2 text-[13px] text-foreground/70 transition hover:text-foreground sm:inline-flex"
-            >
-              Login
-            </Link>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  data-magnify
+                  className="hidden h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-[13px] font-semibold text-primary outline-none transition hover:bg-primary/20 sm:inline-flex"
+                  aria-label="Account"
+                >
+                  {initial}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={12} className="glass-strong w-48 rounded-2xl border-white/10 p-2 text-foreground">
+                  <div className="px-3 py-2 text-[11px] text-foreground/60 truncate">{user.email}</div>
+                  <DropdownMenuItem onClick={() => signOut()} className="rounded-xl px-3 py-2 focus:bg-white/5">
+                    <LogOut className="mr-2 h-4 w-4" /> Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                to="/auth"
+                data-magnify
+                className="hidden rounded-full px-4 py-2 text-[13px] text-foreground/70 transition hover:text-foreground sm:inline-flex"
+              >
+                Login
+              </Link>
+            )}
             <Link
               to="/book-audit"
               data-magnify
@@ -187,6 +208,23 @@ export function Header() {
             {l.label}
           </a>
         ))}
+        {user ? (
+          <button
+            type="button"
+            onClick={() => { signOut(); setMobileOpen(false); }}
+            className="border-b border-border py-4 text-left font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
+          >
+            Sign out
+          </button>
+        ) : (
+          <Link
+            to="/auth"
+            onClick={() => setMobileOpen(false)}
+            className="border-b border-border py-4 font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
+          >
+            Login
+          </Link>
+        )}
         <Link
           to="/book-audit"
           onClick={() => setMobileOpen(false)}
