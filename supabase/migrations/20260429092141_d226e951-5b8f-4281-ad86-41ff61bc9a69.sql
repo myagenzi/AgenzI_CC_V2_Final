@@ -1,30 +1,7 @@
-# Database Schema Setup
-
-Create four tables with proper Row-Level Security, a roles enum + `has_role()` SECURITY DEFINER function, and an auto-profile trigger on signup.
-
-## Tables
-
-1. **profiles** — extends `auth.users` (full_name, avatar_url, company). Auto-created via trigger on signup.
-2. **user_roles** — separate roles table with `app_role` enum (`admin`, `user`). Roles never live on profiles (prevents privilege escalation).
-3. **audit_bookings** — public lead capture from the Book an Audit form. Anonymous INSERT allowed; only admins can SELECT.
-4. **contact_submissions** — generic public lead capture. Same access pattern as audit_bookings.
-
-## Security model
-
-- All four tables: **RLS enabled**.
-- `profiles`: users SELECT/UPDATE own row; admins SELECT all.
-- `user_roles`: users SELECT own roles; only admins INSERT/UPDATE/DELETE.
-- `audit_bookings` & `contact_submissions`: `anon` + `authenticated` can INSERT; only admins can SELECT/UPDATE/DELETE.
-- `has_role(uuid, app_role)` is `SECURITY DEFINER` with locked `search_path` to avoid recursive RLS.
-- `updated_at` maintained by a shared trigger.
-
-## SQL (single migration)
-
-```sql
--- 1. Roles enum
+-- Roles enum
 create type public.app_role as enum ('admin', 'user');
 
--- 2. Generic updated_at trigger function
+-- Generic updated_at trigger function
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -35,7 +12,7 @@ begin
 end;
 $$;
 
--- 3. profiles
+-- profiles
 create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
@@ -72,7 +49,7 @@ create trigger on_auth_user_created
 after insert on auth.users
 for each row execute function public.handle_new_user();
 
--- 4. user_roles
+-- user_roles
 create table public.user_roles (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -82,7 +59,7 @@ create table public.user_roles (
 );
 alter table public.user_roles enable row level security;
 
--- 5. has_role() — SECURITY DEFINER, prevents recursive RLS
+-- has_role() — SECURITY DEFINER, prevents recursive RLS
 create or replace function public.has_role(_user_id uuid, _role public.app_role)
 returns boolean
 language sql
@@ -96,7 +73,7 @@ as $$
   );
 $$;
 
--- 6. audit_bookings (public lead capture)
+-- audit_bookings (public lead capture)
 create table public.audit_bookings (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
@@ -109,7 +86,7 @@ create table public.audit_bookings (
 );
 alter table public.audit_bookings enable row level security;
 
--- 7. contact_submissions (generic lead capture)
+-- contact_submissions (generic lead capture)
 create table public.contact_submissions (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
@@ -155,7 +132,7 @@ create policy "Admins read bookings"
   on public.audit_bookings for select to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
-create policy "Admins manage bookings"
+create policy "Admins update bookings"
   on public.audit_bookings for update to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
@@ -172,25 +149,10 @@ create policy "Admins read contacts"
   on public.contact_submissions for select to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
-create policy "Admins manage contacts"
+create policy "Admins update contacts"
   on public.contact_submissions for update to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
 create policy "Admins delete contacts"
   on public.contact_submissions for delete to authenticated
   using (public.has_role(auth.uid(), 'admin'));
-```
-
-## How to apply
-
-Once you approve, I'll run this as a single migration against your connected backend. After it runs, `src/integrations/supabase/types.ts` regenerates automatically so the tables become typed in code.
-
-## Bootstrapping the first admin
-
-No one is an admin by default. After the migration, sign up once via `/auth`, then I can insert your first admin row (you'll just need to share the email you used).
-
-## Notes / trade-offs
-
-- **Public INSERT on the lead-capture tables** is the standard pattern for marketing-site forms, but it does mean bots can spam them. If that becomes a problem, we can add a Cloudflare Turnstile / hCaptcha check or a rate-limit edge function later.
-- `audit_bookings` and `contact_submissions` deliberately have **no `user_id`** since they're submitted anonymously.
-- The auth trigger reads `raw_user_meta_data.full_name` — if your signup form sends a different key, tell me and I'll adjust.
