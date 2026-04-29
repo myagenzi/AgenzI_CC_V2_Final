@@ -1,48 +1,40 @@
-## Goal
+## Plan: Swap from Lovable Cloud to your own Supabase project
 
-Connect this project to your own Supabase project and add Email + Password sign-up and login.
+Right now the app is wired to a Lovable Cloud–provisioned Supabase instance (project ref `mzwvcknhgcydvmupcttj`, configured via `.env` and `supabase/config.toml`). To use your own Supabase project instead, we need to switch the integration over — this is done through Lovable's native Supabase integration, not by editing files manually.
 
-## Setup (you'll do this in the Lovable UI)
+### What you need to do (one-time, in the Lovable UI)
 
-After approving this plan, Lovable will prompt you to authorize the **native Supabase integration** and pick (or create) the Supabase project to connect. Once linked, Lovable injects `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and `VITE_SUPABASE_PROJECT_ID` automatically — no manual `.env` editing.
+1. Open the green **Supabase** button in the top-right of the Lovable editor.
+2. Choose **Connect Supabase** and authorize Lovable to access your Supabase account.
+3. Select the Supabase **organization** and **project** you want this app to use.
+4. Confirm the connection.
 
-In your Supabase dashboard → Authentication → URL Configuration, set:
-- Site URL: your preview URL (`https://id-preview--b00d1afd-02ad-4320-8f94-b7c8cd77439f.lovable.app`)
-- Redirect URLs: same URL (and your production domain when you have one)
+Once connected, Lovable will automatically:
+- Regenerate `src/integrations/supabase/client.ts` pointing at your project.
+- Update `.env` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`) with your project's values.
+- Refresh `src/integrations/supabase/types.ts` from your project's schema.
+- Update `supabase/config.toml` with your project ref.
 
-For faster testing, you can disable "Confirm email" in Authentication → Providers → Email.
+These four files are auto-managed — I cannot and should not edit them by hand.
 
-## What I'll build
+### What I'll do after you connect
 
-### 1. Supabase client
-- `src/integrations/supabase/client.ts` — typed client using the injected env vars, configured with `persistSession: true`, `autoRefreshToken: true`, `storage: localStorage`.
+Once you've completed the connection, I'll:
 
-### 2. Auth context
-- `src/hooks/useAuth.tsx` — `AuthProvider` + `useAuth()` exposing `{ user, session, loading, signIn, signUp, signOut }`.
-- Subscribes via `onAuthStateChange` **before** calling `getSession()` (correct order to avoid missed events).
-- Wrap `<App />` with `<AuthProvider>` in `src/App.tsx`.
+1. **Verify the swap** — confirm `.env` and `client.ts` now reference your project ref (not `mzwvcknhgcydvmupcttj`).
+2. **Configure Auth in your Supabase project** — you'll need to do this in your own Supabase dashboard under **Authentication → URL Configuration**:
+   - **Site URL**: your preview URL (`https://id-preview--b00d1afd-02ad-4320-8f94-b7c8cd77439f.lovable.app`) or your custom domain when published.
+   - **Redirect URLs**: add the same URL plus `http://localhost:5173` for local dev.
+   - Under **Authentication → Providers → Email**: enable Email provider. For testing, you may want to disable "Confirm email" so signups work immediately without email verification.
+3. **Smoke-test** the existing `/auth` page (signup + login) against your project to confirm sessions persist.
+4. **Optional cleanup** — the existing `useAuth` hook, `Auth.tsx` page, and Header auth UI all use the standard `@/integrations/supabase/client` import, so no code changes are needed. They will "just work" against the new project.
 
-### 3. `/auth` page (`src/pages/Auth.tsx`)
-- Tabbed UI (Login / Sign Up) using existing shadcn `Tabs`, `Input`, `Button`, `Label`, styled to match the site (rounded glass card, primary CTA).
-- Sign-up calls `supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + '/' } })`.
-- Login calls `supabase.auth.signInWithPassword({ email, password })`.
-- Friendly error toasts via existing `useToast` (handle `User already registered`, `Invalid login credentials`).
-- Redirects to `/` when a session is detected.
+### Things to be aware of
 
-### 4. Header integration (`src/components/site/Header.tsx`)
-- Replace the existing static "Login" link with auth-aware behavior:
-  - Logged out → "Login" links to `/auth`.
-  - Logged in → small avatar/initial dropdown with "Sign out".
-- Same change inside the mobile drawer.
+- **Existing data**: Any users who signed up against the Lovable Cloud instance will not exist in your own project. You'll start fresh.
+- **Lovable Cloud stays enabled at the workspace level**, but this project's client will point at your project instead. If you later want backend tools (migrations, edge functions) to act on your project, the native Supabase integration handles that routing automatically.
+- **No code edits from me are required for the swap itself** — it's purely a connection action on your side. My follow-up work is verification and any auth-config tweaks needed to make signup/login work end-to-end.
 
-### 5. Routing (`src/App.tsx`)
-- Add `<Route path="/auth" element={<Auth />} />` above the catch-all.
+### Next step
 
-## Out of scope (ask if you want these)
-
-- User profiles table, roles/RBAC, password reset page, Google/magic-link providers, protected routes — none of these are added now. Easy to layer on next.
-
-## Files touched
-
-- New: `src/integrations/supabase/client.ts`, `src/hooks/useAuth.tsx`, `src/pages/Auth.tsx`
-- Edited: `src/App.tsx`, `src/components/site/Header.tsx`
+Click the **Supabase** button in the top-right and connect your project. Reply here once it's done and I'll verify everything is wired up correctly.
