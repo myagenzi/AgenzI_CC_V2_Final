@@ -10,6 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const expects = [
   {
@@ -29,8 +31,65 @@ const expects = [
   },
 ];
 
+const initialForm = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  company: "",
+  struggle: "",
+  message: "",
+};
+
 export function BookAuditForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState(initialForm);
+
+  const update = (k: keyof typeof initialForm) => (e: { target: { value: string } }) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (submitting || submitted) return;
+
+    const fullName = `${form.firstName} ${form.lastName}`.trim();
+    if (!fullName || !form.email.trim()) {
+      toast({
+        title: "Missing info",
+        description: "Please share your name and a valid email.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+    const { error } = await supabase.from("audit_bookings").insert({
+      full_name: fullName,
+      email: form.email.trim(),
+      company: form.company.trim() || null,
+      phone: form.phone.trim() || null,
+      message:
+        [form.struggle && `Struggle: ${form.struggle}`, form.message]
+          .filter(Boolean)
+          .join("\n\n") || null,
+      source: "book-audit-page",
+    });
+    setSubmitting(false);
+
+    if (error) {
+      console.error("audit_bookings insert failed", error);
+      toast({
+        title: "Couldn't submit",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitted(true);
+    setForm(initialForm);
+  }
 
   return (
     <section className="pb-24 lg:pb-32">
@@ -49,32 +108,66 @@ export function BookAuditForm() {
                 30 minutes. No pitch. No commitment.
               </p>
 
-              <form
-                className="mt-8 space-y-5"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setSubmitted(true);
-                }}
-              >
+              <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field label="First name">
-                    <Input data-magnify type="text" placeholder="Your name" className="form-field" />
+                    <Input
+                      data-magnify
+                      type="text"
+                      placeholder="Your name"
+                      className="form-field"
+                      value={form.firstName}
+                      onChange={update("firstName")}
+                      required
+                    />
                   </Field>
                   <Field label="Last name">
-                    <Input data-magnify type="text" placeholder="Last name" className="form-field" />
+                    <Input
+                      data-magnify
+                      type="text"
+                      placeholder="Last name"
+                      className="form-field"
+                      value={form.lastName}
+                      onChange={update("lastName")}
+                    />
                   </Field>
                 </div>
                 <Field label="Business email">
-                  <Input data-magnify type="email" placeholder="you@company.com" className="form-field" />
+                  <Input
+                    data-magnify
+                    type="email"
+                    placeholder="you@company.com"
+                    className="form-field"
+                    value={form.email}
+                    onChange={update("email")}
+                    required
+                  />
                 </Field>
                 <Field label="WhatsApp number">
-                  <Input data-magnify type="tel" placeholder="+91 98765 43210" className="form-field" />
+                  <Input
+                    data-magnify
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    className="form-field"
+                    value={form.phone}
+                    onChange={update("phone")}
+                  />
                 </Field>
                 <Field label="Business / Brand name">
-                  <Input data-magnify type="text" placeholder="Your business name" className="form-field" />
+                  <Input
+                    data-magnify
+                    type="text"
+                    placeholder="Your business name"
+                    className="form-field"
+                    value={form.company}
+                    onChange={update("company")}
+                  />
                 </Field>
                 <Field label="What are you struggling with most?">
-                  <Select>
+                  <Select
+                    value={form.struggle}
+                    onValueChange={(v) => setForm((f) => ({ ...f, struggle: v }))}
+                  >
                     <SelectTrigger data-magnify className="form-field h-auto py-3 text-left">
                       <SelectValue placeholder="Select one..." />
                     </SelectTrigger>
@@ -93,13 +186,15 @@ export function BookAuditForm() {
                     data-magnify
                     placeholder="What's the biggest bottleneck in your business right now?"
                     className="form-field min-h-[110px] resize-none"
+                    value={form.message}
+                    onChange={update("message")}
                   />
                 </Field>
 
                 <button
                   type="submit"
                   data-magnify
-                  disabled={submitted}
+                  disabled={submitted || submitting}
                   className={`mt-2 w-full rounded-full px-6 py-4 text-[14px] font-semibold transition ${
                     submitted
                       ? "bg-[hsl(142_71%_45%)] text-white"
@@ -108,6 +203,8 @@ export function BookAuditForm() {
                 >
                   {submitted
                     ? "Submitted! We'll be in touch shortly ✓"
+                    : submitting
+                    ? "Submitting..."
                     : "Book Free Audit →"}
                 </button>
                 <p className="text-center text-[12px] text-foreground/50">
