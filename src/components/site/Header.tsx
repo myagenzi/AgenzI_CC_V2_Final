@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, LogOut, Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, LogOut } from "lucide-react";
 import logo from "@/assets/logo-horizontal.png";
 import { cn } from "@/lib/utils";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
@@ -11,13 +13,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+const SESSION_KEY = "agenzl_v2_loaded";
+
 const whatWeDo = [
   { glyph: "✦", label: "CaaS", desc: "Creative as a Service", href: "/what-we-do/creative-caas" },
   { glyph: "◈", label: "MaaS", desc: "Marketing as a Service", href: "/what-we-do/marketing-maas" },
   { glyph: "⬡", label: "Zenzai", desc: "AI · Automation · Tech", href: "/what-we-do/intelligence-zenzai" },
 ];
 
-const otherLinks = [
+const navLinks = [
   { label: "How It Works", href: "/how-it-works" },
   { label: "Pricing", href: "/pricing" },
   { label: "About", href: "/about" },
@@ -25,79 +29,132 @@ const otherLinks = [
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileWWDOpen, setMobileWWDOpen] = useState(false);
-  const lastY = useRef(0);
+  const [loaderDone, setLoaderDone] = useState(
+    () => !!sessionStorage.getItem(SESSION_KEY),
+  );
+  const location = useLocation();
   const { user, signOut } = useAuth();
   const initial = user?.email?.[0]?.toUpperCase() ?? "U";
 
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 8);
-      if (mobileOpen) {
-        setHidden(false);
-      } else if (y < 8) {
-        setHidden(false);
-      } else if (y > lastY.current && y > 80) {
-        setHidden(true);
-      } else if (y < lastY.current) {
-        setHidden(false);
-      }
-      lastY.current = y;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 60);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [mobileOpen]);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  useEffect(() => {
+    if (loaderDone) return;
+    const handler = () => setLoaderDone(true);
+    window.addEventListener("pageLoaderDone", handler);
+    return () => window.removeEventListener("pageLoaderDone", handler);
+  }, [loaderDone]);
+
+  const isActive = (href: string) => location.pathname === href;
+
   return (
     <>
-      <header
-        className={cn(
-          "fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-6 lg:pt-10 transition-transform duration-300 ease-out",
-          hidden && "-translate-y-[140%]",
-        )}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={loaderDone ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          background: "rgba(8,8,8,0.75)",
+          borderBottom: "1px solid rgba(240,238,232,0.08)",
+          boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,0.45)" : "none",
+          transition: "box-shadow 300ms ease",
+        }}
       >
         <div
-          className={cn(
-            "flex w-full max-w-[1100px] items-center justify-between gap-4 rounded-full border border-white/60 bg-white/55 px-3 py-2 pl-4 backdrop-blur-xl backdrop-saturate-150 transition-all",
-            scrolled && "shadow-[0_8px_32px_rgba(76,42,153,0.14)]",
-          )}
+          className="mx-auto flex items-center justify-between px-6 py-4 md:px-10"
+          style={{ maxWidth: 1280 }}
         >
-          <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="AgenzI home">
-            <img src={logo} alt="AgenzI" className="h-[88px] w-auto md:h-[112px]" />
+          {/* LEFT — Logo */}
+          <Link to="/" aria-label="AgenzI home" data-cursor="hover">
+            <img src={logo} alt="AgenzI" style={{ height: 32, width: "auto" }} />
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+          {/* CENTER — Nav links pill (desktop) */}
+          <nav
+            className="hidden md:flex items-center gap-0"
+            aria-label="Main"
+            style={{
+              padding: "8px 8px",
+              borderRadius: 9999,
+              background: "rgba(255,255,255,0.04)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            {/* What We Do dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger data-magnify className="inline-flex items-center gap-1 rounded-full px-4 py-2 text-[13px] text-foreground/70 outline-none transition-colors hover:text-foreground data-[state=open]:text-foreground">
-                What We Do
-                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+              <DropdownMenuTrigger
+                data-cursor="hover"
+                className="outline-none"
+                style={navLinkStyle(false)}
+                asChild={false}
+              >
+                <span className="inline-flex items-center gap-1">
+                  What We Do
+                  <ChevronDown style={{ width: 12, height: 12, opacity: 0.7 }} />
+                </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="center"
-                sideOffset={12}
-                className="glass-strong w-[280px] rounded-2xl border-white/10 p-2 text-foreground"
+                sideOffset={16}
+                style={{
+                  background: "rgba(17,17,17,0.97)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  border: "1px solid rgba(240,238,232,0.08)",
+                  borderRadius: 16,
+                  padding: 8,
+                  minWidth: 240,
+                }}
               >
                 {whatWeDo.map((item) => (
                   <DropdownMenuItem key={item.href} asChild>
                     <Link
                       to={item.href}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 focus:bg-white/5"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
+                      style={{ color: "rgba(240,238,232,0.85)" }}
                     >
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-base text-foreground/85">
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: 32,
+                          height: 32,
+                          borderRadius: "50%",
+                          border: "1px solid rgba(240,238,232,0.1)",
+                          background: "rgba(255,255,255,0.03)",
+                          fontSize: 14,
+                          flexShrink: 0,
+                        }}
+                      >
                         {item.glyph}
                       </span>
-                      <span className="flex flex-col">
-                        <span className="text-[13px] font-semibold text-foreground">{item.label}</span>
-                        <span className="text-[11px] text-foreground/55">{item.desc}</span>
+                      <span style={{ display: "flex", flexDirection: "column" }}>
+                        <span style={{ fontSize: 13, fontWeight: 600 }}>{item.label}</span>
+                        <span style={{ fontSize: 11, color: "rgba(240,238,232,0.45)" }}>
+                          {item.desc}
+                        </span>
                       </span>
                     </Link>
                   </DropdownMenuItem>
@@ -105,134 +162,252 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {otherLinks.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                data-magnify
-                className="rounded-full px-4 py-2 text-[13px] text-foreground/70 transition-colors hover:text-foreground"
+            {navLinks.map((l) => (
+              <Link
+                key={l.href}
+                to={l.href}
+                data-cursor="hover"
+                style={navLinkStyle(isActive(l.href))}
               >
                 {l.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            {user ? (
+          {/* RIGHT — CTA + auth + mobile toggle */}
+          <div className="flex items-center gap-3">
+            {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger
-                  data-magnify
-                  className="hidden h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-[13px] font-semibold text-primary outline-none transition hover:bg-primary/20 sm:inline-flex"
+                  data-cursor="hover"
+                  className="hidden sm:inline-flex h-8 w-8 items-center justify-center rounded-full text-[13px] font-semibold outline-none"
+                  style={{ background: "rgba(104,112,189,0.15)", color: "var(--ring-2)" }}
                   aria-label="Account"
                 >
                   {initial}
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" sideOffset={12} className="glass-strong w-48 rounded-2xl border-white/10 p-2 text-foreground">
-                  <div className="px-3 py-2 text-[11px] text-foreground/60 truncate">{user.email}</div>
-                  <DropdownMenuItem onClick={() => signOut()} className="rounded-xl px-3 py-2 focus:bg-white/5">
-                    <LogOut className="mr-2 h-4 w-4" /> Sign out
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={12}
+                  style={{
+                    background: "rgba(17,17,17,0.97)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                    border: "1px solid rgba(240,238,232,0.08)",
+                    borderRadius: 16,
+                    padding: 8,
+                    minWidth: 180,
+                    color: "#F0EEE8",
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "8px 12px",
+                      fontSize: 11,
+                      color: "rgba(240,238,232,0.5)",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {user.email}
+                  </div>
+                  <DropdownMenuItem
+                    onClick={() => signOut()}
+                    className="rounded-xl px-3 py-2 transition-colors"
+                  >
+                    <LogOut style={{ marginRight: 8, width: 14, height: 14 }} />
+                    Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <Link
-                to="/auth"
-                data-magnify
-                className="hidden rounded-full px-4 py-2 text-[13px] text-foreground/70 transition hover:text-foreground sm:inline-flex"
-              >
-                Login
-              </Link>
             )}
-            <Link
-              to="/book-audit"
-              data-magnify
-              className="cta-glow rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground"
-            >
-              Book Free Audit
-            </Link>
+
+            <div className="hidden md:block">
+              <PrimaryButton label="Get a Free System Audit" href="/book-audit" size="sm" />
+            </div>
+
+            {/* Hamburger (mobile only) */}
             <button
               type="button"
-              className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground md:hidden"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((v) => !v)}
+              className="md:hidden flex h-9 w-9 items-center justify-center rounded-full"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(240,238,232,0.1)",
+              }}
+              data-cursor="hover"
             >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileOpen ? (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 2L14 14M14 2L2 14" stroke="#F0EEE8" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <line x1="2" y1="5" x2="14" y2="5" stroke="#F0EEE8" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="2" y1="11" x2="14" y2="11" stroke="#F0EEE8" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      {/* Mobile drawer */}
-      <div
-        className={cn(
-          "fixed inset-0 z-40 flex flex-col gap-1 overflow-y-auto bg-background px-6 pb-10 pt-28 transition-opacity md:hidden",
-          mobileOpen ? "opacity-100" : "pointer-events-none opacity-0",
-        )}
-      >
-        <button
-          type="button"
-          onClick={() => setMobileWWDOpen((v) => !v)}
-          className="flex items-center justify-between border-b border-border py-4 font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
-        >
-          What We Do
-          <ChevronDown className={cn("h-5 w-5 transition-transform", mobileWWDOpen && "rotate-180")} />
-        </button>
-        {mobileWWDOpen && (
-          <div className="flex flex-col gap-1 border-b border-border py-2 pl-4">
-            {whatWeDo.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 py-2 font-display text-lg text-foreground/70 hover:text-foreground"
+      {/* Mobile fullscreen overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ clipPath: "circle(0% at 95% 5%)" }}
+            animate={{ clipPath: "circle(150% at 95% 5%)" }}
+            exit={{ clipPath: "circle(0% at 95% 5%)" }}
+            transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 48,
+              background: "#080808",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <nav
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 4,
+                marginBottom: 40,
+              }}
+            >
+              {/* What We Do with sub-links */}
+              <motion.button
+                type="button"
+                onClick={() => setMobileWWDOpen((v) => !v)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.05 }}
+                style={mobileNavLinkStyle}
+                data-cursor="hover"
               >
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-sm">
-                  {item.glyph}
-                </span>
-                <span>
-                  {item.label}
-                  <span className="ml-2 text-[11px] font-normal text-foreground/45">{item.desc}</span>
-                </span>
-              </Link>
-            ))}
-          </div>
+                What We Do
+              </motion.button>
+
+              <AnimatePresence>
+                {mobileWWDOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    style={{
+                      overflow: "hidden",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 4,
+                      marginBottom: 8,
+                    }}
+                  >
+                    {whatWeDo.map((item, i) => (
+                      <motion.div
+                        key={item.href}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: i * 0.05 }}
+                      >
+                        <Link
+                          to={item.href}
+                          onClick={() => setMobileOpen(false)}
+                          style={{
+                            fontSize: "clamp(1.2rem,4vw,2rem)",
+                            fontFamily: "'Bricolage Grotesque', sans-serif",
+                            fontWeight: 700,
+                            color: "rgba(240,238,232,0.55)",
+                            textTransform: "uppercase",
+                            textDecoration: "none",
+                          }}
+                          data-cursor="hover"
+                        >
+                          {item.label}
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {navLinks.map((l, i) => (
+                <motion.div
+                  key={l.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.1 + i * 0.08 }}
+                >
+                  <Link
+                    to={l.href}
+                    onClick={() => setMobileOpen(false)}
+                    style={mobileNavLinkStyle}
+                    data-cursor="hover"
+                  >
+                    {l.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </nav>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.35 }}
+            >
+              <PrimaryButton
+                label="Get a Free System Audit"
+                href="/book-audit"
+                size="lg"
+                onClick={() => setMobileOpen(false)}
+              />
+            </motion.div>
+          </motion.div>
         )}
-        {otherLinks.map((l) => (
-          <a
-            key={l.label}
-            href={l.href}
-            onClick={() => setMobileOpen(false)}
-            className="border-b border-border py-4 font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
-          >
-            {l.label}
-          </a>
-        ))}
-        {user ? (
-          <button
-            type="button"
-            onClick={() => { signOut(); setMobileOpen(false); }}
-            className="border-b border-border py-4 text-left font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
-          >
-            Sign out
-          </button>
-        ) : (
-          <Link
-            to="/auth"
-            onClick={() => setMobileOpen(false)}
-            className="border-b border-border py-4 font-display text-2xl font-bold text-foreground/65 transition hover:text-foreground"
-          >
-            Login
-          </Link>
-        )}
-        <Link
-          to="/book-audit"
-          onClick={() => setMobileOpen(false)}
-          className="mt-4 font-display text-2xl font-bold text-primary"
-        >
-          Book Free Audit →
-        </Link>
-      </div>
+      </AnimatePresence>
     </>
   );
 }
+
+function navLinkStyle(active: boolean): React.CSSProperties {
+  return {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+    padding: "8px 16px",
+    fontFamily: "'Space Grotesk', sans-serif",
+    fontSize: 13,
+    fontWeight: 500,
+    color: active ? "#F0EEE8" : "rgba(240,238,232,0.75)",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    borderRadius: 9999,
+    background: active ? "rgba(255,255,255,0.07)" : "transparent",
+    textDecoration: "none",
+    transition: "color 150ms, background 150ms",
+    cursor: "none",
+    whiteSpace: "nowrap",
+  };
+}
+
+const mobileNavLinkStyle: React.CSSProperties = {
+  fontSize: "clamp(2rem,6vw,3.5rem)",
+  fontFamily: "'Bricolage Grotesque', sans-serif",
+  fontWeight: 700,
+  color: "#F0EEE8",
+  textTransform: "uppercase",
+  textDecoration: "none",
+  background: "none",
+  border: "none",
+  cursor: "none",
+  padding: "8px 0",
+  lineHeight: 1.05,
+};

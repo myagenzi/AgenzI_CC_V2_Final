@@ -862,3 +862,134 @@
 .surface-lavender .form-field::placeholder {
   color: hsl(var(--foreground) / 0.38);
 }
+
+/* ============================================================
+   AgenzI v2 — Ring colors, liquid glass, loader, new animations
+   ============================================================ */
+
+/* ── Logo ring colors (extracted from spiral logo PNG) ── */
+:root {
+  --ring-1: #2B3A86;       /* Nebula Blue  — outer ring */
+  --ring-2: #6870BD;       /* Periwinkle   — middle     */
+  --ring-3: #7B5499;       /* Royal Purple — inner      */
+  --ring-4: #BA6AAA;       /* Stardust Pink             */
+  --ring-1-rgb: 43, 58, 134;
+  --ring-2-rgb: 104, 112, 189;
+  --ring-3-rgb: 123, 84, 153;
+  --ring-4-rgb: 186, 106, 170;
+  --accent-gradient: linear-gradient(135deg, var(--ring-1) 0%, var(--ring-2) 50%, var(--ring-3) 100%);
+  --font-primary: 'Bricolage Grotesque', sans-serif;
+  --font-secondary: 'Space Grotesk', sans-serif;
+
+  /* Flat dark tokens used by new components */
+  --bg: #080808;
+  --bg-surface: #111111;
+  --bg-card: #161616;
+  --text-primary: #F0EEE8;
+  --text-secondary: rgba(240,238,232,0.6);
+  --text-muted-new: rgba(240,238,232,0.35);
+  --border-new: rgba(240,238,232,0.08);
+  --border-hover-new: rgba(240,238,232,0.2);
+  /* Convenience aliases for new dark sections */
+  --border: rgba(240,238,232,0.08);
+  --text-muted: rgba(240,238,232,0.35);
+}
+
+/* ── Liquid Glass utilities ── */
+.liquid-glass {
+  background: rgba(255,255,255,0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.45) 0%,
+    rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0) 40%,
+    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.15) 80%,
+    rgba(255,255,255,0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.liquid-glass-strong {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  box-shadow: 4px 4px 4px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.15);
+  position: relative;
+  overflow: hidden;
+}
+.liquid-glass-strong::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.5) 0%,
+    rgba(255,255,255,0.2) 20%,
+    rgba(255,255,255,0) 40%,
+    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.2) 80%,
+    rgba(255,255,255,0.5) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Gradient text helpers ── */
+.hero-heading {
+  background: linear-gradient(180deg, #646973 0%, #BBCCD7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.accent-heading {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── New keyframes ── */
+@keyframes spin-slow    { from { transform: rotate(0deg); }    to { transform: rotate(360deg); } }
+@keyframes pulse-opacity{ 0%,100%{ opacity:0.8; } 50%{ opacity:0.2; } }
+@keyframes scalePulse   { 0%,100%{ transform:scale(1); }        50%{ transform:scale(1.06); } }
+@keyframes fade-rise    { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+@keyframes role-fade-in { from { opacity:0; transform:translateY(8px);  } to { opacity:1; transform:translateY(0); } }
+@keyframes scroll-down  { 0%{ transform:translateY(-100%); } 100%{ transform:translateY(200%); } }
+@keyframes marquee-left { 0%{ transform:translateX(0); } 100%{ transform:translateX(-50%); } }
+@keyframes fadeInUp     { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+.animate-fade-rise     { animation: fade-rise 0.8s ease-out both; }
+.animate-fade-rise-d1  { animation: fade-rise 0.8s ease-out 0.2s both; }
+.animate-fade-rise-d2  { animation: fade-rise 0.8s ease-out 0.4s both; }
+.animate-fade-rise-d3  { animation: fade-rise 0.8s ease-out 0.6s both; }
+.animate-role-fade-in  { animation: role-fade-in 0.4s ease-out both; }
+.animate-scroll-down   { animation: scroll-down 1.5s ease-in-out infinite; }
+.animate-fade-in-up    { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
+
+/* ── Desktop cursor: none — CustomCursor takes over ── */
+@media (min-width: 768px) { * { cursor: none !important; } }
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: #080808; }
+::-webkit-scrollbar-thumb { background: rgba(240,238,232,0.2); border-radius: 2px; }
+
+/* ── Focus ring using ring-2 ── */
+:focus-visible { outline: 2px solid var(--ring-2); outline-offset: 3px; }

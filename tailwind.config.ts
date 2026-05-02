@@ -13,8 +13,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Bricolage Grotesque"', "ui-sans-serif", "system-ui", "sans-serif"],
-        sans: ['"Space Grotesk"', "ui-sans-serif", "system-ui", "sans-serif"],
+        display:   ['"Bricolage Grotesque"', "ui-sans-serif", "system-ui", "sans-serif"],
+        sans:      ['"Space Grotesk"', "ui-sans-serif", "system-ui", "sans-serif"],
+        primary:   ['"Bricolage Grotesque"', "sans-serif"],
+        secondary: ['"Space Grotesk"', "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,6 +53,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // v2 flat dark tokens
+        bg:      "#080808",
+        surface: "#111111",
+        card:    "#161616",
         // AgenzI brand tokens (use sparingly — prefer semantic ones above)
         cosmic: "hsl(var(--cosmic))",
         navy: "hsl(var(--navy))",
@@ -66,6 +72,7 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 4px)",
         sm: "calc(var(--radius) - 8px)",
+        pill: "9999px",
       },
       backgroundImage: {
         "gradient-hero": "var(--gradient-hero)",
